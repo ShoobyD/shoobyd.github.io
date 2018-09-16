@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="he" dir="rtl" >
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+		<meta name="author" content="Baruch Mustakis, aka ShoobyD" />
+		<meta name="description" content="האתר של ברוך מוסטקיס" />
+		<meta name="keywords" content="ברוך מוסטקיס baruch mustakis שובידי ShoobyD מתמטיקה math המחלקה למתמטיקה mathematics department בר אילן biu bar-ilan university" />
+		<!-- revised: 13/10/2013 (scheme: dd/mm/yyyy) -->
+		
+		<title>האתר של ברוך מוסטקיס</title>
+		
+		<!-- to correct the unsightly Flash of Unstyled Content. http://www.bluerobot.com/web/css/fouc.asp -->
+		<script></script>
+		<link href="/assets/style/main.css" rel="stylesheet" type="text/css" />
+		<!--[if lt IE 7]><link rel="stylesheet" type="text/css" href="/assets/style/iestyleshit.css" /><![endif]-->
+		<!--[if lt IE 7]><script defer src="/assets/style/pngfix.js"></script><![endif]-->
+		<link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico" />
+		<style title="StyleSheet">
+			#cv, #social {
+				text-align: center;
+			}
+			#social li {
+				display: inline-block;
+				margin:  16px 0;
+			}
+			#social li img {
+				width: 96px;
+			}
+			#cv iframe {
+				width:  640px;
+				height: 900px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="container">
+			<div id="pageHeader">
+				<h1><a href="/" title="לוגו האתר by Phillip Martin"><img src="/assets/images/math_logo.png" alt="לוגו האתר by Phillip Martin" /></a>
+				<img src="/assets/images/header.png" alt="ברוכים הבאים לאתר של ברוך מוסטקיס" /></h1>
+			</div>
+			<div id="menu">
+				<div id="lsections" class="submenu">
+					<h3>תפריט:</h3>
+					<ul>
+						<li><a href="/" title="לעמוד הראשי">עמוד ראשי</a></li>
+						<li><a href="/fresh/" title="דברים לאתר פרש">דברים לאתר <span class="fresh">פרש</span></a></li>
+						<li><a href="/balloonz/" title="balloonz – משחק בלונים">באלונז</a></li>
+						<li><a href="/icmptunnel/" title="ICMP Tunnel">ICMP Tunnel</a></li>
+						<li><a href="/calhobb/" title="קלווין והובס">קלווין והובס <span class="oldsec">(ישן)</span></a></li>
+						<li class="locus">צור קשר</li>
+					</ul>
+				</div>
+				<div id="lresources" class="submenu">
+					<h3>קישורים חיצוניים:</h3>
+					<ul>
+						<li><a href="https://math.biu.ac.il/" title="המחלקה למתמטיקה" onclick="window.open(this.href); return false;">המחלקה למתמטיקה</a></li>
+						<li><a href="https://cs.biu.ac.il/" title="המחלקה למדעי־המחשב" onclick="window.open(this.href); return false;">המחלקה למדעי־המחשב</a></li>
+						<li><a href="https://www1.biu.ac.il/" title="אתר אוניברסיטת בר־אילן" onclick="window.open(this.href); return false;">אתר אוניברסיטת בר־אילן</a></li>
+						<li><a href="https://www.fresh.co.il/vBulletin/index.php?referrerid=90538" title="לדף הבית של פורום פרש" onclick="window.open(this.href); return false;">אתר הפורומים <span class="fresh">פרש</span></a></li>
+						<li><a href="https://www.facebook.com/groups/tzayruoti/" title="קבוצת 'ציירו אותי' בפייסבוק" onclick="window.open(this.href); return false;">קבוצת <em>'ציירו אותי'</em> ב<span class="facebook">פייסבוק</span></a></li>
+					</ul>
+				</div>
+				<script defer src="/assets/scripts/menu.js"></script>
+			</div>
+			<div id="main-content">
+				<div class="introsect">
+					<h2>מדיה חברתית</h2>
+					<ul id="social">
+						<li>
+							<a href="https://www.facebook.com/ShoobyD" title="facebook"><img src="/assets/images/social_icons/facebook.png" alt="facebook" /></a>
+						</li>
+						<li>
+							<a href="https://www.linkedin.com/in/ShoobyD" title="linkedin"><img src="/assets/images/social_icons/linkedin.png" alt="linkedin" /></a>
+						</li>
+						<li>
+							<a href="mailto:bmusty@gmail.com" title="email"><img src="/assets/images/social_icons/gmail.png" alt="gmail" /></a>
+						</li>
+						<li>
+							<a href="http://shoobyd.deviantart.com/" title="deviantart"><img src="/assets/images/social_icons/deviantart.png" alt="deviantart" /></a>
+						</li>
+						<li>
+							<a href="https://he.wikipedia.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:ShoobyD" title="wikipedia"><img src="/assets/images/social_icons/wikipedia.png" alt="wikipedia" /></a>
+						</li>
+						<li>
+							<a href="http://www.fresh.co.il/vBulletin/member.php?u=90538?referrerid=90538" title="fresh"><img src="/assets/images/social_icons/fresh.png" alt="fresh" /></a>
+						</li>
+					</ul>
+				</div>
+				<div id="cv" class="introsect">
+					<iframe src="https://docs.google.com/gview?url=https://shoobyd.github.io/assets/files/CurriculumVitae.pdf&embedded=true" frameborder="0"></iframe>
+				</div>
+			</div>
+			<script>
+				// make social links open on new tab + add shadow.
+				(function() {
+					var menu_items = Array.from( document.querySelectorAll( '#social a' ) );
+					for ( var lnk of menu_items ) {
+						lnk.onclick = function() { window.open( this.href ); return false; };
+						lnk.firstChild.className = 'shadowfilter';
+					}
+				})();
+			</script>
+
+			<div id="footer">
+				<hr />
+				<div id="footer-content">
+					<p id="validation" dir="ltr">
+						<a href="https://validator.w3.org/check/referer" title="בדיקת תקינות קוד ה-XHTML של האתר" onclick="window.open(this.href); return false;">HTML</a>&nbsp;
+						<a href="https://jigsaw.w3.org/css-validator/check/referer" title="בדיקת תקינות קוד ה-CSS של האתר" onclick="window.open(this.href); return false;">CSS</a>
+					</p>
+					<p><br />נבנה ועוצב בידי <a href="/contact/" title="ברוך מוסטקיס">ברוך מוסטקיס</a>,
+						<br />כל הזכויות שמורות © Copyright<br />
+					</p>
+				</div>
+			</div>
+
+		</div>
+
+	</body>
+
+</html>
+
