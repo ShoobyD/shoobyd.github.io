@@ -1,0 +1,122 @@
+
+/* Style Sheet for Cinema-TV Magazine */
+
+/* Author: Baruch Mustakis a.k.a ShoobyD.
+    Revised: 23/09/08
+    (in d/mm/yy format) */
+
+
+/* base */
+
+* {margin: 0; padding: 0;}
+abbr, acronym, img {border: 0;}
+ol, ul, li {list-style: none; list-style-type: none;}
+h1, h2, h3, h4, h5, h6, th, td {font-size: 100%; font-weight: normal;}
+
+html {}
+body {background: #fcf2dd;}
+
+#container {
+	background:     #ffffff url(../images/border_right.gif) right repeat-y;
+	font-family:    arial, sans-serif;
+	position:       relative;
+	margin:         0 auto;
+	padding-bottom: 20px;
+	width:          72%;
+	min-width:      800px;
+	min-height:     946px;
+	border-left:    1px solid #000000;
+}
+a:link, a:visited {text-decoration: none; color: black;}
+a:hover, a:active {text-decoration: underline; color: #8da1fb;}
+.fresh {color: #239211; font-weight: bold;}
+.fresh:hover {color: #98f089;}
+
+/********************header********************/
+#pageHeader {
+	height:       132px;
+	margin-right: 10px;
+	padding:      27px 21px 0 0;
+	background:   url(../images/header_border.gif) bottom repeat-x;
+}
+#pageHeader h1 {background: url(../images/logo_on.gif) no-repeat bottom right;}
+#pageHeader h1:hover {background: url(../images/logo_off.gif) no-repeat bottom right;}
+
+
+
+/********************menu********************/
+#linkList {
+	float:       right;
+	padding:     21px 21px 0 0;
+	width:       21%;
+	border-left: 1px solid #a5accb;
+}
+#linkList ul {font-size: 0.7em;}
+#linkList li {
+	line-height:     2.1em;
+	padding:         5px 36px 0 8px;
+	list-style-type: none;
+	background:      url(../images/bullet1.gif) no-repeat top right;
+}
+#linkList li a {font-size: 1.3em;}
+#linkList h3 {height: 38px; padding-top: 46px;}
+#linkList h3 span {display: none;}
+#lsections h3 {background: url(../images/sections.gif) no-repeat bottom right;}
+#lsections h3:hover {background: url(../images/sections_hl.gif) no-repeat bottom right;}
+#larchives h3 {background: url(../images/archive.gif) no-repeat bottom right;}
+#larchives h3:hover {background: url(../images/archive_hl.gif) no-repeat bottom right;}
+#lresources h3 {background: url(../images/links.gif) no-repeat bottom right;}
+#lresources h3:hover {background: url(../images/links_hl.gif) no-repeat bottom right;}
+
+
+
+/********************main********************/
+#main {
+	float:   right;
+	width:   68%;
+	padding: 33px;
+}
+#main h3 {
+	font-size:   1.3em;
+	font-weight: bold;
+}
+#issueDetails {
+	float:            left;
+	width:            272px;
+	height:           392px;
+	padding:          48px 68px 68px 48px;
+	line-height:      2.1em;
+	background:       url(../images/paper.png) no-repeat;
+	background-size:  370px 488px;
+	overflow:         auto;
+}
+#content {
+	display: inline;
+	line-height: 1.4em;
+	min-height: 660px;
+	width: 100%;
+}
+#content  p {text-align: justify;}
+
+
+
+/********************footer********************/
+#footer {clear: both;}
+#footer-content {
+	padding-top: 32px;
+	text-align: center;
+	font-size: 0.7em;
+	font-weight: bold;
+}
+hr {
+	margin: 0 auto;
+	width: 52%;
+	height: 2px;
+	border: 0;
+	background: url(../images/hr.gif) bottom repeat-x;
+}
+
+
+
+/* end */
+

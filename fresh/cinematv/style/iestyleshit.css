@@ -1,0 +1,33 @@
+
+/* Style Sheet for Cinema-TV Magazine - IE Shit */
+
+/* Author: Baruch Mustakis a.k.a ShoobyD.
+    Revised: 7/10/08
+    (in d/mm/yy format) */
+
+
+/* base */
+
+body {behavior:url("style/csshover.htc");}
+a {position:relative; text-align: right; zoom: 1;} /*fix links under png*/
+#container {width: 800px;}
+
+/********************header********************/
+#pageHeader {}
+
+/********************menu********************/
+#linkList {}
+
+/********************main********************/
+#main {}
+#content {}
+#issueDetails {
+	background: url(../images/paper.gif) no-repeat;
+}
+
+/********************footer********************/
+#footer {}
+#footer-content {}
+
+/* end */
+

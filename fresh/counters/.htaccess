@@ -1,0 +1,19 @@
+# Turn Rewrite Engine On
+RewriteEngine on
+RewriteBase /counters/
+
+RewriteRule ^birthday/(\d\d?)/(\d\d?)/?$ birthday.php?date=$1/$2
+#RewriteCond %{REQUEST_URI} ^birthday/
+RewriteRule ^birthday/.* birthday.php?date=xx
+RewriteRule ^birthday$ birthday.php
+RewriteRule ^bday/(\d\d?)/(\d\d?)/?$ birthday.php?date=$1/$2
+RewriteRule ^bday$ birthday.php
+
+RewriteRule ^hofesh/(\d\d?)/(\d\d?)/(\d{1,4})/?$ hofesh.php?date=$1/$2/$3
+RewriteRule ^hofesh/.* hofesh.php?date=xx
+RewriteRule ^hofesh$ hofesh.php
+RewriteRule ^vacation/(\d\d?)/(\d\d?)/(\d{1,4})/?$ hofesh.php?date=$1/$2/$3
+RewriteRule ^vacation/.* hofesh.php?date=xx
+RewriteRule ^vacation$ hofesh.php
+
+RewriteRule ^olympics2012$ olympics2012.php
