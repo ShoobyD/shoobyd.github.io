@@ -1,0 +1,57 @@
+
+#mario {
+	width : 100%;
+	height : 100%;
+	position : absolute;
+	top : 0px;
+	left : 0px;
+	overflow-x : hidden;
+	z-index : -1;
+
+	background: -webkit-linear-gradient( rgb( 88, 132, 56 ), rgb( 196, 212, 96 ) );
+	background:    -moz-linear-gradient( rgb( 88, 132, 56 ), rgb( 196, 212, 96 ) );
+	background:     -ms-linear-gradient( rgb( 88, 132, 56 ), rgb( 196, 212, 96 ) );
+	background:      -o-linear-gradient( rgb( 88, 132, 56 ), rgb( 196, 212, 96 ) );
+	background:         linear-gradient( rgb( 88, 132, 56 ), rgb( 196, 212, 96 ) );
+}
+
+#mario .level {
+	height : 248px;
+	width : 3392px;
+	position : absolute;
+	bottom : 6px;
+	left : 24px;
+	background-image : url( mario_background.png );
+/*	overflow-x : hidden;*/
+}
+
+#mario .overlay {
+	width : 3392px;
+	height : 100%;
+	position : absolute;
+	top : 0px;
+	left : 0px;
+	background-color : rgba(50,40,20,0.5);
+}
+
+#mario .mario-sprite {
+	width : 16px;
+	height : 16px;
+	overflow : hidden;
+	position : absolute;
+	left : -999px;
+}
+
+
+#mario .mario-text {
+	position : absolute;
+	left : 1650px;
+	top : -120px;
+}
+
+#mario .text-2 {
+	position : absolute;
+	left : 3100px;
+	top : -180px;
+}
+

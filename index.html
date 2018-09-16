@@ -1,99 +1,113 @@
 <!DOCTYPE html>
-
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="he" lang="he" dir="rtl">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="he" dir="rtl">
 
 	<head>
-		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<meta name="author" content="ברוך מוסטקיס" />
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+		<meta name="author" content="Baruch Mustakis, aka ShoobyD" />
 		<meta name="description" content="האתר של ברוך מוסטקיס" />
 		<meta name="keywords" content="ברוך מוסטקיס baruch mustakis שובידי ShoobyD מתמטיקה math המחלקה למתמטיקה mathematics department בר אילן biu bar-ilan university" />
-		<meta name="generator" content="Baruch Mustakis" />
-		<meta name="revised" content="Baruch Mustakis, 26/09/10" /> <!-- date in dd/mm/yy format -->
+		<!-- revised: 16/09/2018 (scheme: dd/mm/yyyy) -->
 
 		<title>האתר של ברוך מוסטקיס</title>
 
 		<!-- to correct the unsightly Flash of Unstyled Content. http://www.bluerobot.com/web/css/fouc.asp -->
-		<script type="text/javascript"></script>
-		<style type="text/css" title="StyleSheet" media="screen">
-			@import "style/style.css";
+		<script></script>
+		<link href="/assets/style/main.css" rel="stylesheet" type="text/css" />
+		<!--[if lt IE 7]><link rel="stylesheet" type="text/css" href="/assets/style/iestyleshit.css" /><![endif]-->
+		<!--[if lt IE 7]><script defer src="/assets/style/pngfix.js"></script><![endif]-->
+		<link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico" />
+		<style title="StyleSheet">
+			#bsod {
+				margin:     32px;
+				text-align: center;
+			}
+			#bsod img {
+				width:      460px;
+				box-shadow: 4px 2px 8px #aaa;
+			}
 		</style>
-		<!--[if lt IE 7]><link rel="stylesheet" type="text/css" href="style/iestyleshit.css" /><![endif]-->
-		<!--[if lt IE 7]><script defer type="text/javascript" src="style/pngfix.js"></script><![endif]-->
-		<link rel="Shortcut Icon" type="image/x-icon" href="favicon.ico" />
 	</head>
 
 	<body>
 
 		<div id="container">
 			<div id="pageHeader">
-				<h1><a href="index.html" title="לוגו האתר by Phillip Martin"><img src="images/math_logo.png" alt="לוגו האתר by Phillip Martin" /></a>
-				<img src="images/header.png" alt="ברוכים הבאים לאתר של ברוך מוסטקיס" /></h1>
+				<h1><a href="/" title="לוגו האתר by Phillip Martin"><img src="/assets/images/math_logo.png" alt="לוגו האתר by Phillip Martin" /></a>
+				<img src="/assets/images/header.png" alt="ברוכים הבאים לאתר של ברוך מוסטקיס" /></h1>
 			</div>
 
-			<div id="linkList">
-				<div id="lsections">
-					<h3 class="sections"><span>תפריט:</span></h3>
+			<div id="menu">
+				<div id="lsections" class="submenu">
+					<h3>תפריט:</h3>
 					<ul>
-						<li><span class="locus">עמוד ראשי</span></li>
-						<!-- <li><a href="calhobb/index.html" title="קלווין והובס">קלווין והובס</a></li> -->
-						<li><a href="freshscripts/index.html" title="סקריפטים לאתר פרש">סקריפטים לאתר <span class="fresh">פרש</span></a></li>
-						<li><a href="#sectionB" title="...">...</a></li>
+						<li class="locus">עמוד ראשי</li>
+						<li><a href="/fresh/" title="דברים לאתר פרש">דברים לאתר <span class="fresh">פרש</span></a></li>
+						<li><a href="/balloonz/" title="balloonz – משחק בלונים">באלונז</a></li>
+						<li><a href="/icmptunnel/" title="ICMP Tunnel">ICMP Tunnel</a></li>
+						<li><a href="/calhobb/" title="קלווין והובס">קלווין והובס <span class="oldsec">(ישן)</span></a></li>
+						<li><a href="/contact/" title="צור קשר">צור קשר</a></li>
 					</ul>
 				</div>
 
-				<div id="lresources">
-					<h3 class="resources"><span>קישורים נוספים:</span></h3>
+				<div id="lresources" class="submenu">
+					<h3>קישורים חיצוניים:</h3>
 					<ul>
 						<li><a href="https://math.biu.ac.il/" title="המחלקה למתמטיקה" onclick="window.open(this.href); return false;">המחלקה למתמטיקה</a></li>
-						<li><a href="https://cs.biu.ac.il/" title="המחלקה למדעי־המחשב" onclick="window.open(this.href); return false;">המחלקה למתמטיקה</a></li>
-						<li><a href="https://www1.biu.ac.il/" title="אתר אוניברסיטת בר-אילן" onclick="window.open(this.href); return false;">אתר אוניברסיטת בר-אילן</a></li>
+						<li><a href="https://cs.biu.ac.il/" title="המחלקה למדעי־המחשב" onclick="window.open(this.href); return false;">המחלקה למדעי־המחשב</a></li>
+						<li><a href="https://www1.biu.ac.il/" title="אתר אוניברסיטת בר־אילן" onclick="window.open(this.href); return false;">אתר אוניברסיטת בר־אילן</a></li>
 						<li><a href="https://www.fresh.co.il/vBulletin/index.php?referrerid=90538" title="לדף הבית של פורום פרש" onclick="window.open(this.href); return false;">אתר הפורומים <span class="fresh">פרש</span></a></li>
-						<li><a href="../contact.html" title="צור קשר">צור קשר</a></li>
+						<li><a href="https://www.facebook.com/groups/tzayruoti/" title="קבוצת 'ציירו אותי' בפייסבוק" onclick="window.open(this.href); return false;">קבוצת <em>'ציירו אותי'</em> ב<span class="facebook">פייסבוק</span></a></li>
+					</ul>
+				</div>
+				<script defer src="/assets/scripts/menu.js"></script>
+			</div>
+
+			<div id="main-content">
+				<div class="introsect">
+					<h2>קצת עליי</h2>
+					<p>
+						שמי ברוך מוסטקיס, מפתח־ווב<br />
+						בוגר תואר ראשון במתמטיקה עיונית (בהצטיינות),<br />
+						&nbsp;+ לימודי השלמה במדעי־המחשב.
+					</p>
+					<p><a href="/contact/">קורות־חיים ויצירת קשר</a></p>
+					<div id="bsod"><img src="/assets/images/BSoD.jpg" /></div>
+				</div>
+
+				<div class="introsect">
+					<h2>פרויקטים</h2>
+					<ul>
+						<li>
+							<em><a href="/fresh/">דברים לאתר <span class="fresh">פרש</span></a></em> – תוספי דפדפן, קאונטרים, עיצובים
+						</li>
+						<li>
+							<em><a href="http://bit.ly/latincourse" onclick="window.open(this.href); return false;">קורס לטינית</a></em> שאני מעביר בלעדית לאתר פרש<br />
+							<span style="font-size: 0.8em;">&nbsp;&nbsp;&nbsp;&ndash; לינק מקוצר: <a href="http://bit.ly/latincourse" onclick="window.open(this.href); return false;">http://bit.ly/LatinCourse</a></span>
+						</li>
+						<li>
+							<em><a href="/balloonz/">'בָּאלוּנְז' (baloonz)</a></em> – משחק בלונים מתפוצצים להטמעה באתרים
+						</li>
+						<li>
+							<em><a href="/icmptunnel/">ICMP Tunneling</a></em>
+						</li>
+						<li>
+							<em>מערכת הורדת ספרים</em> – סגור לקהל הרחב
+						</li>
+						<li>
+							<a href="https://www.facebook.com/groups/tzayruoti/" title="קבוצת 'ציירו אותי' בפייסבוק" onclick="window.open(this.href); return false;">קבוצת <em>'ציירו אותי'</em> ב<span class="facebook">פייסבוק</span></a></li>
 					</ul>
 				</div>
 			</div>
-
-			<div id="main">
-
-				<div id="content">
-					<div id="sectionA" class="passage">
-						<h2>מי אני?</h2>
-						<p>ברוך מוסטקיס, מפתח־ווב<br />
-						בוגר מתמטיקה עיונית (בהצטיינות) עם השלמות במדעי המחשב, באוניברסיטת בר־אילן.
-						</p>
-					</div>
-					<div id="sectionB" class="passage">
-						<h2>שטויות</h2>
-						<p>
-							<a href="calhobb/index.html">Calvin and Hobbes</a> - מסודר ומקוטלג לפי תאריך פרסום<br /><br />
-							<a href="http://bit.ly/latincourse" onclick="window.open(this.href); return false;">קורס לטינית</a> שאני מעביר בלעדית לאתר פרש<br />
-							<span style="font-size: 0.8em;">&nbsp;&nbsp;&nbsp;&ndash; לינק מקוצר: <a href="http://bit.ly/latincourse" onclick="window.open(this.href); return false;">http://bit.ly/LatinCourse</a></span>
-						</p>
-					</div>
-
-
-				</div>
-			</div>
-
 
 			<div id="footer">
 				<hr />
 				<div id="footer-content">
-					<p id="validation">
-						<a id="CSSchk" href="http://jigsaw.w3.org/css-validator/validator?uri=" title="בדיקת תקינות קוד ה-CSS של האתר" onclick="window.open(this.href); return false;">
-							<img style="border:0;width:88px;height:31px" src="http://jigsaw.w3.org/css-validator/images/vcss" alt="Valid CSS!" />
-						</a> &nbsp;
-						<a id="Xchk" href="http://validator.w3.org/check?uri=" title="בדיקת תקינות קוד ה-XHTML של האתר" onclick="window.open(this.href); return false;">
-							<img src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0 Strict" height="31" width="88" />
-						</a>
-						<script type="text/javascript">
-							CSSchk.href+=document.URL;
-							Xchk.href+=document.URL;
-						</script>
+					<p id="validation" dir="ltr">
+						<a href="http://validator.w3.org/check/referer" title="בדיקת תקינות קוד ה-XHTML של האתר" onclick="window.open(this.href); return false;">HTML</a>&nbsp;
+						<a href="http://jigsaw.w3.org/css-validator/check/referer" title="בדיקת תקינות קוד ה-CSS של האתר" onclick="window.open(this.href); return false;">CSS</a>
 					</p>
-					<p><br />נבנה ועוצב בידי <a href="../me.html" title="ברוך מוסטקיס">ברוך מוסטקיס</a>,
+					<p><br />נבנה ועוצב בידי <a href="/contact/" title="ברוך מוסטקיס">ברוך מוסטקיס</a>,
 						<br />כל הזכויות שמורות © Copyright<br />
-						<br /><a href="http://www.000webhost.com/" title="אתר שרת האחסון החינמי"  onclick="window.open(this.href); return false;"><img src="http://www.000webhost.com/images/120x60_powered.gif" alt="Web Hosting" width="120" height="60" /></a>
 					</p>
 				</div>
 			</div>

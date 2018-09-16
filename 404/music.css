@@ -1,0 +1,77 @@
+
+
+/*********************
+ *   ON/OFF Button   *
+ *********************/
+@-webkit-keyframes btn-open {
+	from { -webkit-transform: scale(0.5,0.5); }
+	to   { -webkit-transform: none;           }
+}
+@-webkit-keyframes btn-close {
+	from { -webkit-transform: none;           }
+	to   { -webkit-transform: scale(0.5,0.5); }
+}
+@-moz-keyframes btn-open {
+	from {    -moz-transform: scale(0.5,0.5); }
+	to   {    -moz-transform: none;           }
+}
+@-moz-keyframes btn-close {
+	from {    -moz-transform: none;           }
+	to   {    -moz-transform: scale(0.5,0.5); }
+}
+@-ms-keyframes btn-open {
+	from {     -ms-transform: scale(0.5,0.5); }
+	to   {     -ms-transform: none;           }
+}
+@-ms-keyframes btn-close {
+	from {     -ms-transform: none;           }
+	to   {     -ms-transform: scale(0.5,0.5); }
+}
+@-o-keyframes btn-open {
+	from {      -o-transform: scale(0.5,0.5); }
+	to   {      -o-transform: none;           }
+}
+@-o-keyframes btn-close {
+	from {      -o-transform: none;           }
+	to   {      -o-transform: scale(0.5,0.5); }
+}
+@keyframes btn-open {
+	from {         transform: scale(0.5,0.5); }
+	to   {         transform: none;           }
+}
+@keyframes btn-close {
+	from {         transform: none;           }
+	to   {         transform: scale(0.5,0.5); }
+}
+
+#music img {
+	top:      7%;
+	left:     7%;
+	position: absolute;
+	width:    64px;
+	-webkit-animation: btn-close 500ms;
+	   -moz-animation: btn-close 500ms;
+	    -ms-animation: btn-close 500ms;
+	     -o-animation: btn-close 500ms;
+	        animation: btn-close 500ms;
+	-webkit-animation-fill-mode: both;
+	   -moz-animation-fill-mode: both;
+	    -ms-animation-fill-mode: both;
+	     -o-animation-fill-mode: both;
+	        animation-fill-mode: both;
+}
+
+#music img:hover {
+	-webkit-animation: btn-open 500ms;
+	   -moz-animation: btn-open 500ms;
+	    -ms-animation: btn-open 500ms;
+	     -o-animation: btn-open 500ms;
+	        animation: btn-open 500ms;
+	-webkit-animation-fill-mode: both;
+	   -moz-animation-fill-mode: both;
+	    -ms-animation-fill-mode: both;
+	     -o-animation-fill-mode: both;
+	        animation-fill-mode: both;
+}
+
+

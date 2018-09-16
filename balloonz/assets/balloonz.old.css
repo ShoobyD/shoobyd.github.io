@@ -1,0 +1,223 @@
+
+
+/*************
+ *   Score   *
+ *************/
+@-webkit-keyframes score-fade-up {
+	from { opacity: 1; margin-top:  -40px; }
+	to   { opacity: 0; margin-top: -210px; }
+}
+@-moz-keyframes score-fade-up {
+	from { opacity: 1; margin-top:  -40px; }
+	to   { opacity: 0; margin-top: -210px; }
+}
+@-ms-keyframes score-fade-up {
+	from { opacity: 1; margin-top:  -40px; }
+	to   { opacity: 0; margin-top: -210px; }
+}
+@-o-keyframes score-fade-up {
+	from { opacity: 1; margin-top:  -40px; }
+	to   { opacity: 0; margin-top: -210px; }
+}
+@keyframes score-fade-up {
+	from { opacity: 1; margin-top:  -40px; }
+	to   { opacity: 0; margin-top: -210px; }
+}
+
+.balloon-score {
+	width: 250px; height: auto;
+	position:       fixed;
+	font-size:      160px;
+	font-weight:    bold;
+	font-family:    "Comic Sans MS", sans-serif;
+	color:          #ec4c1c;
+	text-shadow:    0px 0px 42px #ecce73;
+	letter-spacing: -26px;
+	-webkit-animation: score-fade-up 800ms ease-in;
+	   -moz-animation: score-fade-up 800ms ease-in;
+	    -ms-animation: score-fade-up 800ms ease-in;
+	     -o-animation: score-fade-up 800ms ease-in;
+	        animation: score-fade-up 800ms ease-in;
+	-webkit-animation-fill-mode: both;
+	   -moz-animation-fill-mode: both;
+	    -ms-animation-fill-mode: both;
+	     -o-animation-fill-mode: both;
+	        animation-fill-mode: both;
+}
+
+
+
+/*********************
+ *   ON/OFF Switch   *
+ *********************/
+@-webkit-keyframes btn-open {
+	from { -webkit-transform: scale(0.5,0.5); }
+	to   { -webkit-transform: none; }
+}
+@-webkit-keyframes btn-close {
+	from { -webkit-transform: none; }
+	to   { -webkit-transform: scale(0.5,0.5); }
+}
+@-moz-keyframes btn-open {
+	from { -moz-transform: scale(0.5,0.5); }
+	to   { -moz-transform: none; }
+}
+@-moz-keyframes btn-close {
+	from { -moz-transform: none; }
+	to   { -moz-transform: scale(0.5,0.5); }
+}
+@-ms-keyframes btn-open {
+	from { -ms-transform: scale(0.5,0.5); }
+	to   { -ms-transform: none; }
+}
+@-ms-keyframes btn-close {
+	from { -ms-transform: none; }
+	to   { -ms-transform: scale(0.5,0.5); }
+}
+@-o-keyframes btn-open {
+	from { -o-transform: scale(0.5,0.5); }
+	to   { -o-transform: none; }
+}
+@-o-keyframes btn-close {
+	from { -o-transform: none; }
+	to   { -o-transform: scale(0.5,0.5); }
+}
+@keyframes btn-open {
+	from { transform: scale(0.5,0.5); }
+	to   { transform: none; }
+}
+@keyframes btn-close {
+	from { transform: none; }
+	to   { transform: scale(0.5,0.5); }
+}
+
+.onoffswitch {
+	position:  fixed;
+	top:       12%;
+	left:      16%;
+	width:     144px;
+	direction: ltr;
+	-webkit-animation: btn-close 500ms;
+	   -moz-animation: btn-close 500ms;
+	    -ms-animation: btn-close 500ms;
+	     -o-animation: btn-close 500ms;
+	        animation: btn-close 500ms;
+	-webkit-animation-fill-mode: both;
+	   -moz-animation-fill-mode: both;
+	    -ms-animation-fill-mode: both;
+	     -o-animation-fill-mode: both;
+	        animation-fill-mode: both;
+}
+.onoffswitch:hover {
+	-webkit-animation: btn-open 500ms;
+	   -moz-animation: btn-open 500ms;
+	    -ms-animation: btn-open 500ms;
+	     -o-animation: btn-open 500ms;
+	        animation: btn-open 500ms;
+	-webkit-animation-fill-mode: both;
+	   -moz-animation-fill-mode: both;
+	    -ms-animation-fill-mode: both;
+	     -o-animation-fill-mode: both;
+	        animation-fill-mode: both;
+}
+.onoffswitch-checkbox {
+	display: none;
+}
+.onoffswitch-label {
+	display:       block;
+	overflow:      hidden;
+	cursor:        pointer;
+	border:        2px solid #868686;
+	border-radius: 8px;
+}
+.onoffswitch-inner {
+	display:     block;
+	width:        200%;
+	margin-left: -100%;
+	-webkit-transition: margin 0.3s ease-in 0s;
+	   -moz-transition: margin 0.3s ease-in 0s;
+	    -ms-transition: margin 0.3s ease-in 0s;
+	     -o-transition: margin 0.3s ease-in 0s;
+	        transition: margin 0.3s ease-in 0s;
+}
+.onoffswitch-inner:before, .onoffswitch-inner:after {
+	display:     block;
+	float:       left;
+	width:       50%;
+	height:      48px;
+	padding:     0;
+	line-height: 48px;
+	font-size:   26px;
+	color:       white;
+	font-family: Trebuchet, Arial, sans-serif;
+	font-weight: bold;
+	-webkit-box-sizing: border-box;
+	   -moz-box-sizing: border-box;
+	    -ms-box-sizing: border-box;
+	     -o-box-sizing: border-box;
+	        box-sizing: border-box;
+}
+.onoffswitch-inner:before {
+	content:          "ON";
+	padding-left:     20px;
+	background-color: #9FC46A;
+	color:            #60783F;
+}
+.onoffswitch-inner:after {
+	content:          "OFF";
+	padding-right:    15px;
+	text-align:       right;
+	background-color: #DD7D6C;
+	color:            #8F5247;
+}
+.onoffswitch-switch {
+	display:       block;
+	width:         56px;
+	margin:        0px;
+	background:    #F6F6F6;
+	border:        2px solid #868686;
+	border-radius: 8px;
+	position:      absolute;
+	top:           0;
+	bottom:        0;
+	right:         84px;
+	-webkit-transition: all 0.3s ease-in 0s;
+	   -moz-transition: all 0.3s ease-in 0s;
+	    -ms-transition: all 0.3s ease-in 0s;
+	     -o-transition: all 0.3s ease-in 0s;
+	        transition: all 0.3s ease-in 0s;
+	background-image: -webkit-linear-gradient(center top, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 100%);
+	background-image:    -moz-linear-gradient(center top, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 100%);
+	background-image:     -ms-linear-gradient(center top, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 100%);
+	background-image:      -o-linear-gradient(center top, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 100%);
+	background-image:         linear-gradient(center top, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 100%);
+}
+.onoffswitch-switch img {
+	width:  42px;
+	margin: 3px 6px;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
+	margin-left: 0;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
+	right: 0px; 
+}
+
+
+
+/************
+ *   etc.   *
+ ************/
+.balloon:hover {
+	cursor: url( "pin.cur" ), crosshair;
+}
+
+.unselectable {
+	-webkit-user-select: none;
+	   -moz-user-select: none;
+	    -ms-user-select: none;
+	     -o-user-select: none;
+	        user-select: none;
+}
+
+

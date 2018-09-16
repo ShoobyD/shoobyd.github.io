@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="he" xml:lang="he" dir="rtl">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+		<meta name="author" content="Baruch Mustakis, aka ShoobyD" />
+		<meta name="description" content="תוספים דפדפן לאתר פרש" />
+		<meta name="keywords" content="Baruch Mustakis ברוך מוסטקיס add-ons תוסף תוספים greasemonky גריזמונקי firefox פיירפוקס opera אופרה scripts סקריפטים סקריפט fresh פרש" />
+		<!-- revised: 13/10/2013 (scheme: dd/mm/yyyy) -->
+
+		<title>balloonz: משחק בלונים</title>
+
+		<link href="/assets/style/main.css" rel="stylesheet" type="text/css" />
+		<!--[if lt IE 7]><link rel="stylesheet" type="text/css" href="/assets/style/iestyleshit.css" /><![endif]-->
+		<!--[if lt IE 7]><script defer src="/assets/style/pngfix.js"></script><![endif]-->
+		<style title="StyleSheet">
+			#main-content p {
+				padding:     24px 24px 0 0;
+				line-height: 250%;
+			}
+			.introsect {
+				margin: 42px 0 0 0;
+			}
+			code {
+				direction: ltr;
+				font:      12pt monospace;
+			}
+		</style>
+		<script src="/assets/lib/jquery-3.3.1.min.js"></script>
+		<link rel="stylesheet" href="/assets/lib/highlight.js/styles/zenburn.css">
+		<script src="/assets/lib/highlight.js/highlight.pack.js"></script>
+		<script>hljs.initHighlightingOnLoad();</script>
+	</head>
+	<body>
+		<div id="container">
+			<div id="pageHeader">
+				<h1><a href="/" title="לוגו האתר by Phillip Martin"><img src="/assets/images/math_logo.png" alt="לוגו האתר by Phillip Martin" /></a>
+				<img src="/assets/images/header.png" alt="ברוכים הבאים לאתר של ברוך מוסטקיס" /></h1>
+			</div>
+			<div id="menu">
+				<div id="lsections" class="submenu">
+					<h3>תפריט:</h3>
+					<ul>
+						<li><a href="/" title="לעמוד הראשי">עמוד ראשי</a></li>
+						<li><a href="/fresh/" title="דברים לאתר פרש">דברים לאתר <span class="fresh">פרש</span></a></li>
+						<li class="locus">באלונז</li>
+						<li><a href="/icmptunnel/" title="ICMP Tunnel">ICMP Tunnel</a></li>
+						<li><a href="/calhobb/" title="קלווין והובס">קלווין והובס <span class="oldsec">(ישן)</span></a></li>
+						<li><a href="/contact/" title="צור קשר">צור קשר</a></li>
+					</ul>
+				</div>
+				<div id="lresources" class="submenu">
+					<h3>קישורים חיצוניים:</h3>
+					<ul>
+						<li><a href="http://www.math.biu.ac.il/" title="המחלקה למתמטיקה" onclick="window.open(this.href); return false;">המחלקה למתמטיקה</a></li>
+						<li><a href="http://www.cs.biu.ac.il/" title="המחלקה למדעי־המחשב" onclick="window.open(this.href); return false;">המחלקה למדעי־המחשב</a></li>
+						<li><a href="http://www1.biu.ac.il/" title="אתר אוניברסיטת בר־אילן" onclick="window.open(this.href); return false;">אתר אוניברסיטת בר־אילן</a></li>
+						<li><a href="http://www.fresh.co.il/vBulletin/index.php?referrerid=90538" title="לדף הבית של פורום פרש" onclick="window.open(this.href); return false;">אתר הפורומים <span class="fresh">פרש</span></a></li>
+						<li><a href="https://www.facebook.com/groups/tzayruoti/" title="קבוצת 'ציירו אותי' בפייסבוק" onclick="window.open(this.href); return false;">קבוצת <em>'ציירו אותי'</em> ב<span class="facebook">פייסבוק</span></a></li>
+					</ul>
+				</div>
+				<script defer src="/assets/scripts/menu.js"></script>
+			</div>
+			<div id="main-content">
+				<div class="introsect">
+					<h2>באלונז (balloonz): משחק בלונים</h2>
+					<p>קובץ מקור: <a href="balloonz.js" style="font-style: italic;" >balloonz.js</a>
+					</p>
+				</div>
+				<hr />
+				<pre>
+					<code class="js">
+						<script>
+							$( 'code.js' ).load( 'balloonz.js' );
+						</script>
+					</code>
+				</pre>
+				<!--
+				<script>
+					for ( var i = 0; i < 32; i++ )
+						document.write( "טקסט לדוגמא, טקסט לדוגמא<br/>" );
+				</script>
+				-->
+			</div>
+
+			<div id="footer">
+				<hr />
+				<div id="footer-content">
+					<p id="validation" dir="ltr">
+						<a href="http://validator.w3.org/check/referer" title="בדיקת תקינות קוד ה-XHTML של האתר" onclick="window.open(this.href); return false;">HTML</a>&nbsp;
+						<a href="http://jigsaw.w3.org/css-validator/check/referer" title="בדיקת תקינות קוד ה-CSS של האתר" onclick="window.open(this.href); return false;">CSS</a>
+					</p>
+					<p><br />נבנה ועוצב בידי <a href="/contact/" title="ברוך מוסטקיס">ברוך מוסטקיס</a>,
+						<br />כל הזכויות שמורות © Copyright<br />
+					</p>
+				</div>
+			</div>
+			<script src="balloonz.js"></script>
+
+		</div>
+
+	</body>
+
+</html>
+

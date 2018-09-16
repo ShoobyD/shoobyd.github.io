@@ -1,0 +1,296 @@
+
+/*******************************************
+ * Style Sheet for Baruch Mustakis site.   *
+ * Author: Baruch Mustakis, a.k.a ShoobyD. *
+ * Revised: 23/06/14 (in dd/mm/yy format)  *
+ *******************************************/
+
+
+/*************
+ *   reset   *
+ *************/
+* {
+	margin:  0;
+	padding: 0;
+}
+abbr, acronym, img {
+	border: 0;
+}
+h1, h2, h3, h4, h5, h6, th, td {
+	font-size:   100%;
+	font-weight: normal;
+}
+ol, ul, li {
+	list-style: square;
+}
+
+html {}
+body {
+	background: #248 url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAPUlEQVQYV2NUcun4z4AD3NtTwcCISwFIUsmlA7sCmCTIYAwTkCUxFKBLoijAJglXgEsSrICBgeE/yLW4AADgfyOD5bK4bAAAAABJRU5ErkJggg==') repeat;
+}
+
+
+/*############################################################*/
+
+/************
+ *   font   *
+ ************/
+@font-face {
+	font-family: Kermit;
+	src:         url( '/assets/fonts/kermit.woff' );
+}
+@font-face {
+	font-family: Kermit;
+	src:         url( '/assets/fonts/kermit_bold.woff' );
+	font-weight: bold;
+}
+h1, h2, h3, h4, h5, h6 {
+	font-family: Kermit;
+}
+
+
+/*############################################################*/
+
+/************
+ *   main   *
+ ************/
+#container {
+	background:     #ffffff;
+	font-family:    arial, sans-serif;
+	position:       relative;
+	margin:         0 auto;
+	padding-bottom: 20px;
+	width:          72%;
+	width:          960px; /*ex min-width*/
+	min-height:     946px;
+	border-left:    1px solid #000;
+	box-shadow:     8px 0px 12px #000;
+}
+#main-content {
+	float:       right;
+	text-align:  justify;
+	min-width:   540px;
+	max-width:   634px;
+	/* width:       67%; */
+	padding:     33px;
+	min-height:  600px;
+	line-height: 1.4em;
+}
+#main-content h2 {
+	font:            1.2em Kermit;
+	font-weight:     bold;
+	text-decoration: underline;
+	text-shadow:     2px 2px 4px #aaa;
+}
+#main-content h3 {
+	color:       Navy;
+	font-size:   1.3em;
+	font-weight: bold;
+	line-height: 2.1em;
+	text-shadow: 2px 1px 3px #aaa;
+}
+#main-content p {
+	margin: 8px;
+}
+#main-content ul {
+	margin-right: 8px;
+}
+#main-content li {
+	margin: 16px;
+}
+#main-content li li {
+	list-style-type: none;
+}
+
+#TOC {
+	border:  1px purple dotted;
+	padding: 16px;
+	width:   344px;
+}
+#TOC li {
+	list-style: lower-roman inside;
+}
+
+.introsect, .section {
+	margin: 42px 0;
+}
+.section {
+	border-bottom:  1px solid #ddd;
+}
+.uplink {
+	font-size: 0.8em;
+	margin:    16px 0;
+}
+
+a:link, a:visited {
+	text-decoration: none;
+	color:           navy;
+}
+a:hover, a:active {
+	text-decoration: underline;
+	color:           #8da1fb;
+}
+.fresh {
+	color:       #239211;
+	font-weight: bold;
+}
+.fresh:hover {
+	color: #98f089;
+}
+a:hover .fresh {
+	color: #98f089;
+}
+
+.facebook {
+	color:       #46639e;
+	font-weight: bold;
+}
+.facebook:hover {
+	color: #22b2eb;
+}
+a:hover .facebook {
+	color: #22b2eb;
+}
+
+/* lightbox vertically align */
+#lightbox {
+	position: fixed !important;
+	top:      50%   !important;
+	-webkit-transform: translateY( -50% );
+	   -moz-transform: translateY( -50% );
+		-ms-transform: translateY( -50% );
+		 -o-transform: translateY( -50% );
+			transform: translateY( -50% );
+}
+
+/* 
+ * http://thenewcode.com/600/Creating-a-True-CrossBrowser-Drop-Shadow-Effect-With-CSS3-amp-SVG
+ * filter: url('shadow.svg#drop-shadow');
+ */
+.shadowfilter {
+	        filter: url('data:image/svg+xml;utf8,\
+				<svg height="0" width="0" xmlns="http://www.w3.org/2000/svg">\
+					<filter id="drop-shadow">\
+						<feGaussianBlur in="SourceAlpha" stdDeviation="3"/>\
+						<feOffset dx="3" dy="3" result="offsetblur"/>\
+						<feFlood flood-color="rgba(0,0,0,0.5)"/>\
+						<feComposite in2="offsetblur" operator="in"/>\
+						<feMerge>\
+							<feMergeNode/>\
+							<feMergeNode in="SourceGraphic"/>\
+						</feMerge>\
+					</filter>\
+				</svg>#drop-shadow');
+	-webkit-filter: drop-shadow(3px 3px 3px rgba(0,0,0,0.5));
+	        filter: drop-shadow(3px 3px 3px rgba(0,0,0,0.5));
+	    -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=3, Direction=135, Color='rgba(0,0,0,0.3)')";
+	        filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=3, Direction=135, Color='rgba(0,0,0,0.3)')";
+}
+
+/*############################################################*/
+
+/**************
+ *   header   *
+ **************/
+#pageHeader {
+	height:       178px;
+	padding:      10px 10px 0 0;
+	background:   url(/assets/images/header_border.gif) bottom repeat-x;
+}
+/*
+#pageHeader h1 {background: url(/assets/images/logo_on.gif) no-repeat bottom right;}
+#pageHeader h1:hover {background: url(/assets/images/logo_off.gif) no-repeat bottom right;}
+*/
+
+
+/*############################################################*/
+
+/************
+ *   menu   *
+ ************/
+#menu {
+	float:       right;
+	margin-top:  21px;
+	width:       248px; /*23%*/
+	border-left: 1px solid #a5accb;
+}
+.submenu {
+	margin:     32px 0;
+}
+#menu ul {
+	font-size:  0.7em;
+	background: #f1f3ff;
+	border:     1px solid #e1e3fe;
+}
+#menu li {
+	cursor:          pointer;
+	font-size:       1.3em;
+	line-height:     2.1em;
+	padding:         5px 29px 0 8px;
+	margin-left:     -1px;
+	list-style-type: none;
+	background:      url(/assets/images/bullet1.gif) no-repeat top right;
+	border:          1px solid #e1e3fe;
+}
+#menu li:hover {
+	background: #e1e3fe;
+}
+#menu li a:hover {
+	text-decoration: none;
+}
+#menu li a:hover .fresh {
+	color: #48c089;
+}
+#menu h3 {
+	/* height:      38px; */
+	padding:     16px 24px;
+	font:        1.3em Kermit;
+	font-weight: bold;
+	text-shadow: 2px 2px 4px #888;
+}
+.locus {
+	cursor:           auto !important;
+	font-style:       italic;
+	font-weight:      bold;
+	background-color: #cadafa !important;
+}
+.locus:before {
+	content:      '\00bb';
+	margin-left: 0.2em;
+}
+.oldsec { color: DarkRed; font-style: italic; font-size: 80%; }
+
+
+/*############################################################*/
+
+/**************
+ *   footer   *
+ **************/
+
+#footer {clear: both;}
+#footer-content {
+	padding-top: 32px;
+	text-align:  center;
+	font-size:   0.7em;
+	font-weight: bold;
+}
+hr {
+	margin:     0 auto;
+	width:      52%;
+	height:     2px;
+	border:     0;
+	/* background: url(/assets/images/hr.png) bottom repeat-x; */
+}
+#validation a {
+	border:  1px solid #eeeeee;
+	padding: 5px;
+}
+#validation a:hover {
+	background-color: #f4f4ff;
+}
+
+
+/***********
+ *   EOF   *
+ ***********/
+
