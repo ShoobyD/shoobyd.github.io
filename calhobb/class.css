@@ -1,0 +1,7 @@
+a, .moretitle, 
+.regtitle   { font-family: Verdana, Arial, Helvetica, sans-serif;  } 
+.calendar, .calendar1, .calendarcurrent, .calendardate { font-size: 9px; font-family: Trebuchet, Verdana, Arial, Helvetica, sans-serif; text-decoration: none; } 
+.calendar { color: 999999; } 
+.calendar1 { color: white; } 
+.calendarcurrent { color: black; } 
+.calendardate { color: 000066; } 
