@@ -1,1 +1,84 @@
-htmlshheeeeeiit
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+		<meta name="author" content="Baruch Mustakis, aka ShoobyD" />
+		<meta name="description" content="דף שגיאה 404" />
+		<meta name="keywords" content="ברוך מוסטקיס baruch mustakis שובידי ShoobyD שגיאה error 404 super mario bros nintendo" />
+		<!-- revised: 21/06/2014 (scheme: dd/mm/yyyy) -->
+		<title>whoops.. page not found</title>
+		<style>
+			body {
+				height:      100%;
+				color:       #526713;
+				font:        0.6em Verdana, sans-serif;
+				line-height: 0.2em;
+				background:  rgba( 164, 196, 32, 0.57 );
+			}
+			* {
+				-webkit-user-select: none;
+				   -moz-user-select: none;
+					-ms-user-select: none;
+					 -o-user-select: none;
+						user-select: none;
+			}
+			#container {
+				width:         100%;
+				height:        100%;
+				top:           0px;
+				left:          0px;
+				position:      absolute;
+				border:        24px solid black;
+				border-radius: 36px;
+				box-sizing:    border-box;
+				text-align:    center;
+			}
+			#gba {
+				/*margin-top: 15%;*/
+				margin-top: calc(100vh - 820px);
+			}
+			#ShoobyD {
+				position: relative;
+				top:      -232px;
+			}
+			#credit {
+				position: relative;
+				top:      -42px;
+			}
+			a {
+				color:           #526713;
+				text-decoration: none;
+				font-weight:     bold;
+			}
+			a:hover {
+				text-decoration: underline;
+			}
+		</style>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+		<script src="/assets/404/mario.js"></script>
+		<link href="/assets/404/mario.css" rel="stylesheet" type="text/css" />
+
+	</head>
+	<body>
+		<div id="container">
+			<div id="gba">
+				<img src="/assets/404/gba.png" alt="Gameboy Advanced" /><br />
+				<a href="/" title="לעמוד הראשי"><img src="/assets/404/shoobyd.png" alt="ShoobyD" id="ShoobyD" /></a>
+				<div id="credit">Original Mario background by <a href="http://blog.nihilogic.dk/" onclick="window.open(this.href); return false;">Nihilogic.dk</a></div>
+				<script>
+					var btn = document.querySelector( '#ShoobyD' );
+					btn.addEventListener( 'mouseover', function() { btn.src = '/assets/404/shoobyd_red.png' } )
+					btn.addEventListener( 'mouseout',  function() { btn.src = '/assets/404/shoobyd.png'     } )
+				</script>
+			</div>
+		</div>
+		<div id="mario">
+			<div class="level">
+				<img class="mario-text" src="/assets/404/mario_text.png"/>
+				<div class="mario-sprite"></div>
+			</div>
+		</div>
+		<script src="/assets/404/music.js"></script>
+	</body>
+</html>
+

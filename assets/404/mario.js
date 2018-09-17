@@ -1,4 +1,6 @@
-$(document).ready(function() {
+$( document ).ready( function() {
+
+	const baseURL = '/assets/404/';
 
 	var $background = $("#mario");
 
@@ -21,7 +23,7 @@ $(document).ready(function() {
 	var $mario = $("#mario .level .mario-sprite");
 
 	var marioImg = new Image();
-	marioImg.src = "mario_sprite.png";
+	marioImg.src = baseURL + "mario_sprite.png";
 	$mario.append(marioImg);
 
 	var pos = [8,13 - $(window).height()/16];
@@ -291,7 +293,7 @@ $(document).ready(function() {
 
 	initMario();
 
-});
+} );
 
 
 
