@@ -89,6 +89,18 @@
 		.addClass( 'locus' )
 		.find( 'a' ).contents().unwrap();
 
+	/* special styling */
+	$menu.find( 'a:contains("פרש")' )
+		.html( function() {
+			return $( this ).html().replace( /פרש/g, '<span class="fresh">פרש</span>' )
+		} );
+	$menu.find( 'a:contains("פייסבוק")' )
+		.html( function() {
+			return $( this ).html().replace( /פייסבוק/g, '<span class="facebook">פייסבוק</span>' )
+		} );
+	$menu.find( 'a:contains("קלווין")' )
+		.append( '&nbsp;<span class="oldsec">(ישן)</span>' );
+
 	/* event handlers */
 	$menu.find( 'li:has(a)' ).click( function() {
 		$( this ).find( 'a' )[ 0 ].click();
