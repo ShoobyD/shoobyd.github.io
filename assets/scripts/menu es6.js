@@ -2,6 +2,7 @@
 
 {
 
+	/* data */
 	const menu_items = {
 		'lsections' : {
 			'title' : 'תפריט',
@@ -63,30 +64,32 @@
 		},
 	};
 
+	/* build menu */
 	const $menu = $( '#menu ' );
-
 	for ( let sect in menu_items ) {
 
 		const submenu = menu_items[ sect ];
 		const $subDiv = $( `
-			<div class="submenu ${ sect }">
-				<h3>${ submenu.title }</h3>
-				<ul>
-			</div>
+				<div class="submenu ${ sect }">
+					<h3>${ submenu.title }</h3>
+					<ul>
+				</div>
 			` )
 			.appendTo( $menu );
 
 		const $subUL  = $subDiv.find( 'ul' );
 
-		for ( let item of submenu.items ) {
-
+		for ( let item of submenu.items )
 			$subUL.append( `<li><a href="${ item.url }" title="${ item.title }">${ item.title }</a></li>` );
 
-		}
-
 	}
-	$menu.find( `li:has(a[href="${ location.pathname }"])` ).addClass( 'locus' );
 
+	/* locus */
+	$menu.find( `li:has(a[href="${ location.pathname }"])` )
+		.addClass( 'locus' )
+		.find( 'a' ).contents().unwrap();
+
+	/* event handlers */
 	$menu.find( 'li:has(a)' ).click( function() {
 		$( this ).find( 'a' )[ 0 ].click();
 	} );
