@@ -1,34 +1,99 @@
 'use strict';
 
 {
-	const menuTemplate = `
-		<div id="lsections" class="submenu">
-			<h3>תפריט:</h3>
-			<ul>
-				<li><a href="/" title="לעמוד הראשי">עמוד ראשי</a></li>
-				<li><a href="/sudoku/" title="פותר סודוקו">פותר סודוקו</a></li>
-				<li><a href="/balloonz/" title="balloonz – משחק בלונים">באלונז</a></li>
-				<li><a href="/icmptunnel/" title="ICMP Tunnel">ICMP Tunnel</a></li>
-				<li><a href="/fresh/" title="דברים לאתר פרש">דברים לאתר <span class="fresh">פרש</span></a></li>
-				<li><a href="/calhobb/" title="קלווין והובס">קלווין והובס <span class="oldsec">(ישן)</span></a></li>
-				<li><a href="/contact/" title="צור קשר">צור קשר</a></li>
-			</ul>
-		</div>
-		<div id="lresources" class="submenu">
-			<h3>קישורים חיצוניים:</h3>
-			<ul>
-				<li><a href="https://math.biu.ac.il/" title="המחלקה למתמטיקה" onclick="window.open(this.href); return false;">המחלקה למתמטיקה</a></li>
-				<li><a href="https://cs.biu.ac.il/" title="המחלקה למדעי־המחשב" onclick="window.open(this.href); return false;">המחלקה למדעי־המחשב</a></li>
-				<li><a href="https://www1.biu.ac.il/" title="אתר אוניברסיטת בר־אילן" onclick="window.open(this.href); return false;">אתר אוניברסיטת בר־אילן</a></li>
-				<li><a href="https://www.fresh.co.il/vBulletin/index.php?referrerid=90538" title="לדף הבית של פורום פרש" onclick="window.open(this.href); return false;">אתר הפורומים <span class="fresh">פרש</span></a></li>
-				<li><a href="https://www.facebook.com/groups/tzayruoti/" title="קבוצת 'ציירו אותי' בפייסבוק" onclick="window.open(this.href); return false;">קבוצת <em>'ציירו אותי'</em> ב<span class="facebook">פייסבוק</span></a></li>
-			</ul>
-		</div>
-	`;
 
-	const menu_items = Array.from( document.querySelectorAll( '#menu li' ) );
-	for ( let li of menu_items )
-		if ( li.querySelector('a') )
-			li.addEventListener( 'click', function() { li.querySelector('a').click() } );
+	const menu_items = {
+		'lsections' : {
+			'title' : 'תפריט',
+			'items' : [
+				{
+					'url'   : '/',
+					'title' : 'עמוד הראשי',
+				},
+				{
+					'url'   : '/sudoku/',
+					'title' : 'פותר סודוקו',
+				},
+				{
+					'url'   : '/balloonz/',
+					'title' : 'balloonz',
+				},
+				{
+					'url'   : '/icmptunnel/',
+					'title' : 'ICMP Tunnel',
+				},
+				{
+					'url'   : '/fresh/',
+					'title' : 'דברים לאתר פרש',
+				},
+				{
+					'url'   : '/calhobb/',
+					'title' : 'קלווין והובס',
+				},
+				{
+					'url'   : '/contact/',
+					'title' : 'צור קשר',
+				},
+			],
+		},
+		'lresources' : {
+			'title' : 'קישורים חיצוניים',
+			'items' : [
+				{
+					'url'   : 'https://math.biu.ac.il/',
+					'title' : 'המחלקה למתמטיקה',
+				},
+				{
+					'url'   : 'https://cs.biu.ac.il/',
+					'title' : 'המחלקה למדעי־המחשב',
+				},
+				{
+					'url'   : 'https://www1.biu.ac.il/',
+					'title' : 'אוניברסיטת בר־אילן',
+				},
+				{
+					'url'   : 'https://www.fresh.co.il/vBulletin/index.php?referrerid=90538',
+					'title' : 'אתר הפורומים פרש',
+				},
+				{
+					'url'   : 'https://www.facebook.com/groups/tzayruoti/',
+					'title' : 'קבוצת "ציירו אותי" בפייסבוק',
+				},
+			],
+		},
+	};
+
+	const $menu = $( '#menu ' );
+
+	for ( let sect in menu_items ) {
+
+		const submenu = menu_items[ sect ];
+		const $subDiv = $( `
+			<div class="submenu ${ sect }">
+				<h3>${ submenu.title }</h3>
+				<ul>
+			</div>
+			` )
+			.appendTo( $menu );
+
+		const $subUL  = $subDiv.find( 'ul' );
+
+		for ( let item of submenu.items ) {
+
+			$subUL.append( `<li><a href="${ item.url }" title="${ item.title }">${ item.title }</a></li>` );
+
+		}
+
+	}
+	$menu.find( `li:has(a[href="${ location.pathname }"])` ).addClass( 'locus' );
+
+	$menu.find( 'li:has(a)' ).click( function() {
+		$( this ).find( 'a' )[ 0 ].click();
+	} );
+	$menu.find( '.lresources a' ).click( function() {
+		window.open( this.href );
+		return false;
+	} );
+
 }
 
