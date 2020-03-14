@@ -57,7 +57,7 @@
 	}
 
 	function getLessonName() {
-		return lessonTitle = document.querySelector( '.list-item.active .list-item-title' ).innerText;
+		return document.querySelector( '.list-item.active .list-item-title' ).innerText;
 	}
 
 } )();
