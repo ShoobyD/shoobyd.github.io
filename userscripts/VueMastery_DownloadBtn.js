@@ -22,12 +22,12 @@
 	} );
 
 	async function BuildDownloadBtn() {
-		const donwloadUrl = await getVimeoDonwloadUrl();
+		const downloadUrl = await getVimeoDownloadUrl();
 		const lessonName  = getLessonName();
 		const cardElm     = document.querySelector( '.card-body' )
 		cardElm.innerHTML = `
 			<a data-v-7a860b52="" data-v-3ecb07c8=""
-			   href="${ donwloadUrl }"
+			   href="${ downloadUrl }"
 			   download="${ lessonName }"
 			   class="button secondary -full">
 				<svg data-v-45b1b638="" data-v-7a860b52="" name="download-cloud"
@@ -39,7 +39,7 @@
 
 	}
 
-	async function getVimeoDonwloadUrl() {
+	async function getVimeoDownloadUrl() {
 		const itemPropElm = document.querySelector( '[itemprop="embedURL"]' );
 		if ( !itemPropElm )
 			throw 'No [itemprop="embedURL"] Element';
