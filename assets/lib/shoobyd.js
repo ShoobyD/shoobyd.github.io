@@ -1,6 +1,6 @@
 /*
  * ShoobyD-lib
- *    v0.8
+ *    v0.9
  */
 
 ( function() {
@@ -57,13 +57,17 @@
 
 		},
 
+		// Build Downloading Interface
+		// 'downloadListener' MUST RUN ON FILE DOMAIN
 		downloadInterfaceFactory() {
 
-			let downloadWindow, downloadUrl;
+			let downloadUrl;
+			const downloads = {};
 
 			window.onmessage = function( e ) {
 
 				if ( e.data === 'downloadWindow loaded' ) {
+					const downloadWindow = downloads[ downloadUrl ]
 					downloadWindow.postMessage( JSON.stringify( { downloadUrl } ), '*' );
 					downloadWindow.close()
 				}
@@ -73,8 +77,10 @@
 			return {
 				download( fileUrl ) {
 					downloadUrl    = fileUrl;
-					downloadDomain = fileUrl;
-					downloadWindow = window.open( 'https://vod-progressive.akamaized.net/', `downloadWindow-${ fileUrl }`, 'width=120, height=1' );
+					const downloadDomain = fileUrl.match( /^\w+:\/\/[^/]+\// )[ 0 ];
+					const downloadWindow = window.open( downloadDomain, `downloadWindow-${ fileUrl }`, 'width=120, height=1' );
+					downloadWindow.downloadUrl = downloadUrl;
+					downloads[ fileUrl ] = downloadWindow;
 				},
 			}
 		},
