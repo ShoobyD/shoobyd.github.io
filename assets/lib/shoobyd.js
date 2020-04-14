@@ -6,8 +6,11 @@
 ( function() {
 	'use strict';
 
-	const ShoobyD = unsafeWindow.ShoobyD = unsafeWindow.ShoobyD || {
+	const log = console.log.bind( console );
+	if ( !window.log )
+		window.log = log;
 
+	const ShoobyD = window.ShoobyD = window.ShoobyD || {
 
 		// Creating an element from HTML string
 		createElement( htmlString ) {
@@ -97,10 +100,6 @@
 
 	};
 
-
-	const log = console.log.bind( console );
-	if ( !unsafeWindow.log )
-		unsafeWindow.log = log;
 
 } )();
 
