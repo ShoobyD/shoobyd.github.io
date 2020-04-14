@@ -7,8 +7,13 @@
 	'use strict';
 
 	const log = console.log.bind( console );
+	const err = console.error.bind( console );
+
 	if ( !window.log )
 		window.log = log;
+
+	if ( !window.err )
+		window.err = err;
 
 	const ShoobyD = window.ShoobyD = window.ShoobyD || {
 
