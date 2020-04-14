@@ -1,6 +1,6 @@
 /*
  * ShoobyD-lib
- *    v1.0
+ *    v1.1
  */
 
 ( function() {
@@ -51,8 +51,8 @@
 
 			window.onmessage = e => {
 
-				const messageData = JSON.parse( e.data || '{}' );
-				if ( messageData.downloadUrl )
+				const messageData = e.data;
+				if ( typeof messageData === 'object' && messageData.downloadUrl )
 					this.downloadFile( messageData.downloadUrl );
 
 			};
@@ -67,10 +67,10 @@
 
 			window.onmessage = function( e ) {
 
-				const messageData = JSON.parse( e.data || '{}' );
-				if ( messageData.downloadWindowName ) {
-					const { downloadWindow, downloadUrl } = downloads[ downloadWindowName ];
-					downloadWindow.postMessage( JSON.stringify( { downloadUrl } ), '*' );
+				const messageData = e.data;
+				if ( typeof messageData === 'object' && messageData.downloadWindowName )
+					const { downloadWindow, downloadUrl } = downloads[ messageData.downloadWindowName ];
+					downloadWindow.postMessage( { downloadUrl }, '*' );
 					downloadWindow.close()
 				}
 
