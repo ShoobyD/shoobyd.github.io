@@ -1,6 +1,6 @@
 /*
  * ShoobyD-lib
- *    v0.7
+ *    v0.8
  */
 
 ( function() {
@@ -42,7 +42,43 @@
 
 		},
 
+		// Downloading Listener
+		downloadListener() {
 
+			window.onload    = e => window.opener.postMessage( 'downloadWindow loaded', '*' );
+
+			window.onmessage = e => {
+
+				const messageData = JSON.parse( e.data || '{}' );
+				if ( messageData.downloadUrl )
+					this.downloadFile( messageData.downloadUrl );
+
+			};
+
+		},
+
+		downloadInterfaceFactory() {
+
+			let downloadWindow, downloadUrl;
+
+			window.onmessage = function( e ) {
+
+				if ( e.data === 'downloadWindow loaded' ) {
+					downloadWindow.postMessage( JSON.stringify( { downloadUrl } ), '*' );
+					downloadWindow.close()
+				}
+
+			};
+
+			return {
+				download( fileUrl ) {
+					downloadUrl    = fileUrl;
+					downloadDomain = fileUrl;
+					downloadWindow = window.open( 'https://vod-progressive.akamaized.net/', `downloadWindow-${ fileUrl }`, 'width=120, height=1' );
+				},
+			}
+		},
+		
 
 		// Extending a function / object method
 		extendFunction( data ) {
