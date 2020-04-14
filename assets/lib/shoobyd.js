@@ -1,6 +1,6 @@
 /*
  * ShoobyD-lib
- *    v0.9
+ *    v1.0
  */
 
 ( function() {
@@ -45,7 +45,9 @@
 		// Downloading Listener
 		downloadListener() {
 
-			window.onload    = e => window.opener.postMessage( 'downloadWindow loaded', '*' );
+			window.onload    = e => window.opener.postMessage( {
+				downloadWindowName: window.name,
+			}, '*' );
 
 			window.onmessage = e => {
 
@@ -61,13 +63,13 @@
 		// 'downloadListener' MUST RUN ON FILE DOMAIN
 		downloadInterfaceFactory() {
 
-			let downloadUrl;
 			const downloads = {};
 
 			window.onmessage = function( e ) {
 
-				if ( e.data === 'downloadWindow loaded' ) {
-					const downloadWindow = downloads[ downloadUrl ]
+				const messageData = JSON.parse( e.data || '{}' );
+				if ( messageData.downloadWindowName ) {
+					const { downloadWindow, downloadUrl } = downloads[ downloadWindowName ];
 					downloadWindow.postMessage( JSON.stringify( { downloadUrl } ), '*' );
 					downloadWindow.close()
 				}
@@ -75,12 +77,14 @@
 			};
 
 			return {
-				download( fileUrl ) {
-					downloadUrl    = fileUrl;
-					const downloadDomain = fileUrl.match( /^\w+:\/\/[^/]+\// )[ 0 ];
-					const downloadWindow = window.open( downloadDomain, `downloadWindow-${ fileUrl }`, 'width=120, height=1' );
-					downloadWindow.downloadUrl = downloadUrl;
-					downloads[ fileUrl ] = downloadWindow;
+				download( downloadUrl ) {
+					const downloadDomain     = downloadUrl.match( /^\w+:\/\/[^/]+\// )[ 0 ];
+					const downloadWindowName = `downloadWindow-${ downloadUrl }`;
+					const downloadWindow     = window.open( downloadDomain, downloadWindowName, 'width=120, height=1' );
+					downloads[ downloadWindowName ] = {
+						downloadUrl,
+						downloadWindow,
+					};
 				},
 			}
 		},
