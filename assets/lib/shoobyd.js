@@ -1,6 +1,6 @@
 /*
  * ShoobyD-lib
- *    v1.1
+ *    v1.2
  */
 
 ( function() {
@@ -68,7 +68,7 @@
 			window.onmessage = function( e ) {
 
 				const messageData = e.data;
-				if ( typeof messageData === 'object' && messageData.downloadWindowName )
+				if ( typeof messageData === 'object' && messageData.downloadWindowName ) {
 					const { downloadWindow, downloadUrl } = downloads[ messageData.downloadWindowName ];
 					downloadWindow.postMessage( { downloadUrl }, '*' );
 					downloadWindow.close()
