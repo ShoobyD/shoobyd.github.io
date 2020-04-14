@@ -34,10 +34,17 @@
 				text-align:    center;
 			}
 			#gba {
-				/*margin-top: 15%;*/
-				margin-top: calc(100vh - 820px);
+				position: absolute;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
 			}
-			#ShoobyD {
+			#homeLink {
 				position: relative;
 				top:      -232px;
 			}
@@ -63,12 +70,14 @@
 		<div id="container">
 			<div id="gba">
 				<img src="/assets/404/gba.png" alt="Gameboy Advanced" /><br />
-				<a href="/" title="לעמוד הראשי"><img src="/assets/404/shoobyd.png" alt="ShoobyD" id="ShoobyD" /></a>
+				<a href="/" title="לעמוד הראשי" id="homeLink">
+					<img src="/assets/404/shoobyd.png" alt="ShoobyD" />
+				</a>
 				<div id="credit">Original Mario background by <a href="http://blog.nihilogic.dk/" onclick="window.open(this.href); return false;">Nihilogic.dk</a></div>
 				<script>
-					var btn = document.querySelector( '#ShoobyD' );
-					btn.addEventListener( 'mouseover', function() { btn.src = '/assets/404/shoobyd_red.png' } )
-					btn.addEventListener( 'mouseout',  function() { btn.src = '/assets/404/shoobyd.png'     } )
+					const btnImg = document.querySelector( '#homeLink img' );
+					btnImg.addEventListener( 'mouseover', function() { btnImg.src = '/assets/404/shoobyd_red.png' } )
+					btnImg.addEventListener( 'mouseout',  function() { btnImg.src = '/assets/404/shoobyd.png'     } )
 				</script>
 			</div>
 		</div>
