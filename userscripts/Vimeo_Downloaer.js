@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Vimeo Downloaer
-// @version      0.20
+// @version      0.21
 // @description  try to take over the world!
 // @author       ShoobyD
 // @include      *player.vimeo.com/*
@@ -93,23 +93,24 @@
 				<div class="vp-panel vp-panel-open"></div>
 				<style scoped>
 					.download-captions-menu {
-						opacity: 0;
-						visibility: hidden;
-						pointer-events: all;
-						transition: opacity 0.5s ease, visibility 0s 0.5s;
+						opacity:        0                  !important;
+						visibility:     hidden             !important;
+						pointer-events: all                !important;
+						transition:     opacity 0.5s 0.2s ease,
+						                visibility 0s 0.7s !important;
 					}
 					:focus > .download-captions-menu,
 					:hover > .download-captions-menu {
-						opacity: 1;
-						visibility: visible;
-						transition: visibility 0s, opacity 0.5s ease;
+						opacity:        1                  !important;
+						visibility:     visible            !important;
+						transition:     visibility 0s,
+						                opacity 0.5s ease  !important;
 					}
 					.download-captions-menu .vp-panel {
-						min-width: auto;
-						min-width: auto;
+						min-width:      auto               !important;
 					}
 					.download-captions-menu .vp-panel button {
-						margin: 1em !important;
+						margin:         1em                !important;
 					}
 				</style>
 			</div>
