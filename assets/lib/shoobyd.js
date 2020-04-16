@@ -1,6 +1,6 @@
 /*
  * ShoobyD-lib
- *    v1.2
+ *    v1.3
  */
 
 ( function() {
@@ -78,13 +78,18 @@
 
 			return {
 				download( downloadUrl ) {
-					const downloadDomain     = downloadUrl.match( /^\w+:\/\/[^/]+\// )[ 0 ];
+
+					const downloadDomain = new URL( downloadUrl ).origin;
+					if ( downloadDomain === location.origin )
+						return this.downloadFile( downloadUrl );
+
 					const downloadWindowName = `downloadWindow-${ downloadUrl }`;
 					const downloadWindow     = window.open( downloadDomain, downloadWindowName, 'width=120, height=1' );
 					downloads[ downloadWindowName ] = {
 						downloadUrl,
 						downloadWindow,
 					};
+
 				},
 			}
 		},
