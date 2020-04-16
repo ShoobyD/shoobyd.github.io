@@ -1,6 +1,6 @@
 /*
  * ShoobyD-lib
- *    v1.3
+ *    v1.4
  */
 
 ( function() {
@@ -77,7 +77,7 @@
 			};
 
 			return {
-				download( downloadUrl ) {
+				download: function( downloadUrl ) {
 
 					const downloadDomain = new URL( downloadUrl ).origin;
 					if ( downloadDomain === location.origin )
@@ -90,7 +90,7 @@
 						downloadWindow,
 					};
 
-				},
+				}.bind( this ),
 			}
 		},
 		
