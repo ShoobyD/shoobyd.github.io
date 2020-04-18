@@ -1,6 +1,6 @@
 /*
  * ShoobyD-lib
- *    v1.5
+ *    v1.6
  */
 
 ( function() {
@@ -69,8 +69,9 @@
 
 				const messageData = e.data;
 				if ( typeof messageData === 'object' && messageData.downloadWindowName ) {
-					const { downloadWindow, downloadUrl } = downloads[ messageData.downloadWindowName ];
-					downloadWindow.postMessage( { downloadUrl }, '*' );
+					const   downloadData     = downloads[ messageData.downloadWindowName ];
+					const { downloadWindow } = downloadData;
+					downloadWindow.postMessage( downloadData, '*' );
 					downloadWindow.close()
 				}
 
