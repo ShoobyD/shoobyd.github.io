@@ -1,6 +1,6 @@
 /*
  * ShoobyD-lib
- *    v1.4
+ *    v1.5
  */
 
 ( function() {
@@ -53,7 +53,7 @@
 
 				const messageData = e.data;
 				if ( typeof messageData === 'object' && messageData.downloadUrl )
-					this.downloadFile( messageData.downloadUrl );
+					this.downloadFile( messageData.downloadUrl, fileName = '' );
 
 			};
 
@@ -77,15 +77,16 @@
 			};
 
 			return {
-				download: function( downloadUrl ) {
+				download: function( downloadUrl, fileName = '' ) {
 
 					const downloadDomain = new URL( downloadUrl ).origin;
 					if ( downloadDomain === location.origin )
-						return this.downloadFile( downloadUrl );
+						return this.downloadFile( downloadUrl, fileName );
 
 					const downloadWindowName = `downloadWindow-${ downloadUrl }`;
 					const downloadWindow     = window.open( downloadDomain, downloadWindowName, 'width=120, height=1' );
 					downloads[ downloadWindowName ] = {
+						fileName,
 						downloadUrl,
 						downloadWindow,
 					};
