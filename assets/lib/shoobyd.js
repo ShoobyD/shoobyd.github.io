@@ -1,6 +1,6 @@
 /*
  * ShoobyD-lib
- *    v1.7
+ *    v1.8
  */
 
 ( function() {
@@ -77,8 +77,8 @@
 					} = downloads[ messageData.downloadWindowName ];
 
 					downloadWindow.postMessage( {
+						fileName,
 						downloadUrl,
-						downloadWindow,
 					}, '*' );
 
 					downloadWindow.close()
