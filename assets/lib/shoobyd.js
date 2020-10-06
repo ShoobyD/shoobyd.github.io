@@ -15,7 +15,37 @@
 	if ( !window.err )
 		window.err = err;
 
+
+	const _XMLHttpRequest       = unsafeWindow.XMLHttpRequest;
+	let _XHRHandler;
+	unsafeWindow.XMLHttpRequest = function() {
+		const xhr               = new _XMLHttpRequest( ...arguments );
+		let _onreadystatechange = xhr.onreadystatechange;
+
+		xhr.onreadystatechange = function() {
+			if ( _XHRHandler && this.readyState == 4 && this.status == 200 ) {
+				_XHRHandler( this );
+			}
+			if ( _onreadystatechange )
+				_onreadystatechange.apply( this, arguments );
+		};
+		Object.defineProperty( xhr, 'onreadystatechange', {
+			set( cbk ) {
+				_onreadystatechange = cbk;
+			},
+		} );
+		return xhr;
+	};
+
 	const ShoobyD = window.ShoobyD = window.ShoobyD || {
+
+		// Proxy XHR requests
+		setXHRHandler( handler ) {
+
+			_XHRHandler = handler;
+
+		},
+
 
 		// Creating an element from HTML string
 		createElement( htmlString ) {
