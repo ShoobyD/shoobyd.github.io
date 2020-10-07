@@ -1,6 +1,6 @@
 /*
  * ShoobyD-lib
- *    v1.8
+ *    v1.9
  */
 
 ( function() {
@@ -16,6 +16,10 @@
 		window.err = err;
 
 
+	/*
+	 * An XHR proxy
+	 * Used with ShoobyD.setXHRHandler
+	 */
 	const _XMLHttpRequest       = unsafeWindow.XMLHttpRequest;
 	let _XHRHandler;
 	unsafeWindow.XMLHttpRequest = function() {
@@ -39,7 +43,7 @@
 
 	const ShoobyD = window.ShoobyD = window.ShoobyD || {
 
-		// Proxy XHR requests
+		// set XHR proxy handler
 		setXHRHandler( handler ) {
 
 			_XHRHandler = handler;
