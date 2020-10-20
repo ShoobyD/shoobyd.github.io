@@ -1,6 +1,6 @@
 ﻿// ==UserScript==
 // @name         Redirect Mobile Pages
-// @version      0.11
+// @version      0.12
 // @description  redirecting mobile pages to desktop view
 // @author       Baruch Mustakis (a.k.a. ShoobyD)
 // @include      *.m.wikipedia.org*
@@ -24,7 +24,8 @@
 	}
 
 	const getUrlParam = ( () => {
-		const urlParams = new URLSearchParams( location.search );
+		const queryString = location.search.slice( 1 ).replace( /\?.*/, '' );
+		const urlParams   = new URLSearchParams( queryString );
 		return param => urlParams.get( param );
 	} )();
 
