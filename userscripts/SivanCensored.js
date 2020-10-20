@@ -14,8 +14,8 @@
 
 	new MutationSummary( {
 		'rootNode' : document.body,
-		'callback' : function( sum ) {
-			for ( var elm of sum[ 0 ].added )
+		'callback' : sum => {
+			for ( let elm of sum[ 0 ].added )
 				elm.innerHTML = elm.innerHTML.replace( /סיוון/g, 'ס☠☠☠ן' );
 		},
 		'queries'  : [ { element : '.selectable-text, .quoted-mention' } ],
