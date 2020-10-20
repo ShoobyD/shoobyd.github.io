@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Vimeo Downloaer
-// @version      0.28
+// @version      0.30
 // @description  try to take over the world!
 // @author       ShoobyD
 // @include      *player.vimeo.com/*
@@ -162,7 +162,7 @@ setTimeout( () => {
 		return scriptElm.innerText
 					.replace( /.*"title":"/, '' )
 					.replace( /".*/, '' )
-					.replace( /^(\d+)\)/, '$1.' );
+					.replace( /^(\d+)(\)|\s*-)/, '$1.' );
 	}
 
 	function getCaptionsUrl() {
