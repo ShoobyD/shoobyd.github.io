@@ -4,36 +4,59 @@
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 		<meta name="author" content="Baruch Mustakis, aka ShoobyD" />
 		<meta name="description" content="תוספים דפדפן לאתר פרש" />
-		<meta name="keywords" content="Baruch Mustakis ברוך מוסטקיס add-ons תוסף תוספים greasemonky גריזמונקי firefox פיירפוקס opera אופרה scripts סקריפטים סקריפט fresh פרש" />
+		<meta name="keywords"
+		      content="Baruch Mustakis ברוך מוסטקיס add-ons תוסף תוספים greasemonky גריזמונקי firefox פיירפוקס opera אופרה scripts סקריפטים סקריפט fresh פרש" />
 		<!-- revised: 13/10/2013 (scheme: dd/mm/yyyy) -->
-		
+
 		<title>ICMP Tunnel</title>
-		
+
 		<link href="/assets/style/main.css" rel="stylesheet" type="text/css" />
-		<!--[if lt IE 7]><link rel="stylesheet" type="text/css" href="/assets/style/iestyleshit.css" /><![endif]-->
-		<!--[if lt IE 7]><script defer src="/assets/style/pngfix.js"></script><![endif]-->
+		<!--[if lt IE 7]>
+		<link rel="stylesheet" type="text/css" href="/assets/style/iestyleshit.css" /><![endif]-->
+		<!--[if lt IE 7]>
+		<script defer src="/assets/style/pngfix.js"></script><![endif]-->
 		<style title="StyleSheet">
 			#files {
 				padding-right: 24px;
 			}
+
 			.introsect, .section {
 				margin: 42px 0 !important;
 			}
+
 			code {
 				direction: ltr;
 				font:      12pt monospace;
 			}
 		</style>
 		<script src="/assets/lib/jquery-3.3.1.min.js"></script>
-		<link rel="stylesheet" href="/assets/lib/highlight.js/style/zenburn.css" type="text/css" />
-		<script src="/assets/lib/highlight.js/highlight.pack.js"></script>
-		<script>hljs.initHighlightingOnLoad();</script>
+		<link rel="stylesheet"
+		      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/zenburn.min.css">
+		<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+		<script>
+			( async () => {
+				await Promise.all( [
+					'cxicmp',
+					'sxicmp',
+					'icmp_tunnel',
+				].map( fileName => {
+					return new Promise( async resolve => {
+						const fileData = await fetch( fileName + '.py' )
+								.then( stream => stream.text() );
+
+						document.getElementById( fileName ).innerHTML = fileData;
+						resolve();
+					} );
+				} ) );
+				hljs.initHighlighting();
+			} )();
+		</script>
 	</head>
 	<body>
 		<div id="container">
 			<div id="pageHeader">
 				<h1><a href="/" title="לוגו האתר by Phillip Martin"><img src="/assets/images/math_logo.png" alt="לוגו האתר by Phillip Martin" /></a>
-				<img src="/assets/images/header.png" alt="ברוכים הבאים לאתר של ברוך מוסטקיס" /></h1>
+					<img src="/assets/images/header.png" alt="ברוכים הבאים לאתר של ברוך מוסטקיס" /></h1>
 			</div>
 
 			<div id="menu">
@@ -44,7 +67,9 @@
 				<div class="introsect">
 					<h2>ICMP Tunnel</h2>
 					<p>יישום העברת קבצים אמינה מעל פרוטוקול ICMP, ותחת ערבול payload.</p>
-					<p id="files"><a href="icmp_tunnel.zip" style="font-style: italic;" >הורדה</a> <small>(zip)</small>; <a href="README.pdf" style="font-style: italic;" >קרא־אותי</a> <small>(pdf)</small>.</p>
+					<p id="files"><a href="icmp_tunnel.zip" style="font-style: italic;">הורדה</a> <small>(zip)</small>; <a href="README.pdf"
+					                                                                                                       style="font-style: italic;">קרא־אותי</a>
+						<small>(pdf)</small>.</p>
 				</div>
 				<div id="TOC">
 					<h3>תוכן</h3>
@@ -58,33 +83,21 @@
 					<li id="client" class="section">
 						<h3>קוד לקוח (cxicmp.py)</h3>
 						<pre>
-							<code id="cxicmp" class="python">
-								<script>
-									$( '#cxicmp' ).load( 'cxicmp.py' );
-								</script>
-							</code>
+							<code id="cxicmp" class="python"></code>
 						</pre>
 						<div class="uplink"><a href="#TOC" title="חזרה לתוכן העניינים">חזרה למעלה</a></div>
 					</li>
 					<li id="server" class="section">
 						<h3>קוד שרת (sxicmp.py)</h3>
 						<pre>
-							<code id="sxicmp" class="python">
-								<script>
-									$( '#cxicmp' ).load( 'sxicmp.py' );
-								</script>
-							</code>
+							<code id="sxicmp" class="python"></code>
 						</pre>
 						<div class="uplink"><a href="#TOC" title="חזרה לתוכן העניינים">חזרה למעלה</a></div>
 					</li>
 					<li id="module" class="section">
 						<h3>קוד מודול (icmp_tunnel.py)</h3>
 						<pre>
-							<code id="icmp_tunnel" class="python">
-								<script>
-									$( '#icmp_tunnel' ).load( 'icmp_tunnel.py' );
-								</script>
-							</code>
+							<code id="icmp_tunnel" class="python"></code>
 						</pre>
 						<div class="uplink"><a href="#TOC" title="חזרה לתוכן העניינים">חזרה למעלה</a></div>
 					</li>
@@ -95,8 +108,10 @@
 				<hr />
 				<div id="footer-content">
 					<p id="validation" dir="ltr">
-						<a href="https://validator.w3.org/check/referer" title="בדיקת תקינות קוד ה-XHTML של האתר" onclick="window.open(this.href); return false;">HTML</a>&nbsp;
-						<a href="https://jigsaw.w3.org/css-validator/check/referer" title="בדיקת תקינות קוד ה-CSS של האתר" onclick="window.open(this.href); return false;">CSS</a>
+						<a href="https://validator.w3.org/check/referer" title="בדיקת תקינות קוד ה-XHTML של האתר"
+						   onclick="window.open(this.href); return false;">HTML</a>&nbsp;
+						<a href="https://jigsaw.w3.org/css-validator/check/referer" title="בדיקת תקינות קוד ה-CSS של האתר"
+						   onclick="window.open(this.href); return false;">CSS</a>
 					</p>
 					<p><br />נבנה ועוצב בידי <a href="/contact/" title="ברוך מוסטקיס">ברוך מוסטקיס</a>,
 						<br />כל הזכויות שמורות © Copyright<br />
