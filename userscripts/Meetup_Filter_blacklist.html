@@ -1,0 +1,31 @@
+<script>
+	const JSON_URL  = 'https://www.jsonstore.io/9e682480ba9de202720deaef9aa1e53e3cadc76d296e6ad7101c0b97a2b95015/blacklist';
+	const JSON_URL  = 'https://api.myjson.com/bins/uves6';
+	const blacklist = [
+		'Best Authentic Walking Tours in Tel Aviv',
+		'All the best Workshops (DIY) - Israel',
+		'All The Best Foodie Events - Israel',
+		'The Best Science Bar Talks in Tel aviv',
+		'The Best Inspiring and intellectual lectures - Israel',
+		'Sales & Bizdev Success Stories - Israel',
+		'Freelance Israel',
+		'Israel AWS Partners Group',
+		'Fund raising in preseed and seed stages',
+		'Tel Aviv-Yafo Business Strategy Meetup',
+		'Pub Crawling in Tel Aviv',
+		'Networking & Wine community',
+		'Jewelry eCommerce Meetup',
+		'Language Learning in Tel Aviv',
+		'A Cup of English',
+		'Tel Aviv-Yafo Spiritual Growth Meetup',
+		'מפגשים קטוגניים: נפגשים, לומדים, אוכלים',
+		'xxxxxx',
+	];
+	fetch( JSON_URL, {
+		'headers' : {
+			'Content-type': 'application/json'
+		},
+		'method'  : 'PUT',
+		'body'    : JSON.stringify( blacklist ),
+	} );
+</script>
