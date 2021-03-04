@@ -24,14 +24,13 @@ var log = console.log.bind( console );
 	ShoobyD.setXHRHandler( xhr => {
 		if ( /\/sessions$/.test( xhr.responseURL ) ) {
 			const { challenges } = JSON.parse( xhr.response );
-			_practice = new Practice( challenges );
+			_practice            = new Practice( challenges );
 		}
 	} );
 
 	function isAutoPractice() {
 		return Cookies.get( 'auto-practice' );
 	}
-
 
 
 	class Practice {
@@ -118,11 +117,11 @@ var log = console.log.bind( console );
 		get solutionElements() {
 
 			const {
-				type,
-				correctIndex,
-				correctIndices,
-				correctTokens,
-			} = this.currChallenge;
+				      type,
+				      correctIndex,
+				      correctIndices,
+				      correctTokens,
+			      } = this.currChallenge;
 
 			if ( type === 'listenTap' )
 				return correctTokens.map( token => this.findChoiceElementByText( token ) );
@@ -192,8 +191,8 @@ var log = console.log.bind( console );
 
 
 	new MutationSummary( {
-		'rootNode' : document.body,
-		'callback' : function( summary ) {
+		'rootNode': document.body,
+		'callback': function( summary ) {
 
 			if ( !summary[ 0 ].added.length )
 				return;
@@ -204,14 +203,13 @@ var log = console.log.bind( console );
 			_practice.solve();
 
 		},
-		'queries'  : [ { element : '[data-test="challenge-header"]' } ],
+		'queries' : [ { element: '[data-test="challenge-header"]' } ],
 	} );
 
 
-
 	new MutationSummary( {
-		'rootNode' : document.body,
-		'callback' : function( summary ) {
+		'rootNode': document.body,
+		'callback': function( summary ) {
 
 			if ( !summary[ 0 ].added.length )
 				return;
@@ -237,12 +235,12 @@ var log = console.log.bind( console );
 				practiceBtn.parentNode.appendChild( autoBtn );
 			}
 		},
-		'queries'  : [ { element : '[data-test="global-practice"]' } ],
+		'queries' : [ { element: '[data-test="global-practice"]' } ],
 	} );
 
 	new MutationSummary( {
-		'rootNode' : document.body,
-		'callback' : function( summary ) {
+		'rootNode': document.body,
+		'callback': function( summary ) {
 
 			if ( !summary[ 0 ].added.length )
 				return;
@@ -255,7 +253,7 @@ var log = console.log.bind( console );
 				startBtn.click();
 			}
 		},
-		'queries'  : [ { element : '[data-test="player-next"], [data-test="player-practice-again"]' } ],
+		'queries' : [ { element: '[data-test="player-next"], [data-test="player-practice-again"]' } ],
 	} );
 
 
