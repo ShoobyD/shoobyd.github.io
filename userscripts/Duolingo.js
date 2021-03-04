@@ -77,7 +77,7 @@ var log = console.log.bind( console );
 
 		}
 
-		get choiceElms() {
+		get choiceElements() {
 
 			return [ ...document.querySelectorAll( this.isTapToken?
 				'[data-test="word-bank"] [data-test="challenge-tap-token"]':
@@ -86,11 +86,11 @@ var log = console.log.bind( console );
 
 		}
 
-		getChoiceElmText( elm ) {
+		getChoiceElementText( element ) {
 
 			return this.isTapToken?
-				elm.innerText:
-				elm.querySelector( '[data-test="challenge-judge-text"]' ).innerText;
+				element.innerText:
+				element.querySelector( '[data-test="challenge-judge-text"]' ).innerText;
 
 		}
 
@@ -109,13 +109,13 @@ var log = console.log.bind( console );
 					break;
 			*/
 
-			this.solutionElms.forEach( solutionElm => solutionElm.click() );
+			this.solutionElements.forEach( solutionElement => solutionElement.click() );
 
 			this.continue();
 
 		}
 
-		get solutionElms() {
+		get solutionElements() {
 
 			const {
 				type,
@@ -136,12 +136,12 @@ var log = console.log.bind( console );
 
 		findChoiceElementByText( text ) {
 
-			const choiceElm = this.choiceElms.find( choiceElm => this.getChoiceElmText( choiceElm ) === text );
+			const choiceElement = this.choiceElements.find( choiceElement => this.getChoiceElementText( choiceElement ) === text );
 
-			if ( !choiceElm )
+			if ( !choiceElement )
 				throw new Error( `No choice element for: ${ text }` );
 
-			return choiceElm;
+			return choiceElement;
 
 		}
 
