@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Vimeo Downloaer
-// @version      0.30
+// @version      0.31
 // @description  try to take over the world!
 // @author       ShoobyD
 // @include      *player.vimeo.com/*
@@ -37,9 +37,9 @@ setTimeout( () => {
 			return BuildDownloadPanel();
 
 		new MutationSummary( {
-			'rootNode' : playerElm,
-			'queries'  : [ { element : PREFS_SELECTOR } ],
-			'callback' : BuildDownloadPanel,
+			'rootNode': playerElm,
+			'queries' : [ { element: PREFS_SELECTOR } ],
+			'callback': BuildDownloadPanel,
 		} );
 
 	}
@@ -57,7 +57,7 @@ setTimeout( () => {
 		if ( captionsUrl ) {
 			const downloadMenu = BuildMenu();
 			downloadPanel.append( downloadMenu );
-			const captionsBtn  = BuildCaptionsBtn( captionsUrl );
+			const captionsBtn = BuildCaptionsBtn( captionsUrl );
 			downloadMenu.querySelector( '.vp-panel' ).append( captionsBtn );
 		}
 
@@ -69,7 +69,7 @@ setTimeout( () => {
 		const bestQuality  = getBestQuality( downloadUrls );
 		const isFullHD     = bestQuality.quality === '1080p';
 
-		const downloadBtn  = ShoobyD.createElement( `
+		const downloadBtn = ShoobyD.createElement( `
 				<button type="button" class="vp-prefs">
 					<svg viewBox="0 0 451.111 451.111" ${ isFullHD? 'class="fill"': 'style="fill: #f66"' }>
 						<g>
@@ -149,20 +149,20 @@ setTimeout( () => {
 	}
 
 	function getDownloadUrls() {
-		const vidsArr   = eval(
-							scriptElm.innerText
-								.replace( /.*"progressive":/, '' )
-								.replace( /\].*/, ']' )
-						);
+		const vidsArr   = JSON.parse(
+			scriptElm.innerText
+				.replace( /.*"progressive":/, '' )
+				.replace( /\].*/, ']' ),
+		);
 		const vidsPairs = vidsArr.map( vData => [ vData.quality, vData.url ] );
 		return Object.fromEntries( vidsPairs );
 	}
 
 	function getVideoTitle() {
 		return scriptElm.innerText
-					.replace( /.*"title":"/, '' )
-					.replace( /".*/, '' )
-					.replace( /^(\d+)(\)|\s*-)/, '$1.' );
+			.replace( /.*"title":"/, '' )
+			.replace( /".*/, '' )
+			.replace( /^(\d+)(\)|\s*-)/, '$1.' );
 	}
 
 	function getCaptionsUrl() {
