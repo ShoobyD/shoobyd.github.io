@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Duolingo AutoPractice
-// @version      0.7
+// @version      1.8
 // @description  try to take over the world!
 // @author       ShoobyD
 // @namespace    https://shoobyd.github.io/
@@ -20,11 +20,28 @@ var log = console.log.bind( console );
 
 	let _practice;
 
+	const nativeInputValueSetter    = Object.getOwnPropertyDescriptor( window.HTMLInputElement.prototype, 'value' ).set;
+	const nativeTextAreaValueSetter = Object.getOwnPropertyDescriptor( window.HTMLTextAreaElement.prototype, 'value' ).set;
+
+	function triggerTextInput( inputElement, text ) {
+		if ( inputElement instanceof HTMLTextAreaElement )
+			nativeTextAreaValueSetter.call( inputElement, text );
+		else
+			nativeInputValueSetter.call( inputElement, text );
+
+		inputElement.dispatchEvent( new InputEvent( 'input', {
+			bubbles  : true,
+			composed : true,
+			inputType: 'insertText',
+			isTrusted: true,
+		} ) );
+	}
+
 
 	ShoobyD.setXHRHandler( xhr => {
 		if ( /\/sessions$/.test( xhr.responseURL ) ) {
-			const { challenges } = JSON.parse( xhr.response );
-			_practice            = new Practice( challenges );
+			const session = JSON.parse( xhr.response );
+			_practice     = new Practice( session );
 		}
 	} );
 
@@ -32,47 +49,65 @@ var log = console.log.bind( console );
 		return Cookies.get( 'auto-practice' );
 	}
 
+	class Challenge {
 
-	class Practice {
+		constructor( challengeData ) {
 
-		constructor( challenges ) {
-
-			this.challenges = challenges;
-			this.currIndex  = 0;
-
-		}
-
-		get currChallenge() {
-
-			return this.challenges[ this.currIndex ];
+			Object.assign( this, challengeData, {
+				data: challengeData,
+			} );
 
 		}
 
 		get isSkip() {
 
-			const { type } = this.currChallenge;
-
 			const skipTypes = [
 				'speak',
-				'translate',
-				'name',
 				'listen',
 			];
 
-			return skipTypes.includes( type );
+			return skipTypes.includes( this.type );
 
 		}
 
 		get isTapToken() {
-
-			const { type } = this.currChallenge;
 
 			const tapTokenTypes = [
 				'listenTap',
 				'tapComplete',
 			];
 
-			return tapTokenTypes.includes( type );
+			return tapTokenTypes.includes( this.type );
+
+		}
+
+		solve() {
+
+			switch ( this.type ) {
+
+				case 'translate':
+				case 'name':
+					const inputElement = document.querySelector( '[data-test="challenge-translate-input"], [data-test="challenge-text-input"]' );
+					triggerTextInput( inputElement, this.correctSolutions[ 0 ] );
+					break;
+
+				default:
+					this.solutionElements.forEach( solutionElement => solutionElement.click() );
+			}
+
+			this.solved = true;
+
+		}
+
+		get solutionElements() {
+
+			if ( this.type === 'listenTap' )
+				return this.correctTokens.map( token => this.findChoiceElementByText( token ) );
+
+			if ( this.correctIndices )
+				return this.correctIndices.map( index => this.findChoiceElementByIndex( index ) );
+
+			return [ this.findChoiceElementByIndex( this.correctIndex ) ];
 
 		}
 
@@ -93,46 +128,6 @@ var log = console.log.bind( console );
 
 		}
 
-		solve() {
-
-			if ( this.isSkip )
-				return this.continue();
-
-			/*
-				case 'translate':
-				case 'name':
-					setTimeout( () => {
-					const inputElm = document.querySelector( '[data-test="challenge-translate-input"], [data-test="challenge-text-input"]' );
-					inputElm.value = correctSolutions[ 0 ];
-					}, 500 );
-					break;
-			*/
-
-			this.solutionElements.forEach( solutionElement => solutionElement.click() );
-
-			this.continue();
-
-		}
-
-		get solutionElements() {
-
-			const {
-				      type,
-				      correctIndex,
-				      correctIndices,
-				      correctTokens,
-			      } = this.currChallenge;
-
-			if ( type === 'listenTap' )
-				return correctTokens.map( token => this.findChoiceElementByText( token ) );
-
-			if ( correctIndices )
-				return correctIndices.map( index => this.findChoiceElementByIndex( index ) );
-
-			return [ this.findChoiceElementByIndex( correctIndex ) ];
-
-		}
-
 		findChoiceElementByText( text ) {
 
 			const choiceElement = this.choiceElements.find( choiceElement => this.getChoiceElementText( choiceElement ) === text );
@@ -146,19 +141,60 @@ var log = console.log.bind( console );
 
 		findChoiceElementByIndex( index ) {
 
-			const { choices }  = this.currChallenge;
-			const solutionText = choices[ index ]?.text || choices[ index ];
+			const solutionText = this.choices[ index ]?.text || this.choices[ index ];
 
 			return this.findChoiceElementByText( solutionText );
 
 		}
 
+	}
+
+	class Practice {
+
+		constructor( session ) {
+
+			this.session = session;
+
+			const hardChallenges = session.adaptiveChallenges || [];
+			this.challenges      = session.challenges;
+			this.challenges.splice( -hardChallenges.length, 0, ...hardChallenges );
+
+			this.challenges = this.challenges.map( challengeData => new Challenge( challengeData ) );
+
+			this.currIndex = 0;
+
+		}
+
+		getCurrentChallenge() {
+
+			return this.challenges.find( challenge => !challenge.solved );
+			// return this.challenges[ this.currIndex ];
+
+		}
+
+		solve() {
+
+			this.currentChallenge = this.getCurrentChallenge();
+
+			if ( this.currentChallenge.isSkip ) {
+				this.challenges.forEach( challenge => {
+					if ( challenge.type === this.type )
+						challenge.solved = true;
+				} );
+				return this.continue();
+			}
+
+			this.currentChallenge.solve();
+			this.continue();
+
+		}
+
 		async continue() {
 
-			await this.btnClickPromise( this.isSkip? 'skip': 'next' );
+			await this.btnClickPromise( this.currentChallenge.isSkip? 'skip': 'next' );
 
 			this.currIndex++;
-			if ( !this.currChallenge )
+			if ( !this.getCurrentChallenge() )
 				_practice = null;
 
 			await this.btnClickPromise();
