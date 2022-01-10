@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Duolingo AutoPractice
-// @version      1.8
+// @version      2.3
 // @description  try to take over the world!
 // @author       ShoobyD
 // @namespace    https://shoobyd.github.io/
@@ -87,8 +87,12 @@ var log = console.log.bind( console );
 
 				case 'translate':
 				case 'name':
-					const inputElement = document.querySelector( '[data-test="challenge-translate-input"], [data-test="challenge-text-input"]' );
-					triggerTextInput( inputElement, this.correctSolutions[ 0 ] );
+					const inputElement  = document.querySelector( '[data-test="challenge-translate-input"], [data-test="challenge-text-input"]' );
+					const solutionText  = this.correctSolutions[ 0 ];
+					const allPrefixes   = [ ...document.querySelectorAll( '[data-test="challenge-judge-text"]' ) ];
+					const prefixElement = allPrefixes.find( element => solutionText.indexOf( element.innerText ) === 0 );
+					triggerTextInput( inputElement, solutionText.replace( new RegExp( `^${ prefixElement?.innerText }\\s?`, 'i' ), '' ) );
+					prefixElement?.click();
 					break;
 
 				default:
@@ -161,15 +165,10 @@ var log = console.log.bind( console );
 
 			this.challenges = this.challenges.map( challengeData => new Challenge( challengeData ) );
 
-			this.currIndex = 0;
-
 		}
 
 		getCurrentChallenge() {
-
 			return this.challenges.find( challenge => !challenge.solved );
-			// return this.challenges[ this.currIndex ];
-
 		}
 
 		solve() {
@@ -177,52 +176,38 @@ var log = console.log.bind( console );
 			this.currentChallenge = this.getCurrentChallenge();
 
 			if ( this.currentChallenge.isSkip ) {
-				this.challenges.forEach( challenge => {
-					if ( challenge.type === this.type )
-						challenge.solved = true;
-				} );
-				return this.continue();
+				this.skip();
+				return;
 			}
 
 			this.currentChallenge.solve();
-			this.continue();
 
-		}
-
-		async continue() {
-
-			await this.btnClickPromise( this.currentChallenge.isSkip? 'skip': 'next' );
-
-			this.currIndex++;
 			if ( !this.getCurrentChallenge() )
 				_practice = null;
 
-			await this.btnClickPromise();
-
 		}
 
-		async btnClickPromise( type = 'next' ) {
+		skip() {
 
-			return new Promise( resolve => {
-
-				const iVal = setInterval( () => {
-
-					const btn = document.querySelector( `[data-test="player-${ type }"]` );
-
-					if ( btn && !btn.disabled ) {
-
-						clearInterval( iVal );
-						btn.click();
-						resolve();
-
-					}
-
-				}, 200 );
-
+			this.challenges.forEach( challenge => {
+				if ( challenge.type === this.type )
+					challenge.solved = true;
 			} );
 
-		}
+			const iVal = setInterval( () => {
 
+				const skipBtn = document.querySelector( `[data-test="player-skip"]` );
+
+				if ( skipBtn && !skipBtn.disabled ) {
+
+					clearInterval( iVal );
+					skipBtn.click();
+
+				}
+
+			}, 200 );
+
+		}
 	}
 
 
@@ -274,24 +259,17 @@ var log = console.log.bind( console );
 		'queries' : [ { element: '[data-test="global-practice"]' } ],
 	} );
 
-	new MutationSummary( {
-		'rootNode': document.body,
-		'callback': function( summary ) {
+	setInterval( () => {
 
-			if ( !summary[ 0 ].added.length )
-				return;
+		if ( !isAutoPractice() )
+			return;
 
-			if ( !isAutoPractice() )
-				return;
+		const startBtn = document.querySelector( '[data-test="player-next"], [data-test="player-practice-again"]' );
+		if ( startBtn && !startBtn.disabled ) {
+			startBtn.click();
+		}
 
-			const startBtn = document.querySelector( '[data-test="player-next"], [data-test="player-practice-again"]' );
-			if ( startBtn ) {
-				startBtn.click();
-			}
-		},
-		'queries' : [ { element: '[data-test="player-next"], [data-test="player-practice-again"]' } ],
 	} );
-
 
 } )();
 
