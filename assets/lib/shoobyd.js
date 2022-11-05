@@ -41,13 +41,37 @@
 		return xhr;
 	};
 
+	/*
+	 * A fetch proxy
+	 * Used with ShoobyD.setFetchHandler
+	 */
+	const _fetch       = unsafeWindow.fetch;
+	let _fetchHandler;
+	unsafeWindow.fetch = function() {
+		return new Promise( async ( resolve, reject ) => {
+			try {
+				const result = await _fetch( ...arguments );
+				if ( _fetchHandler ) {
+					_fetchHandler( result );
+				}
+				resolve( result );
+			} catch( err ) {
+				reject( err );
+			}
+		} );
+	};
+
 	const ShoobyD = window.ShoobyD = window.ShoobyD || {
 
 		// set XHR proxy handler
 		setXHRHandler( handler ) {
-
 			_XHRHandler = handler;
+		},
 
+
+		// set fetch proxy handler
+		setFetchHandler( handler ) {
+			_fetchHandler = handler;
 		},
 
 
