@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Duolingo AutoPractice
-// @version      2.5
+// @version      2.6
 // @description  try to take over the world!
 // @author       ShoobyD
 // @namespace    https://shoobyd.github.io/
@@ -41,6 +41,13 @@ var log = console.log.bind( console );
 	ShoobyD.setXHRHandler( xhr => {
 		if ( /\/sessions$/.test( xhr.responseURL ) ) {
 			const session = xhr.response;
+			_practice     = new Practice( session );
+		}
+	} );
+
+	ShoobyD.setFetchHandler( async response => {
+		if ( /\/sessions$/.test( response.url ) ) {
+			const session = await response.json();
 			_practice     = new Practice( session );
 		}
 	} );
