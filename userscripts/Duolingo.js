@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Duolingo AutoPractice
-// @version      2.4
+// @version      2.5
 // @description  try to take over the world!
 // @author       ShoobyD
 // @namespace    https://shoobyd.github.io/
@@ -240,7 +240,7 @@ var log = console.log.bind( console );
 			const practiceBtn = document.querySelector( '[data-test="global-practice"]' );
 			if ( practiceBtn ) {
 				const autoBtn = ShoobyD.createElement( `
-					<button class="_1f0yj _-7YNG _3zYDc _1LfAN _2fOC9 t5wFJ _3dtSu _25Cnc _3yAjN UCrz7 _3GeW0">
+					<button class="HajF7 _1f0yj _-7YNG _3zYDc _1LfAN _2fOC9 t5wFJ _3dtSu _25Cnc _3yAjN UCrz7 _3GeW0">
 						${ isAutoPractice()? 'Stop': 'Start' } Practice
 					</button>
 				` );
