@@ -47,7 +47,7 @@ var log = console.log.bind( console );
 
 	ShoobyD.setFetchHandler( async response => {
 		if ( /\/sessions$/.test( response.url ) ) {
-			const session = await response.json();
+			const session = await response.clone().json();
 			_practice     = new Practice( session );
 		}
 	} );
