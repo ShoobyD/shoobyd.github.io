@@ -1,6 +1,6 @@
 ﻿// ==UserScript==
 // @name         Redirect Mobile Pages
-// @version      0.12
+// @version      0.13
 // @description  redirecting mobile pages to desktop view
 // @author       Baruch Mustakis (a.k.a. ShoobyD)
 // @include      *.m.wikipedia.org*
@@ -8,6 +8,7 @@
 // @include      *m.facebook.com*
 // @include      *graph.facebook.com*
 // @include      *m.9gag.com*
+// @include      *m.aliexpress.com*
 // @include      *.maariv.co.il/amp/*
 // @run-at       document-start
 // ==/UserScript==
@@ -32,7 +33,12 @@
 	if ( /\w{2}\.m\.wiki(pedia|books)\.org/.test( location.host ) )
 		replaceUrl( '.m.', '.' );
 
-	if ( 'm.9gag.com' == location.host )
+	if (
+		[
+			'm.9gag.com',
+			'm.aliexpress.com',
+		].includes( location.host )
+	)
 		replaceUrl( 'm.', 'www.' );
 
 	if ( 'graph.facebook.com' == location.host )
@@ -46,7 +52,7 @@
 			location.assign( `${
 				location.origin
 					.replace( 'm.', 'www.' )
-				}/${ getUrlParam( 'id' ) }/posts/${ getUrlParam( 'story_fbid' ) }` );
+			}/${ getUrlParam( 'id' ) }/posts/${ getUrlParam( 'story_fbid' ) }` );
 		} else if ( getUrlParam( 'view' ) === 'permalink' ) {
 			replaceUrl( /\/\/m(\..*)\?.*/, `//www$1/permalink/${ getUrlParam( 'id' ) }/` );
 		} else {
