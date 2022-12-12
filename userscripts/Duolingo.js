@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Duolingo AutoPractice
-// @version      2.6
+// @version      2.7
 // @description  try to take over the world!
 // @author       ShoobyD
 // @namespace    https://shoobyd.github.io/
@@ -26,8 +26,10 @@ var log = console.log.bind( console );
 	function triggerTextInput( inputElement, text ) {
 		if ( inputElement instanceof HTMLTextAreaElement )
 			nativeTextAreaValueSetter.call( inputElement, text );
-		else
+		else if ( inputElement instanceof HTMLInputElement )
 			nativeInputValueSetter.call( inputElement, text );
+		else
+			inputElement.innerText = text;
 
 		inputElement.dispatchEvent( new InputEvent( 'input', {
 			bubbles  : true,
@@ -93,7 +95,7 @@ var log = console.log.bind( console );
 			switch ( this.type ) {
 
 				case 'translate':
-				case 'name':
+				case 'name': {
 					const inputElement  = document.querySelector( '[data-test="challenge-translate-input"], [data-test="challenge-text-input"]' );
 					const solutionText  = this.correctSolutions[ 0 ];
 					const allPrefixes   = [ ...document.querySelectorAll( '[data-test="challenge-judge-text"]' ) ];
@@ -101,6 +103,14 @@ var log = console.log.bind( console );
 					triggerTextInput( inputElement, solutionText.replace( new RegExp( `^${ prefixElement?.innerText }\\s?`, 'i' ), '' ) );
 					prefixElement?.click();
 					break;
+				}
+
+				case 'partialReverseTranslate': {
+					const inputElement = document.querySelector( '[data-test*="challenge-partialReverseTranslate"] [contenteditable]' );
+					const solutionText = this.displayTokens.filter( token => token.isBlank ).map( token => token.text ).join( '' );
+					triggerTextInput( inputElement, solutionText );
+					break;
+				}
 
 				default:
 					this.solutionElements.forEach( solutionElement => solutionElement.click() );
