@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Duolingo AutoPractice
-// @version      2.7
+// @version      3.0
 // @description  try to take over the world!
 // @author       ShoobyD
 // @namespace    https://shoobyd.github.io/
@@ -97,6 +97,10 @@ var log = console.log.bind( console );
 				case 'translate':
 				case 'name': {
 					const inputElement  = document.querySelector( '[data-test="challenge-translate-input"], [data-test="challenge-text-input"]' );
+					if ( !inputElement ) {
+						this.tryButtons();
+						break;
+					}
 					const solutionText  = this.correctSolutions[ 0 ];
 					const allPrefixes   = [ ...document.querySelectorAll( '[data-test="challenge-judge-text"]' ) ];
 					const prefixElement = allPrefixes.find( element => solutionText.indexOf( element.innerText ) === 0 );
@@ -113,14 +117,19 @@ var log = console.log.bind( console );
 				}
 
 				default:
-					this.solutionElements.forEach( solutionElement => solutionElement.click() );
+					this.tryButtons();
 			}
 
 			this.solved = true;
+		}
 
+		tryButtons() {
+			this.solutionElements.forEach( solutionElement => solutionElement.click() );
 		}
 
 		get solutionElements() {
+			if ( this.type === 'translate' )
+				return this.correctTokens.map( token => document.querySelector( `[data-test="${ token }-challenge-tap-token"]` ) )
 
 			if ( this.type === 'listenTap' )
 				return this.correctTokens.map( token => this.findChoiceElementByText( token ) );
@@ -188,7 +197,7 @@ var log = console.log.bind( console );
 			return this.challenges.find( challenge => !challenge.solved );
 		}
 
-		solve() {
+		async solve() {
 
 			this.currentChallenge = this.getCurrentChallenge();
 
@@ -196,6 +205,8 @@ var log = console.log.bind( console );
 				this.skip();
 				return;
 			}
+
+			await wait( 400 );
 
 			this.currentChallenge.solve();
 
@@ -288,6 +299,9 @@ var log = console.log.bind( console );
 
 	} );
 
+	function wait( time ) {
+		return new Promise( resolve => setTimeout( resolve, time ) );
+	}
 } )();
 
 
