@@ -170,7 +170,7 @@
 
 			let functionName, object, extendFunction, isBefore;
 
-			if ( typeof data !== 'object' ) {
+			if ( typeof data === 'object' ) {
 
 				( {
 					functionName,
@@ -188,16 +188,13 @@
 
 				if ( typeof arguments[ 1 ] === 'function' ) {
 
-					if ( arguments[ 2 ] )
-						return;
-
 					object         = unsafeWindow;
 					extendFunction = arguments[ 1 ];
 					isBefore       = arguments[ 2 ];
 
 				} else {
 
-					if ( typeof arguments[ 2 ] !== 'function' )
+					if ( typeof arguments[ 1 ] !== 'object' || typeof arguments[ 2 ] !== 'function' )
 						return;
 
 					object         = arguments[ 1 ];
@@ -213,9 +210,14 @@
 
 			object[ functionName ] = function() {
 
+				let result;
+				const args = arguments;
 				funcs.forEach( function( func ) {
-					func.apply( this, arguments );
+					const res = func.apply( object, args );
+					if ( func === oldFunc )
+						result = res;
 				} );
+				return result;
 
 			};
 
