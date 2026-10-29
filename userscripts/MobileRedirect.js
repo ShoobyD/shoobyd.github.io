@@ -1,11 +1,12 @@
 ﻿// ==UserScript==
 // @name         Redirect Mobile Pages
-// @version      0.13
+// @version      0.14
 // @description  redirecting mobile pages to desktop view
 // @author       Baruch Mustakis (a.k.a. ShoobyD)
 // @include      *.m.wikipedia.org*
 // @include      *.m.wikibooks.org*
 // @include      *m.facebook.com*
+// @include      *m.weekend.co.il*
 // @include      *graph.facebook.com*
 // @include      *m.9gag.com*
 // @include      *m.aliexpress.com*
@@ -37,6 +38,7 @@
 		[
 			'm.9gag.com',
 			'm.aliexpress.com',
+			'm.weekend.co.il',
 		].includes( location.host )
 	)
 		replaceUrl( 'm.', 'www.' );
