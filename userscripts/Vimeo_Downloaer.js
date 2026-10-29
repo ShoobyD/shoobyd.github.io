@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Vimeo Downloaer
-// @version      0.31
+// @version      1.0
 // @description  try to take over the world!
 // @author       ShoobyD
 // @include      *player.vimeo.com/*
@@ -48,9 +48,10 @@ setTimeout( () => {
 	function BuildDownloadPanel() {
 
 		const downloadPanel = ShoobyD.createElement( '<div></div>' );
-		document.querySelector( PREFS_SELECTOR ).after( downloadPanel );
+		const prefsBtn      = document.querySelector( PREFS_SELECTOR );
+		prefsBtn.after( downloadPanel );
 
-		const downloadBtn = BuildDownloadBtn();
+		const downloadBtn = BuildDownloadBtn( prefsBtn.className );
 		downloadPanel.append( downloadBtn );
 
 		const captionsUrl = getCaptionsUrl();
@@ -63,14 +64,14 @@ setTimeout( () => {
 
 	}
 
-	function BuildDownloadBtn() {
+	function BuildDownloadBtn( classes ) {
 
 		const downloadUrls = getDownloadUrls();
 		const bestQuality  = getBestQuality( downloadUrls );
 		const isFullHD     = bestQuality.quality === '1080p';
 
 		const downloadBtn = ShoobyD.createElement( `
-				<button type="button" class="vp-prefs">
+				<button type="button" class="${ classes }">
 					<svg viewBox="0 0 451.111 451.111" ${ isFullHD? 'class="fill"': 'style="fill: #f66"' }>
 						<g>
 							<path d="m225.556 354.445 145-145-48.333-48.333-64.444 64.444v-225.556h-64.444v225.556l-64.444-64.444-48.333 48.333z"></path>
