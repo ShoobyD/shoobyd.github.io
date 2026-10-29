@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Duolingo AutoPractice
-// @version      3.0
+// @version      4.0
 // @description  try to take over the world!
 // @author       ShoobyD
 // @namespace    https://shoobyd.github.io/
@@ -55,15 +55,16 @@ var log = console.log.bind( console );
 	} );
 
 	function isAutoPractice() {
-		return Cookies.get( 'auto-practice' );
+		return true; //Cookies.get( 'auto-practice' );
 	}
 
 	class Challenge {
 
-		constructor( challengeData ) {
+		constructor( data, index ) {
 
-			Object.assign( this, challengeData, {
-				data: challengeData,
+			Object.assign( this, data, {
+				index,
+				data,
 			} );
 
 		}
@@ -71,8 +72,8 @@ var log = console.log.bind( console );
 		get isSkip() {
 
 			const skipTypes = [
-				'speak',
-				'listen',
+				// 'speak',
+				// 'listen',
 			];
 
 			return skipTypes.includes( this.type );
@@ -96,7 +97,7 @@ var log = console.log.bind( console );
 
 				case 'translate':
 				case 'name': {
-					const inputElement  = document.querySelector( '[data-test="challenge-translate-input"], [data-test="challenge-text-input"]' );
+					const inputElement = document.querySelector( '[data-test="challenge-translate-input"], [data-test="challenge-text-input"]' );
 					if ( !inputElement ) {
 						this.tryButtons();
 						break;
@@ -116,6 +117,12 @@ var log = console.log.bind( console );
 					break;
 				}
 
+				case 'speak':
+				case 'listenComplete': {
+					this.solveAlternative();
+					break;
+				}
+
 				default:
 					this.tryButtons();
 			}
@@ -123,13 +130,44 @@ var log = console.log.bind( console );
 			this.solved = true;
 		}
 
+		solveAlternative() {
+			const newIndex             = _practice.replaceIndices[ this.index ];
+			const alternativeChallenge = _practice.interChallenges[ newIndex ] ?? _practice.challenges[ this.index + 1 ];
+			if ( !alternativeChallenge )
+				throw new Error( `No alternative challenge.` );
+
+			alternativeChallenge.solve();
+		}
+
 		tryButtons() {
-			this.solutionElements.forEach( solutionElement => solutionElement.click() );
+			try {
+				if ( this.solutionElements ) {
+					this.solutionElements.forEach( solutionElement => solutionElement.click() );
+				} else {
+					if ( getChallengeBtns().length ) {
+						let btns;
+						while ( ( btns = getChallengeBtns() ).length ) {
+							const first  = btns[ 0 ];
+							const second = [ ...btns ].slice( 1 ).find( btn => btn.dataset.test === btns[ 0 ].dataset.test );
+							first.click();
+							second.click();
+						}
+					} else {
+						throw new Error( `No challenge buttons` );
+					}
+				}
+			} catch ( e ) {
+				this.solveAlternative();
+			}
+
+			function getChallengeBtns() {
+				return document.querySelectorAll( 'button[data-test*="challenge"]:not([aria-disabled="true"])' );
+			}
 		}
 
 		get solutionElements() {
 			if ( this.type === 'translate' )
-				return this.correctTokens.map( token => document.querySelector( `[data-test="${ token }-challenge-tap-token"]` ) )
+				return this.correctTokens.map( token => document.querySelector( `[data-test="${ token }-challenge-tap-token"]` ) );
 
 			if ( this.type === 'listenTap' )
 				return this.correctTokens.map( token => this.findChoiceElementByText( token ) );
@@ -137,8 +175,8 @@ var log = console.log.bind( console );
 			if ( this.correctIndices )
 				return this.correctIndices.map( index => this.findChoiceElementByIndex( index ) );
 
-			return [ this.findChoiceElementByIndex( this.correctIndex ) ];
-
+			if ( typeof this.correctIndex !== 'undefined' )
+				return [ this.findChoiceElementByIndex( this.correctIndex ) ];
 		}
 
 		get choiceElements() {
@@ -170,11 +208,15 @@ var log = console.log.bind( console );
 		}
 
 		findChoiceElementByIndex( index ) {
-
-			const solutionText = this.choices[ index ]?.text || this.choices[ index ];
+			const choices      = this.choices || this.options;
+			const solutionText = choices[ index ]?.text || choices[ index ];
 
 			return this.findChoiceElementByText( solutionText );
-
+			// try {
+			// 	return this.findChoiceElementByText( solutionText );
+			// } catch ( e ) {
+			// 	return this.choiceElements[ index ];
+			// }
 		}
 
 	}
@@ -189,8 +231,10 @@ var log = console.log.bind( console );
 			this.challenges      = session.challenges;
 			this.challenges.splice( -hardChallenges.length, 0, ...hardChallenges );
 
-			this.challenges = this.challenges.map( challengeData => new Challenge( challengeData ) );
+			this.challenges = this.challenges.map( ( challengeData, index ) => new Challenge( challengeData, index ) );
 
+			this.interChallenges = session.adaptiveInterleavedChallenges.challenges.map( challengeData => new Challenge( challengeData ) );
+			this.replaceIndices  = session.adaptiveInterleavedChallenges.speakOrListenReplacementIndices;
 		}
 
 		getCurrentChallenge() {
