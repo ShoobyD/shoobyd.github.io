@@ -87,7 +87,8 @@
 
 	/* ---------- depth: offset, soft, warm-neutral ---------- */
 	--sd-shadow-panel: 0 30px 80px -30px rgb(10 8 6 / 0.65), inset 0 1px 0 rgb(255 240 215 / 0.12);
-	--sd-shadow-text:  0 1px 12px rgb(20 16 12 / 0.55);
+	/* a tight shadow under the glyphs plus a soft dark glow: keeps labels legible over the 3D scene */
+	--sd-shadow-text:  0 1px 2px rgb(20 16 12 / 0.85), 0 0 10px rgb(20 16 12 / 0.7);
 
 	/* ---------- motion ---------- */
 	--sd-ease:     cubic-bezier(0.22, 1, 0.36, 1); /* exponential ease-out */
