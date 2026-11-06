@@ -30,11 +30,19 @@ const fragmentShader = /* glsl */ `
 const HUM = 0.03;
 const MAX = 0.55;
 
+/**
+ * The making tier's frame beside the tower, facing the parked camera: the strings stand at its
+ * origin, and the self-portrait (portrait.ts) hangs beside them in the same frame.
+ */
+export function placeAtMakingTier(obj: THREE.Object3D) {
+	obj.position.copy(tierPos(4, R[4] + 3.0, yb(4) + 3.2));
+	obj.rotation.y = Math.PI / 2 - PARK[4].th;
+}
+
 export function createStrings(scene: THREE.Scene, mats: Materials) {
 	const shared = { uTime: { value: 0 }, uAmp: { value: HUM }, uCol: { value: new THREE.Color(2.4, 1.6, 0.75) } };
 	const group = new THREE.Group();
-	group.position.copy(tierPos(4, R[4] + 3.0, yb(4) + 3.2));
-	group.rotation.y = Math.PI / 2 - PARK[4].th;
+	placeAtMakingTier(group);
 	for (let k = 0; k < 6; k++) {
 		const mat = new THREE.ShaderMaterial({
 			uniforms: { ...shared, uIdx: { value: k } },

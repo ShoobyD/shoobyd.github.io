@@ -15,6 +15,8 @@ import BabelTitle from '../components/home/BabelTitle.vue';
 import TowerScene from '../components/tower/TowerScene.vue';
 import TowerLoader from '../components/tower/TowerLoader.astro';
 import TowerLoaderBoot from '../components/tower/TowerLoaderBoot.astro';
+import { Image } from 'astro:assets';
+import selfPortrait from '../assets/images/self-portrait-bsod.jpg';
 import { projects, projectName } from '../data/projects';
 import { home, links, tierAltitude, tierIds } from '../i18n/home';
 import type { Lang } from '../i18n/ui';
@@ -36,6 +38,9 @@ const projectItems = projects.map((p) => ({
 /** One doorway in the tower per project card, in the same order. */
 const towerDoors = projects.map((p) => ({ id: p.id, href: p.href }));
 
+/** The self-portrait opens the base panel, and hangs again beside the strings on the making tier. */
+const towerPortrait = { src: selfPortrait.src, width: selfPortrait.width, height: selfPortrait.height };
+
 const [latinBefore, latinAfter = ''] = c.languages.latin.split('{link}');
 
 const crafts = [
@@ -56,12 +61,17 @@ const contacts = [
 <Base lang={lang}>
 	<TowerLoaderBoot slot="head" />
 	<TowerLoader label={c.loader} />
-	<TowerScene client:only="vue" tiers={[...tierIds]} doors={towerDoors} />
+	<TowerScene client:only="vue" tiers={[...tierIds]} doors={towerDoors} portrait={towerPortrait} />
 	<AltitudeGauge client:idle label={c.gauge.label} unit={c.gauge.unit} tiers={gaugeTiers} />
 
 	<TierSection id="base" title={c.base.title} level={1}>
 		<p class="handle" lang="en" dir="ltr">ShoobyD</p>
 		<p class="lead">{c.base.lead}</p>
+		<figure class="portrait">
+			<span class="portrait__mat">
+				<Image src={selfPortrait} alt={c.base.portraitAlt} widths={[260, 520]} sizes="15rem" loading="eager" />
+			</span>
+		</figure>
 		<p class="hint">
 			<svg viewBox="0 0 20 20" aria-hidden="true">
 				<rect x="6" y="2" width="8" height="13" rx="4" fill="none" stroke="currentColor" stroke-width="1.5" />
@@ -183,6 +193,30 @@ const contacts = [
 	.dim {
 		color: var(--sd-text-dim);
 	}
+	/* the self-portrait: a pen drawing on a limestone mat, hung slightly askew */
+	.portrait {
+		max-inline-size: 15rem;
+		margin-block: var(--sd-space-5) 0;
+		margin-inline: 0;
+	}
+	.portrait__mat {
+		display: block;
+		padding: 10px;
+		background: var(--sd-limestone);
+		border-radius: 3px;
+		box-shadow: 0 14px 30px -12px rgb(10 8 6 / 0.7), inset 0 0 0 1px rgb(45 42 38 / 0.15);
+		transform: rotate(-1.4deg);
+	}
+	.portrait img {
+		display: block;
+		inline-size: 100%;
+		block-size: auto;
+		border-radius: 1px;
+	}
+	@media (max-width: 47.5rem) {
+		.portrait { max-inline-size: 11rem; }
+	}
+
 	.hint {
 		display: flex;
 		align-items: center;

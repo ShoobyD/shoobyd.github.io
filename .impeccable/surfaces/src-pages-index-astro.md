@@ -42,12 +42,13 @@ STORY:
 
 FIRST VIEWPORT:
 - The tower stands at the inline-end of the viewport at dawn, rising from the plain with its unfinished summit visible.
-- At the inline-start, an arch-topped panel holds the kicker "קומת היסוד", the name "ברוך מוסטקיס" at monumental scale, "ShoobyD", one line of who he is, and the scroll hint.
+- At the inline-start, an arch-topped panel holds the name "ברוך מוסטקיס" at monumental scale, "ShoobyD", one line of who he is, his self-portrait, and the scroll hint. (No kicker: kickers above headings are banned by the craft floor.)
+- **The self-portrait** (his pen drawing of himself facing a blue error screen, `src/assets/images/self-portrait-bsod.jpg`) is a brand commitment: drawing is one of his hobbies and the BSoD is the site's long-standing wink. It appears twice: small, on a limestone mat and slightly askew, in the base panel (every mode, including the static fallback); and again inside the 3D world, framed and hung on the wall beside the guitar strings on the making tier. (User decision, 2026-11-07.)
 - The header holds brand, game-mode and EN.
 - The altitude gauge with the tier buttons runs along the inline-end edge. In LTR the whole composition mirrors.
 - **The tower itself never mirrors.** Its geometry is a physical object: the ramp always climbs clockwise, and the project doorways keep the same order along it in both languages. Only the page layout (panels, gauge, which side the tower stands on) follows `dir`. Do not "fix" the doorway order for LTR. (User decision, 2026-11-06.)
 - **Signature interaction:** a smoothed scroll helix around the tower, parking at each tier, with sky, sun, fog and window glow tied to altitude.
-- **Per-tier moments:** hover-linked doors and cards (code), an armillary sphere (mathematics), orbiting glyphs of many scripts under Genesis 11:1 (languages), strummable guitar strings (making), the scrambling summit heading.
+- **Per-tier moments:** hover-linked doors and cards (code), an armillary sphere (mathematics), orbiting glyphs of many scripts under Genesis 11:1 (languages), strummable guitar strings with the framed self-portrait beside them (making), the scrambling summit heading.
 - **Game mode:** brick stacking with overhang slicing. Built bricks persist on the tower.
 
 FORM: Spiral Tower of Babel, #1 on my ordered grounded list in re-roll round 1, chosen by the user as IMPECCABLE’S PICK over the assigned Möbius ride after comparing three live WebGL prototypes. seed:9235411404157c62

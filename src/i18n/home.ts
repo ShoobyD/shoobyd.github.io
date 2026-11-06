@@ -23,7 +23,8 @@ interface HomeCopy {
 	/** Shown on the full-screen loader while the 3D tower is being prepared. */
 	loader: string;
 	gauge: { label: string; unit: string; tiers: Record<TierId, string> };
-	base: { title: string; lead: string; hint: string };
+	/** `portraitAlt` describes the self-portrait drawing shown in the base panel. */
+	base: { title: string; lead: string; hint: string; portraitAlt: string };
 	/** `doorHint`, like `making.stringsHint`, is shown only while the 3D tower is on screen. */
 	code: { title: string; lead: string; doorHint: string; status: Record<ProjectStatus, string> };
 	math: { title: string; lead: string; aside: string };
@@ -46,6 +47,7 @@ export const home: Record<Lang, HomeCopy> = {
 			title: 'ברוך מוסטקיס',
 			lead: 'מפתח־ווב, מתמטיקאי בהכשרתו. טפסו למעלה.',
 			hint: 'גללו כדי לטפס',
+			portraitAlt: 'דיוקן עצמי בקווי עט: ברוך יושב מול מחשב, יד על הפנים, ומביט במסך כחול של שגיאה.',
 		},
 		code: {
 			title: 'קוד',
@@ -94,6 +96,7 @@ export const home: Record<Lang, HomeCopy> = {
 			title: 'Baruch Mustakis',
 			lead: 'Web developer, mathematician by training. Climb up.',
 			hint: 'Scroll to climb',
+			portraitAlt: 'A self-portrait in pen: Baruch at a computer, hand on his face, staring at a blue error screen.',
 		},
 		code: {
 			title: 'Code',

@@ -27,9 +27,10 @@ import { createDoors, type DoorSpec } from './tiers/doors';
 import { createArmillary } from './tiers/armillary';
 import { createGlyphs } from './tiers/glyphs';
 import { createStrings } from './tiers/strings';
+import { createPortrait, type PortraitSpec } from './tiers/portrait';
 import { TOWER_CLASS, progressAt, scrollFor, sectionTops } from '../mode';
 
-export type { DoorSpec };
+export type { DoorSpec, PortraitSpec };
 
 export interface TowerOptions {
 	canvas: HTMLCanvasElement;
@@ -37,6 +38,8 @@ export interface TowerOptions {
 	tiers: readonly string[];
 	/** One doorway per project card (`[data-project="<id>"]`), in card order. */
 	doors: DoorSpec[];
+	/** The self-portrait hung beside the strings on the making tier. */
+	portrait: PortraitSpec;
 	/** Called if the GPU drops the context; the caller tears the scene down to the static page. */
 	onLost?: () => void;
 }
@@ -62,7 +65,14 @@ export interface TowerHandle {
 }
 
 /** Every piece of the world, built in a fixed order so the seeded random gives the same tower each visit. */
-function buildWorld(scene: THREE.Scene, tower: THREE.Group, anisotropy: number, doorSpecs: DoorSpec[], narrow: boolean) {
+function buildWorld(
+	scene: THREE.Scene,
+	tower: THREE.Group,
+	anisotropy: number,
+	doorSpecs: DoorSpec[],
+	portraitSpec: PortraitSpec,
+	narrow: boolean,
+) {
 	const random = createRandom(1188);
 	const mats = createMaterials();
 	const brick = brickTexture(random.rnd, anisotropy);
@@ -76,8 +86,9 @@ function buildWorld(scene: THREE.Scene, tower: THREE.Group, anisotropy: number, 
 	const armillary = createArmillary(scene);
 	const glyphs = createGlyphs(scene, random);
 	const strings = createStrings(scene, mats);
+	const portrait = createPortrait(scene, mats, portraitSpec, anisotropy);
 	const clouds = createClouds(scene, random);
-	return { brick, sky, landscape, built, doors, figures, summit, armillary, glyphs, strings, clouds };
+	return { brick, sky, landscape, built, doors, figures, summit, armillary, glyphs, strings, portrait, clouds };
 }
 
 const pointerInUi = (t: EventTarget | null) =>
@@ -103,7 +114,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 	scene.add(tower);
 	let world: ReturnType<typeof buildWorld>;
 	try {
-		world = buildWorld(scene, tower, stage.maxAnisotropy, opts.doors, narrow);
+		world = buildWorld(scene, tower, stage.maxAnisotropy, opts.doors, opts.portrait, narrow);
 	} catch (err) {
 		// nothing is on the page yet; free what was built and let the caller keep the static page
 		disposeScene(scene);

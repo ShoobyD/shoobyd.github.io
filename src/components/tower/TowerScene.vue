@@ -10,13 +10,15 @@
  */
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import { endLoading } from './mode';
-import type { DoorSpec, TowerHandle } from './scene';
+import type { DoorSpec, PortraitSpec, TowerHandle } from './scene';
 
 const props = defineProps<{
 	/** Tier ids in climbing order (sections `#tier-<id>`). */
 	tiers: string[];
 	/** One doorway per project card, in card order. */
 	doors: DoorSpec[];
+	/** The self-portrait hung beside the strings on the making tier. */
+	portrait: PortraitSpec;
 }>();
 
 const canvas = ref<HTMLCanvasElement | null>(null);
@@ -79,6 +81,7 @@ async function start() {
 			canvas: canvas.value,
 			tiers: props.tiers,
 			doors: props.doors,
+			portrait: props.portrait,
 			onLost() {
 				lost = true;
 				stop();
