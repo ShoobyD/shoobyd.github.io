@@ -13,6 +13,8 @@ import ContactList from '../components/home/ContactList.vue';
 import AltitudeGauge from '../components/home/AltitudeGauge.vue';
 import BabelTitle from '../components/home/BabelTitle.vue';
 import TowerScene from '../components/tower/TowerScene.vue';
+import TowerLoader from '../components/tower/TowerLoader.astro';
+import TowerLoaderBoot from '../components/tower/TowerLoaderBoot.astro';
 import { projects, projectName } from '../data/projects';
 import { home, links, tierAltitude, tierIds } from '../i18n/home';
 import type { Lang } from '../i18n/ui';
@@ -52,6 +54,8 @@ const contacts = [
 ---
 
 <Base lang={lang}>
+	<TowerLoaderBoot slot="head" />
+	<TowerLoader label={c.loader} />
 	<TowerScene client:only="vue" tiers={[...tierIds]} doors={towerDoors} />
 	<AltitudeGauge client:idle label={c.gauge.label} unit={c.gauge.unit} tiers={gaugeTiers} />
 

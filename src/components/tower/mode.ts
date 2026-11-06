@@ -8,6 +8,15 @@ export const TOWER_CLASS = 'webgl';
 export const isTowerActive = () => document.documentElement.classList.contains(TOWER_CLASS);
 
 /**
+ * Set on the root by TowerLoaderBoot (inline, before first paint) while the full-screen loader is
+ * up. The inline script cannot import this, so keep the literal there in sync.
+ */
+export const LOADING_CLASS = 'sd-tower-loading';
+
+/** Lifts the loader: called when the scene is live, and on every path where it gives up. */
+export const endLoading = () => document.documentElement.classList.remove(LOADING_CLASS);
+
+/**
  * Where each tier starts in document coordinates. In both modes a tier is "reached" when its
  * section's top meets the top of the viewport, so the camera, the panels and the altitude gauge
  * all read the same progress.

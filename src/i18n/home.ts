@@ -20,6 +20,8 @@ export const tierAltitude: Record<TierId, number> = {
 };
 
 interface HomeCopy {
+	/** Shown on the full-screen loader while the 3D tower is being prepared. */
+	loader: string;
 	gauge: { label: string; unit: string; tiers: Record<TierId, string> };
 	base: { title: string; lead: string; hint: string };
 	/** `doorHint`, like `making.stringsHint`, is shown only while the 3D tower is on screen. */
@@ -33,6 +35,7 @@ interface HomeCopy {
 
 export const home: Record<Lang, HomeCopy> = {
 	he: {
+		loader: 'מניחים לבנים…',
 		gauge: {
 			label: 'קומות המגדל',
 			unit: 'אמות',
@@ -79,6 +82,7 @@ export const home: Record<Lang, HomeCopy> = {
 		},
 	},
 	en: {
+		loader: 'Laying bricks…',
 		gauge: {
 			label: 'Tower tiers',
 			unit: 'cubits',

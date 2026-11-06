@@ -1,0 +1,27 @@
+---
+/**
+ * Switches the tower loader on before the first paint, for visitors who will get the 3D.
+ * Place it in the page head: `<TowerLoaderBoot slot="head" />` (see TowerLoader.astro).
+ */
+---
+
+<script is:inline>
+	(function () {
+		var root = document.documentElement;
+		try {
+			if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+			if (new URLSearchParams(location.search).has('no3d')) return;
+			var connection = navigator.connection;
+			if (connection && connection.saveData) return;
+			var gl = document.createElement('canvas').getContext('webgl2');
+			if (!gl) return;
+			var lose = gl.getExtension('WEBGL_lose_context');
+			if (lose) lose.loseContext();
+			root.classList.add('sd-tower-loading');
+			setTimeout(function () { root.classList.remove('sd-tower-loading'); }, 20000);
+		} catch (e) {
+			root.classList.remove('sd-tower-loading');
+		}
+	})();
+</script>
+

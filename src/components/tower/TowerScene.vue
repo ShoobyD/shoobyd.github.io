@@ -9,6 +9,7 @@
  * Debug: `?no3d` keeps the static page, `?noshadow` renders without shadows.
  */
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
+import { endLoading } from './mode';
 import type { DoorSpec, TowerHandle } from './scene';
 
 const props = defineProps<{
@@ -58,8 +59,17 @@ function afterFirstPaint() {
 	});
 }
 
+/**
+ * Every way out of start() lifts the full-screen loader (TowerLoader): on success the scene has
+ * already switched the root to `html.webgl`, so the loader fades out over the live tower; on any
+ * bail-out it fades out over the static page.
+ */
 async function start() {
-	if (handle || starting || !wanted() || !hasWebGL2()) return;
+	if (handle || starting || !wanted() || !hasWebGL2()) {
+		// a start already in flight owns the loader; it lifts it when it finishes
+		if (!handle && !starting) endLoading();
+		return;
+	}
 	starting = true;
 	try {
 		await afterFirstPaint();
@@ -80,6 +90,7 @@ async function start() {
 		stop();
 	} finally {
 		starting = false;
+		endLoading();
 	}
 }
 
