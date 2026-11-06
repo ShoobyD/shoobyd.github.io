@@ -10,7 +10,12 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "7.4.2"
+    "@astrojs/vue": "7.1.2",
+    "@fontsource-variable/assistant": "5.3.0",
+    "@fontsource/frank-ruhl-libre": "5.3.0",
+    "@fontsource/suez-one": "5.3.0",
+    "astro": "7.4.2",
+    "vue": "3.5.44"
   }
 }
 

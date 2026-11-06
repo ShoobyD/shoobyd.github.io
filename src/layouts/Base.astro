@@ -1,0 +1,78 @@
+---
+/**
+ * Base layout for every new page: document language and direction, meta, the
+ * ShoobyD theme, and the site shell (header, main, footer).
+ *
+ * `alternatePath` is the same page in the other language. Pass it only when that page
+ * exists; the language switch in the header is rendered only when it is set.
+ */
+import '../theme/base.css';
+import SiteHeader from '../theme/components/SiteHeader.vue';
+import SiteFooter from '../theme/components/SiteFooter.vue';
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import { dirFor, otherLang, useTranslations, type Lang } from '../i18n/ui';
+
+interface Props {
+	lang: Lang;
+	title?: string;
+	description?: string;
+	alternatePath?: string;
+}
+
+const { lang, title, description, alternatePath } = Astro.props;
+const t = useTranslations(lang);
+const dir = dirFor(lang);
+const other = otherLang(lang);
+
+const pageTitle = title ? `${title} · ${t('site.title')}` : t('site.title');
+const pageDescription = description ?? t('site.description');
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const alternateHref = alternatePath ? getRelativeLocaleUrl(other, alternatePath) : undefined;
+
+const langSwitch = alternateHref
+	? { href: alternateHref, label: t('lang.label'), ariaLabel: t('lang.aria'), hreflang: other }
+	: undefined;
+---
+
+<!doctype html>
+<html lang={lang} dir={dir}>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<title>{pageTitle}</title>
+		<meta name="description" content={pageDescription} />
+		<meta name="author" content="Baruch Mustakis (ShoobyD)" />
+		<meta name="theme-color" content="#6f8fb3" />
+		<link rel="canonical" href={canonical} />
+		{alternateHref && <link rel="alternate" hreflang={other} href={new URL(alternateHref, Astro.site)} />}
+		<link rel="icon" href="/favicon.ico" sizes="any" />
+
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="ShoobyD" />
+		<meta property="og:title" content={pageTitle} />
+		<meta property="og:description" content={pageDescription} />
+		<meta property="og:url" content={canonical} />
+		<meta property="og:locale" content={lang === 'he' ? 'he_IL' : 'en_US'} />
+		<slot name="head" />
+	</head>
+	<body>
+		<a class="sd-skip-link" href="#main">{t('nav.skip')}</a>
+		<SiteHeader
+			homeHref={getRelativeLocaleUrl(lang, '/')}
+			brandName={t('brand.name')}
+			brandTagline={t('brand.tagline')}
+			homeLabel={t('nav.home')}
+			langSwitch={langSwitch}
+		>
+			<slot name="header-actions" slot="actions" />
+		</SiteHeader>
+		<main id="main">
+			<slot />
+		</main>
+		<SiteFooter
+			credit={t('footer.credit')}
+			copyright={t('footer.copyright', { year: new Date().getFullYear() })}
+		/>
+	</body>
+</html>
+

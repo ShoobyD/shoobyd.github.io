@@ -1,0 +1,138 @@
+/*
+ * ShoobyD theme — base styles: reset, typography and themed browser surfaces.
+ * Direction-agnostic: logical properties only (no left/right), so one stylesheet
+ * serves both `dir="rtl"` (Hebrew) and `dir="ltr"` (English).
+ */
+@import "./fonts.css";
+@import "./tokens.css";
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+html {
+	background: var(--sd-field);
+	-webkit-text-size-adjust: 100%;
+	text-size-adjust: 100%;
+	scrollbar-color: var(--sd-ochre) var(--sd-glass-strong);
+}
+
+body {
+	margin: 0;
+	min-block-size: 100vh;
+	background: var(--sd-sky-gradient) fixed;
+	color: var(--sd-text);
+	font-family: var(--sd-font-text);
+	font-size: var(--sd-text-base);
+	line-height: var(--sd-leading);
+	-webkit-font-smoothing: antialiased;
+	caret-color: var(--sd-gold);
+	overflow-x: clip;
+}
+
+h1, h2, h3 {
+	margin: 0;
+	font-family: var(--sd-font-display);
+	font-weight: 400;
+	line-height: var(--sd-leading-tight);
+	letter-spacing: 0.005em;
+	text-wrap: balance;
+}
+h1 { font-size: var(--sd-text-h1); }
+h2 { font-size: var(--sd-text-h2); }
+h3 { font-size: var(--sd-text-xl); }
+
+p { margin: 0; text-wrap: pretty; }
+
+a {
+	color: inherit;
+	text-decoration-color: color-mix(in srgb, var(--sd-gold) 70%, transparent);
+	text-decoration-thickness: 1px;
+	text-underline-offset: 0.22em;
+	transition: text-decoration-color var(--sd-dur-fast);
+}
+a:hover { text-decoration-color: var(--sd-gold); }
+
+button, input, select, textarea { font: inherit; color: inherit; }
+
+::selection {
+	background: var(--sd-gold);
+	color: var(--sd-ink);
+}
+
+:focus-visible {
+	outline: 2px solid var(--sd-focus);
+	outline-offset: 3px;
+	border-radius: var(--sd-corner);
+}
+
+::-webkit-scrollbar { inline-size: 10px; block-size: 10px; }
+::-webkit-scrollbar-track { background: var(--sd-glass-strong); }
+::-webkit-scrollbar-thumb {
+	background: var(--sd-ochre);
+	border: 2px solid var(--sd-glass-strong);
+	border-radius: var(--sd-pill);
+}
+
+.sd-visually-hidden {
+	position: absolute;
+	inline-size: 1px;
+	block-size: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+.sd-skip-link {
+	position: fixed;
+	z-index: 100;
+	inset-block-start: var(--sd-space-3);
+	inset-inline-start: var(--sd-space-3);
+	padding-block: var(--sd-space-2);
+	padding-inline: var(--sd-space-4);
+	background: var(--sd-gold);
+	color: var(--sd-ink);
+	font-weight: 700;
+	border-radius: var(--sd-pill);
+	transform: translateY(-200%);
+	transition: transform var(--sd-dur-fast) var(--sd-ease);
+}
+.sd-skip-link:focus-visible { transform: none; }
+
+/* tabular numerals wherever a value is measured (altitude, scores, years) */
+.sd-numeric { font-variant-numeric: tabular-nums; }
+
+
+/* ---------- the pill control: dark glass that warms to gold on hover ----------
+ * Global rather than scoped, so page content slotted into the header gets it too. */
+.sd-control {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--sd-space-2);
+	min-block-size: 44px;
+	min-inline-size: 52px;
+	padding-block: 9px;
+	padding-inline: 16px;
+	background: var(--sd-control);
+	color: var(--sd-text);
+	border: 1px solid var(--sd-line-strong);
+	border-radius: var(--sd-pill);
+	font-weight: 600;
+	font-size: 0.95rem;
+	line-height: 1;
+	text-decoration: none;
+	cursor: pointer;
+	backdrop-filter: blur(10px);
+	transition:
+		border-color var(--sd-dur-fast),
+		background var(--sd-dur-fast),
+		transform var(--sd-dur-fast) var(--sd-ease);
+}
+.sd-control:hover { border-color: var(--sd-gold); background: var(--sd-control-hover); }
+.sd-control:active { transform: scale(0.97); }
+.sd-control:disabled,
+.sd-control[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; transform: none; }
+.sd-control--display { font-family: var(--sd-font-display); font-weight: 400; }
+.sd-control--gold { background: var(--sd-gold); color: var(--sd-ink); border-color: var(--sd-gold); }
+.sd-control--gold:hover { background: var(--sd-gold-hot); border-color: var(--sd-gold-hot); }
+

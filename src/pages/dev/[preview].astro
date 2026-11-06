@@ -1,0 +1,111 @@
+---
+/**
+ * Dev-only preview of the shell and theme, in both directions:
+ *   /dev/rtl/ (Hebrew)  and  /dev/ltr/ (English)
+ * (not /dev/he/: the i18n router rejects paths that contain the default locale segment)
+ * getStaticPaths returns nothing in production builds, so these pages are never published.
+ */
+import Base from '../../layouts/Base.astro';
+import ArchPanel from '../../theme/components/ArchPanel.vue';
+import type { Lang } from '../../i18n/ui';
+
+export function getStaticPaths() {
+	if (!import.meta.env.DEV) return [];
+	return [
+		{ params: { preview: 'rtl' }, props: { lang: 'he' } },
+		{ params: { preview: 'ltr' }, props: { lang: 'en' } },
+	];
+}
+
+const { lang } = Astro.props as { lang: Lang };
+const he = lang === 'he';
+const swatches = ['ochre', 'ochre-deep', 'limestone', 'ink', 'gold', 'gold-hot', 'sky', 'sky-dawn-top', 'sky-dawn-low', 'sky-night'];
+---
+
+<!-- the language switch only renders with an alternatePath; in the preview it just shows the control -->
+<Base lang={lang} title="Theme preview" alternatePath="/dev/">
+	<button slot="header-actions" class="sd-control" type="button">{he ? 'מצב משחק' : 'Game mode'}</button>
+
+	<div class="preview">
+		<ArchPanel>
+			<h1>{he ? 'ברוך מוסטקיס' : 'Baruch Mustakis'}</h1>
+			<p class="handle">ShoobyD</p>
+			<p class="lead">
+				{he
+					? 'מפתח־ווב, מתמטיקאי בהכשרתו. טפסו למעלה.'
+					: 'Web developer, mathematician by training. Climb up.'}
+			</p>
+			<p>
+				{he ? 'קישור לדוגמה: ' : 'A sample link: '}
+				<a href="https://github.com/ShoobyD">GitHub</a>
+			</p>
+		</ArchPanel>
+
+		<ArchPanel as="article">
+			<h2>{he ? 'טוקנים' : 'Tokens'}</h2>
+			<ul class="swatches">
+				{swatches.map((name) => (
+					<li>
+						<span class="chip" style={`background: var(--sd-${name})`} />
+						<code>--sd-{name}</code>
+					</li>
+				))}
+			</ul>
+			<p class="type-sample">
+				<span style="font-family: var(--sd-font-display)">Suez One אבגד</span>
+				<span style="font-family: var(--sd-font-serif)">Frank Ruhl Libre אבגד</span>
+				<span>Assistant אבגד</span>
+			</p>
+		</ArchPanel>
+	</div>
+</Base>
+
+<style>
+	.preview {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: start;
+		gap: var(--sd-space-6);
+		padding-block: var(--sd-space-7);
+		padding-inline: var(--sd-gutter);
+	}
+	.handle {
+		margin-block: var(--sd-space-2) var(--sd-space-4);
+		font-family: var(--sd-font-display);
+		font-size: 1.35rem;
+		color: var(--sd-gold);
+		letter-spacing: 0.12em;
+	}
+	.lead {
+		margin-block-end: var(--sd-space-4);
+		font-size: var(--sd-text-lg);
+	}
+	.swatches {
+		display: grid;
+		gap: var(--sd-space-2);
+		margin-block: var(--sd-space-4);
+		padding: 0;
+		list-style: none;
+	}
+	.swatches li {
+		display: flex;
+		align-items: center;
+		gap: var(--sd-space-3);
+	}
+	.chip {
+		inline-size: 2rem;
+		block-size: 1.25rem;
+		border: 1px solid var(--sd-line-strong);
+		border-radius: var(--sd-corner);
+	}
+	code {
+		direction: ltr;
+		font-size: var(--sd-text-sm);
+	}
+	.type-sample {
+		display: grid;
+		gap: var(--sd-space-1);
+		font-size: var(--sd-text-xl);
+	}
+</style>
+

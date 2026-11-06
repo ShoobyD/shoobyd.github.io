@@ -1,0 +1,10 @@
+/*
+ * ShoobyD theme — self-hosted fonts (via @fontsource, bundled at build time).
+ * Every face covers both Hebrew and Latin; the CSS uses unicode-range so a page
+ * downloads only the subsets it actually renders.
+ */
+@import "@fontsource/suez-one/400.css";
+@import "@fontsource/frank-ruhl-libre/400.css";
+@import "@fontsource/frank-ruhl-libre/500.css";
+@import "@fontsource-variable/assistant/index.css";
+

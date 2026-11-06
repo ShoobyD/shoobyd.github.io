@@ -1,0 +1,92 @@
+/*
+ * ShoobyD theme — design tokens.
+ * World: the spiral Tower of Babel (see .impeccable/surfaces/src-pages-index-astro.md).
+ * Self-contained: no imports from the rest of the site, so sibling repos can reuse it.
+ * Every token is namespaced `--sd-` to avoid collisions when loaded into other pages.
+ */
+:root {
+	color-scheme: dark;
+
+	/* ---------- palette: materials of the tower ---------- */
+	--sd-ochre:        #c98b4a; /* sun-baked mudbrick */
+	--sd-ochre-deep:   #a9713a;
+	--sd-limestone:    #e9e3d3; /* cornices, primary text */
+	--sd-limestone-dk: #cbbf9f;
+	--sd-ink:          #2d2a26; /* shadow ink, text on gold */
+	--sd-gold:         #f2c37e; /* lamplight accent */
+	--sd-gold-hot:     #ffd89a; /* focus / active */
+
+	/* sky by altitude: dawn at the base → night at the summit */
+	--sd-sky:          #6f8fb3;
+	--sd-sky-dawn-top: #2a3a62;
+	--sd-sky-dawn-low: #f3b98a;
+	--sd-sky-night:    #101a33;
+
+	/* ---------- semantic roles ---------- */
+	--sd-field:        var(--sd-sky);
+	--sd-text:         var(--sd-limestone);
+	--sd-text-dim:     rgb(233 227 211 / 0.8);
+	--sd-accent:       var(--sd-gold);
+	--sd-focus:        var(--sd-gold-hot);
+	--sd-line:         rgb(233 227 211 / 0.2);
+	--sd-line-strong:  rgb(233 227 211 / 0.3);
+	--sd-glass:        rgb(36 32 28 / 0.7);
+	--sd-glass-strong: rgb(24 22 19 / 0.8);
+	--sd-control:      rgb(30 27 24 / 0.58);
+	--sd-control-hover: rgb(30 27 24 / 0.78);
+
+	/* the readable sky used when there is no WebGL scene behind the content */
+	--sd-sky-gradient: linear-gradient(180deg, var(--sd-sky-dawn-top) 0%, var(--sd-sky) 55%, var(--sd-sky-dawn-low) 100%);
+
+	/* ---------- type ---------- */
+	--sd-font-display: "Suez One", "Frank Ruhl Libre", Georgia, serif;
+	--sd-font-serif:   "Frank Ruhl Libre", Georgia, serif;
+	--sd-font-text:    "Assistant Variable", "Assistant", "Segoe UI", system-ui, sans-serif;
+
+	--sd-text-xs:   0.78rem;
+	--sd-text-sm:   0.9rem;
+	--sd-text-base: 1.0625rem; /* 17px */
+	--sd-text-lg:   1.16rem;
+	--sd-text-xl:   clamp(1.3rem, 1.1rem + 0.6vw, 1.5rem);
+	--sd-text-h2:   clamp(2rem, 1.4rem + 2.2vw, 3.05rem);
+	--sd-text-h1:   clamp(2.6rem, 1.5rem + 4.4vw, 4.9rem);
+	--sd-leading:   1.6;
+	--sd-leading-tight: 1.04;
+	--sd-measure:   68ch;
+
+	/* ---------- space ---------- */
+	--sd-space-1: 0.25rem;
+	--sd-space-2: 0.5rem;
+	--sd-space-3: 0.75rem;
+	--sd-space-4: 1rem;
+	--sd-space-5: 1.5rem;
+	--sd-space-6: 2rem;
+	--sd-space-7: 3rem;
+	--sd-space-8: 4.5rem;
+	--sd-gutter:  clamp(16px, 4vw, 56px);
+
+	/* ---------- shape: arches, not rounded rectangles ---------- */
+	--sd-arch:        15.5rem 5.6rem; /* elliptical arch top of a panel */
+	--sd-arch-small:  30px 22px;      /* doorway arch of a list item */
+	--sd-corner:      6px;            /* the squared foot of an arch */
+	--sd-pill:        999px;
+
+	/* ---------- depth: offset, soft, warm-neutral ---------- */
+	--sd-shadow-panel: 0 30px 80px -30px rgb(10 8 6 / 0.65), inset 0 1px 0 rgb(255 240 215 / 0.12);
+	--sd-shadow-text:  0 1px 12px rgb(20 16 12 / 0.55);
+
+	/* ---------- motion ---------- */
+	--sd-ease:     cubic-bezier(0.22, 1, 0.36, 1); /* exponential ease-out */
+	--sd-dur-fast: 0.25s;
+	--sd-dur:      0.6s;
+	--sd-dur-slow: 1.3s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	:root {
+		--sd-dur-fast: 0s;
+		--sd-dur:      0s;
+		--sd-dur-slow: 0s;
+	}
+}
+
