@@ -1,0 +1,226 @@
+---
+/**
+ * Home: the spiral Tower of Babel (direction contract: .impeccable/surfaces/src-pages-index-astro.md).
+ * This is the readable content layer — every tier as real HTML on the climbing sky. It is
+ * the whole page today, and it stays the fallback once the 3D tower (step 6b) is layered on.
+ */
+import Base from '../layouts/Base.astro';
+import TierSection from '../components/home/TierSection.vue';
+import ProjectList from '../components/home/ProjectList.vue';
+import CraftList from '../components/home/CraftList.vue';
+import ContactList from '../components/home/ContactList.vue';
+import AltitudeGauge from '../components/home/AltitudeGauge.vue';
+import { projects, projectName } from '../data/projects';
+import { home, links, tierAltitude, tierIds } from '../i18n/home';
+import type { Lang } from '../i18n/ui';
+
+const lang: Lang = 'he';
+const c = home[lang];
+
+const gaugeTiers = tierIds.map((id) => ({ id, label: c.gauge.tiers[id], altitude: tierAltitude[id] }));
+
+const projectItems = projects.map((p) => ({
+	id: p.id,
+	name: projectName(p, lang),
+	href: p.href,
+	status: p.status,
+	statusLabel: c.code.status[p.status],
+	description: p.description[lang],
+}));
+
+const [latinBefore, latinAfter = ''] = c.languages.latin.split('{link}');
+
+const crafts = [
+	{ icon: 'guitar' as const, text: c.making.guitar },
+	{ icon: 'drawing' as const, text: c.making.drawing, link: { label: c.making.drawingLink, href: links.drawMeGroup } },
+	{ icon: 'cooking' as const, text: c.making.cooking },
+	{ icon: 'diy' as const, text: c.making.diy },
+];
+
+const contacts = [
+	{ id: 'linkedin', label: c.summit.contacts.linkedin, value: 'in/ShoobyD', href: links.linkedin, external: true },
+	{ id: 'email', label: c.summit.contacts.email, value: 'bmusty@gmail.com', href: links.email },
+	{ id: 'github', label: c.summit.contacts.github, value: 'ShoobyD', href: links.github, external: true },
+	{ id: 'cv', label: c.summit.contacts.cv, value: 'PDF', href: links.cv, external: true },
+];
+---
+
+<Base lang={lang}>
+	<AltitudeGauge client:idle label={c.gauge.label} unit={c.gauge.unit} tiers={gaugeTiers} />
+
+	<TierSection id="base" title={c.base.title} level={1}>
+		<p class="handle" lang="en" dir="ltr">ShoobyD</p>
+		<p class="lead">{c.base.lead}</p>
+		<p class="hint">
+			<svg viewBox="0 0 20 20" aria-hidden="true">
+				<rect x="6" y="2" width="8" height="13" rx="4" fill="none" stroke="currentColor" stroke-width="1.5" />
+				<path d="M10 5v3M7 17.5l3 1.5 3-1.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+			</svg>
+			<span>{c.base.hint}</span>
+		</p>
+	</TierSection>
+
+	<TierSection id="code" title={c.code.title}>
+		<p class="lead dim">{c.code.lead}</p>
+		<ProjectList items={projectItems} />
+	</TierSection>
+
+	<TierSection id="math" title={c.math.title}>
+		<p class="lead">{c.math.lead}</p>
+		<p class="formula" dir="ltr" aria-hidden="true">e<sup>iπ</sup> + 1 = 0</p>
+		<p class="aside">{c.math.aside}</p>
+	</TierSection>
+
+	<TierSection id="languages" title={c.languages.title}>
+		<blockquote>
+			<p>{c.languages.quote}</p>
+			<cite>{c.languages.cite}</cite>
+		</blockquote>
+		<ul class="chips">
+			{c.languages.topics.map((topic) => <li>{topic}</li>)}
+		</ul>
+		<p class="lead">
+			{latinBefore}<a href={links.latinCourse} rel="noopener" target="_blank">{c.languages.latinLink}</a>{latinAfter}
+		</p>
+	</TierSection>
+
+	<TierSection id="making" title={c.making.title}>
+		<CraftList items={crafts} />
+	</TierSection>
+
+	<TierSection id="summit" title={c.summit.title} tone="night">
+		<p class="wink">{c.summit.wink}</p>
+		<ContactList items={contacts} />
+	</TierSection>
+</Base>
+
+<style is:global>
+	html {
+		scroll-behavior: smooth;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		html { scroll-behavior: auto; }
+	}
+
+	/* the page is the climb: the sky darkens from dawn at the base to night at the summit */
+	body {
+		background: var(--sd-sky-climb);
+		background-attachment: scroll;
+	}
+
+	/* the summit's stars, sown with two offset dot fields */
+	.tier--night {
+		background-image:
+			radial-gradient(1.5px 1.5px at 20% 30%, rgb(255 248 230 / 0.9), transparent),
+			radial-gradient(1px 1px at 70% 20%, rgb(255 248 230 / 0.7), transparent),
+			radial-gradient(1.2px 1.2px at 40% 70%, rgb(255 248 230 / 0.6), transparent),
+			radial-gradient(1px 1px at 85% 60%, rgb(255 248 230 / 0.8), transparent),
+			radial-gradient(1.5px 1.5px at 55% 45%, rgb(255 248 230 / 0.5), transparent);
+		background-size: 240px 240px, 310px 310px, 190px 190px, 270px 270px, 350px 350px;
+	}
+</style>
+
+<style>
+	.handle {
+		margin-block: 0 var(--sd-space-4);
+		font-family: var(--sd-font-display);
+		font-size: 1.35rem;
+		color: var(--sd-gold);
+		letter-spacing: 0.12em;
+		text-align: start;
+	}
+	.lead {
+		max-inline-size: var(--sd-measure);
+		font-size: var(--sd-text-lg);
+	}
+	.dim {
+		color: var(--sd-text-dim);
+	}
+	.hint {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		margin-block-start: var(--sd-space-5);
+		font-size: var(--sd-text-sm);
+		color: var(--sd-text-dim);
+	}
+	.hint svg {
+		flex: none;
+		inline-size: 20px;
+		block-size: 20px;
+		animation: nudge 2.2s var(--sd-ease) infinite;
+	}
+	@keyframes nudge {
+		0%, 100% { transform: translateY(0); }
+		50% { transform: translateY(5px); }
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.hint svg { animation: none; }
+	}
+
+	.formula {
+		margin-block: var(--sd-space-5) 0;
+		font-family: var(--sd-font-serif);
+		font-size: clamp(1.8rem, 1.4rem + 1.4vw, 2.4rem);
+		color: var(--sd-gold);
+		letter-spacing: 0.03em;
+		text-align: center;
+	}
+	.aside {
+		margin-block-start: var(--sd-space-4);
+		padding-block-start: var(--sd-space-3);
+		border-block-start: 1px solid var(--sd-line);
+		font-family: var(--sd-font-serif);
+		font-size: 1.05rem;
+		color: var(--sd-text-dim);
+	}
+
+	blockquote {
+		margin-block: 0 var(--sd-space-4);
+		margin-inline: 0;
+		padding-inline-start: var(--sd-space-4);
+		border-inline-start: 1px solid var(--sd-gold);
+	}
+	blockquote p {
+		font-family: var(--sd-font-serif);
+		font-size: 1.32rem;
+		line-height: 1.45;
+	}
+	blockquote cite {
+		display: block;
+		margin-block-start: var(--sd-space-1);
+		font-style: normal;
+		font-size: 0.85rem;
+		color: var(--sd-gold);
+	}
+	.chips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-block: 0 var(--sd-space-4);
+		padding: 0;
+		list-style: none;
+	}
+	.chips li {
+		padding-block: 5px;
+		padding-inline: 13px;
+		background: rgb(233 227 211 / 0.09);
+		border: 1px solid rgb(233 227 211 / 0.18);
+		border-radius: var(--sd-pill);
+		font-size: 0.95rem;
+		font-weight: 600;
+	}
+
+	.wink {
+		margin-block-end: var(--sd-space-4);
+		font-size: 0.98rem;
+		color: var(--sd-text-dim);
+	}
+
+	@media (max-width: 47.5rem) {
+		.handle { font-size: 1.1rem; }
+		.lead { font-size: 1.02rem; }
+		blockquote p { font-size: 1.12rem; }
+	}
+</style>
+

@@ -37,6 +37,20 @@
 
 	/* the readable sky used when there is no WebGL scene behind the content */
 	--sd-sky-gradient: linear-gradient(180deg, var(--sd-sky-dawn-top) 0%, var(--sd-sky) 55%, var(--sd-sky-dawn-low) 100%);
+	/* the whole climb on one page, base (top) to summit (bottom): dawn → day → golden dusk → night */
+	--sd-sky-climb: linear-gradient(
+		180deg,
+		var(--sd-sky-dawn-top) 0%,
+		#b98a86 9%,
+		var(--sd-sky-dawn-low) 15%,
+		#a9c1d8 26%,
+		var(--sd-sky) 40%,
+		#8e8ea6 54%,
+		#d9945f 64%,
+		#5b4a6e 76%,
+		#1d2b52 86%,
+		var(--sd-sky-night) 100%
+	);
 
 	/* ---------- type ---------- */
 	--sd-font-display: "Suez One", "Frank Ruhl Libre", Georgia, serif;
