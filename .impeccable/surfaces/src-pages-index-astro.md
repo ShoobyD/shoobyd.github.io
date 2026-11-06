@@ -45,6 +45,7 @@ FIRST VIEWPORT:
 - At the inline-start, an arch-topped panel holds the kicker "קומת היסוד", the name "ברוך מוסטקיס" at monumental scale, "ShoobyD", one line of who he is, and the scroll hint.
 - The header holds brand, game-mode and EN.
 - The altitude gauge with the tier buttons runs along the inline-end edge. In LTR the whole composition mirrors.
+- **The tower itself never mirrors.** Its geometry is a physical object: the ramp always climbs clockwise, and the project doorways keep the same order along it in both languages. Only the page layout (panels, gauge, which side the tower stands on) follows `dir`. Do not "fix" the doorway order for LTR. (User decision, 2026-11-06.)
 - **Signature interaction:** a smoothed scroll helix around the tower, parking at each tier, with sky, sun, fog and window glow tied to altitude.
 - **Per-tier moments:** hover-linked doors and cards (code), an armillary sphere (mathematics), orbiting glyphs of many scripts under Genesis 11:1 (languages), strummable guitar strings (making), the scrambling summit heading.
 - **Game mode:** brick stacking with overhang slicing. Built bricks persist on the tower.
