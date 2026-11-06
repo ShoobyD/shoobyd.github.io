@@ -1,0 +1,36 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/assigned.html"
+        ],
+        "createdAt": "2026-11-06T01:21:16.871Z",
+        "reason": "Claude: decision sketch only; mask text sits on the #f2b705 mask painted by radial-gradient (~8.6:1), detector reads the body bg"
+      },
+      {
+        "rule": "cream-palette",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/model-pick.html"
+        ],
+        "createdAt": "2026-11-06T01:49:41.203Z",
+        "reason": "Claude: decision sketch; #ecebe4 is grey newsprint, the comic-page world's own ground, not a default surface"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/challenger-pattern.html"
+        ],
+        "createdAt": "2026-11-06T03:27:03.546Z",
+        "reason": "Claude: spent round-0 decision sketch, eliminated by re-roll; not shipping UI"
+      }
+    ]
+  }
+}
+

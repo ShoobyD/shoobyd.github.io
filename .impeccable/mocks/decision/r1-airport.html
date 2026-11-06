@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>Airport wayfinding sketch</title>
+<style>
+	* { box-sizing: border-box; margin: 0; }
+	html, body { width: 1440px; height: 900px; overflow: hidden; }
+	body { background: #d8d8d4; color: #111; font-family: "Segoe UI", Arial, sans-serif; }
+	.band { background: #ffcc00; display: flex; align-items: center; gap: 30px; padding: 22px 44px; border-block-end: 6px solid #111; }
+	.band .pic { width: 64px; height: 64px; background: #111; color: #fff; display: grid; place-items: center; font-size: 34px; }
+	.band b { font-size: 40px; } .band .gate { margin-inline-start: auto; font-size: 64px; font-weight: 900; }
+	.hall { padding: 70px 44px; }
+	.hall h1 { font-size: 110px; font-weight: 900; line-height: 1; }
+	.hall p { font-size: 28px; margin-block-start: 18px; }
+	.board { margin-block-start: 50px; background: #111; color: #ffcc00; padding: 18px 26px; font-family: Consolas, monospace; font-size: 26px; display: grid; grid-template-columns: 120px 1fr 200px; row-gap: 10px; width: 900px; }
+</style>
+</head>
+<body>
+	<div class="band"><div class="pic">→</div><b>פרויקטים · Projects</b><span>4 דק׳</span><div class="gate">D1–D12</div></div>
+	<div class="band" style="border-block-start:0"><div class="pic">✉</div><b>צור קשר · Contact</b><div class="gate">C1</div></div>
+	<div class="hall">
+		<h1>ברוך מוסטקיס</h1>
+		<p>מפתח־ווב · ShoobyD · ברוכים הבאים לטרמינל</p>
+		<div class="board"><span>D1</span><span>Sudoku Solver</span><span>ON TIME</span><span>D2</span><span>balloonz</span><span>BOARDING</span><span>D3</span><span>ICMP Tunnel</span><span>ARCHIVE</span></div>
+	</div>
+</body>
+</html>
+

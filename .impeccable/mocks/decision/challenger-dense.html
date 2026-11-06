@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>High-density sketch</title>
+<style>
+	* { box-sizing: border-box; margin: 0; }
+	html, body { width: 1440px; height: 900px; overflow: hidden; }
+	body { background: #fff; color: #111; font-family: "Segoe UI", Arial, sans-serif; font-size: 13px; padding: 14px 20px; }
+	.top { display: flex; align-items: center; gap: 24px; border-block-end: 3px solid #d7000f; padding-block-end: 10px; }
+	.top h1 { font-size: 40px; font-weight: 900; }
+	.top nav { display: flex; gap: 6px; margin-inline-start: auto; }
+	.top nav span { background: #d9dde1; padding: 6px 12px; }
+	.me { display: grid; grid-template-columns: 220px 1fr; gap: 14px; margin-block: 12px; border: 1px solid #c6ccd2; padding: 10px; }
+	.avatar { height: 150px; background: #d9dde1; }
+	.me h2 { font-size: 30px; }
+	.mosaic { display: grid; grid-template-columns: repeat(8, 1fr); grid-auto-rows: 100px; gap: 6px; }
+	.m { border: 1px solid #c6ccd2; position: relative; padding: 28px 8px 6px; }
+	.m::before { content: attr(data-t); position: absolute; inset-block-start: 0; inset-inline-start: 0; background: #d7000f; color: #fff; padding: 3px 8px; font-weight: 700; font-size: 13px; }
+	.m.w2 { grid-column: span 2; } .m.h2 { grid-row: span 2; }
+	.m i { display: block; height: 8px; background: #e6e9ec; margin-block-end: 6px; }
+</style>
+</head>
+<body>
+	<div class="top"><h1>ShoobyD.</h1><span>ברוך מוסטקיס · מפתח־ווב</span><nav><span>פרויקטים</span><span>תחביבים</span><span>קישורים</span><span>צור קשר</span><span>EN</span></nav></div>
+	<div class="me"><div class="avatar"></div><div><h2>ברוך מוסטקיס</h2><i></i></div></div>
+	<div class="mosaic">
+		<div class="m w2 h2" data-t="Sudoku"><i></i><i></i><i></i></div><div class="m" data-t="balloonz"><i></i></div><div class="m" data-t="ICMP"><i></i></div>
+		<div class="m w2" data-t="סינית"><i></i><i></i></div><div class="m" data-t="דופלר"><i></i></div><div class="m" data-t="dialog"><i></i></div>
+		<div class="m" data-t="פרש"><i></i></div><div class="m" data-t="לטינית"><i></i></div><div class="m w2" data-t="userscripts"><i></i><i></i></div>
+		<div class="m" data-t="גיטרה"><i></i></div><div class="m" data-t="איור"><i></i></div>
+		<div class="m" data-t="מתמטיקה"><i></i></div><div class="m w2" data-t="tech-lead"><i></i></div><div class="m" data-t="droploader"><i></i></div>
+		<div class="m" data-t="pinterest"><i></i></div><div class="m" data-t="קלווין"><i></i></div><div class="m" data-t="BSoD"><i></i></div>
+		<div class="m w2" data-t="CV"><i></i></div><div class="m" data-t="chefdepot"><i></i></div><div class="m" data-t="sort"><i></i></div>
+	</div>
+</body>
+</html>
+

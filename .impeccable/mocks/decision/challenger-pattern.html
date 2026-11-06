@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>Pattern envelope sketch</title>
+<style>
+	* { box-sizing: border-box; margin: 0; }
+	html, body { width: 1440px; height: 900px; overflow: hidden; }
+	body { background: #cfc2a0; font-family: "Segoe UI", Arial, sans-serif; color: #111; display: grid; place-items: center; }
+	.env { width: 1240px; height: 800px; background: #e9dcb8; border: 2px solid #111; display: grid; grid-template-columns: 1fr 340px; box-shadow: 0 20px 50px rgba(0,0,0,.25); }
+	.front { padding: 36px 44px; border-inline-end: 2px dashed #111; position: relative; }
+	.no { font-size: 92px; font-weight: 900; line-height: .9; }
+	.name { font-size: 40px; font-weight: 800; margin-block-start: 6px; }
+	.views { display: flex; gap: 36px; margin-block-start: 34px; align-items: end; }
+	.fig { width: 230px; height: 430px; border-radius: 110px 110px 18px 18px; position: relative; }
+	.fig b { position: absolute; inset-block-start: -26px; inset-inline-start: 50%; translate: 50% 0; width: 52px; height: 52px; border-radius: 50%; background: #111; color: #e9dcb8; display: grid; place-items: center; font-size: 30px; }
+	.fig span { position: absolute; inset-block-end: -38px; width: 100%; text-align: center; font-size: 24px; font-weight: 700; }
+	.a { background: #9fb7c9; } .bb { background: #c8252c; } .c { background: #e1a95f; }
+	.side { padding: 36px 30px; }
+	.side h3 { font-size: 28px; border-block-end: 2px solid #111; padding-block-end: 8px; }
+	table { width: 100%; border-collapse: collapse; margin-block-start: 14px; font-size: 18px; }
+	td { border-block-end: 1px dashed #111; padding: 10px 8px; }
+	.cut { position: absolute; inset-block-end: 26px; inset-inline-start: 44px; font-size: 22px; color: #c8252c; font-weight: 700; }
+</style>
+</head>
+<body>
+	<div class="env">
+		<div class="front">
+			<div class="no">SD 1987</div>
+			<div class="name">ברוך מוסטקיס · ShoobyD</div>
+			<div class="views">
+				<div class="fig a"><b>A</b><span>מפתח־ווב</span></div>
+				<div class="fig bb"><b>B</b><span>מנגן</span></div>
+				<div class="fig c"><b>C</b><span>מאייר</span></div>
+			</div>
+			<div class="cut">✂ גזרו כאן ← כל הפרויקטים בגב המעטפה</div>
+		</div>
+		<div class="side">
+			<h3>חלקים בחבילה</h3>
+			<table>
+				<tr><td>1 · Sudoku Solver</td></tr><tr><td>2 · balloonz</td></tr><tr><td>3 · ICMP Tunnel</td></tr>
+				<tr><td>4 · דברים לפרש</td></tr><tr><td>5 · קורס לטינית</td></tr><tr><td>6 · צור קשר</td></tr>
+			</table>
+		</div>
+	</div>
+</body>
+</html>
+

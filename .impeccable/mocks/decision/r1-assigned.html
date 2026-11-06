@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>Möbius ride sketch</title>
+<style>
+	* { box-sizing: border-box; margin: 0; }
+	html, body { width: 1440px; height: 900px; overflow: hidden; }
+	body { background: #1f3fff; color: #f6f6f2; font-family: "Segoe UI", Arial, sans-serif; position: relative; }
+	svg.band { position: absolute; inset: 0; }
+	.intro { position: absolute; inset-block-start: 96px; inset-inline-start: 96px; width: 560px; }
+	.intro .nick { font-family: Consolas, monospace; font-size: 30px; letter-spacing: .25em; }
+	.intro h1 { font-size: 96px; line-height: .95; font-weight: 900; margin-block-start: 12px; }
+	.intro p { font-size: 26px; margin-block-start: 22px; line-height: 1.35; }
+	.station { position: absolute; background: #f6f6f2; color: #111; padding: 14px 20px; font-weight: 800; font-size: 24px; }
+	.station small { display: block; font-family: Consolas, monospace; font-size: 15px; color: #b3261b; }
+	.ghost { position: absolute; border: 2px dashed #f6f6f2; padding: 12px 18px; font-size: 22px; font-weight: 700; }
+	nav { position: absolute; inset-block-start: 36px; inset-inline-end: 48px; display: flex; gap: 28px; font-size: 20px; font-weight: 700; }
+	.track { position: absolute; inset-block-end: 40px; inset-inline-start: 96px; display: flex; gap: 10px; align-items: center; font-family: Consolas, monospace; font-size: 18px; }
+	.track i { display: block; width: 40px; height: 6px; background: rgba(246,246,242,.35); }
+	.track i.on { background: #e63b2e; }
+	.play { position: absolute; inset-block-end: 34px; inset-inline-end: 48px; background: #e63b2e; color: #fff; padding: 16px 26px; font-size: 22px; font-weight: 800; }
+</style>
+</head>
+<body>
+	<nav><span>תחנות</span><span>קטלוג</span><span>צור קשר</span><span>EN ⟲</span></nav>
+	<svg class="band" viewBox="0 0 1440 900">
+		<path d="M760 620 C 900 760, 1240 700, 1300 520 C 1360 330, 1150 200, 1000 300 C 900 370, 860 520, 760 620 Z" fill="#f6f6f2"/>
+		<path d="M760 620 C 660 720, 640 560, 700 430 C 760 300, 960 230, 1000 300 C 900 300, 820 420, 800 520 C 790 570, 780 600, 760 620 Z" fill="#c9cfe6"/>
+		<path d="M1300 520 C 1250 610, 1050 650, 930 560" fill="none" stroke="#111" stroke-width="3" stroke-dasharray="10 8"/>
+		<circle cx="1180" cy="610" r="16" fill="#e63b2e"/>
+	</svg>
+	<div class="intro">
+		<div class="nick">SHOOBYD</div>
+		<h1>ברוך מוסטקיס</h1>
+		<p>מפתח־ווב ומתמטיקאי. משטח אחד, צד אחד, הרבה תחומים. גללו כדי לנסוע לאורך הסרט.</p>
+	</div>
+	<div class="station" style="top:470px;left:1020px"><small>SD-01 · תחנה 1</small>Sudoku Solver</div>
+	<div class="ghost" style="top:270px;left:1150px">SD-02</div>
+	<div class="ghost" style="top:560px;left:690px">SD-03</div>
+	<div class="track">01 <i class="on"></i><i></i><i></i><i></i><i></i><i></i> 06</div>
+	<div class="play">מצב משחק ●</div>
+</body>
+</html>
+

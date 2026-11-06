@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>Sunday comics sketch</title>
+<style>
+	* { box-sizing: border-box; margin: 0; }
+	html, body { width: 1440px; height: 900px; overflow: hidden; }
+	body {
+		background: #ecebe4; color: #16140f; font-family: "Comic Sans MS", "Segoe Print", sans-serif;
+		padding: 28px 40px;
+		background-image: radial-gradient(#d6d4ca 1.2px, transparent 1.4px); background-size: 7px 7px;
+	}
+	header { display: flex; justify-content: space-between; align-items: end; border-block-end: 5px solid #16140f; padding-block-end: 10px; }
+	header h1 { font-size: 64px; font-weight: 900; letter-spacing: .02em; }
+	header nav { display: flex; gap: 24px; font-size: 22px; font-weight: 700; }
+	.grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr; grid-template-rows: 470px 260px; gap: 16px; margin-block-start: 18px; }
+	.p { border: 5px solid #16140f; position: relative; overflow: hidden; background: #fff; }
+	.hero { grid-row: span 1; background: #ffd400; }
+	.face {
+		position: absolute; inset-block-end: -20px; inset-inline-start: 60px; width: 300px; height: 360px;
+		background: #fff; border: 5px solid #16140f; border-radius: 48% 48% 40% 40%;
+	}
+	.face::before, .face::after { content: ""; position: absolute; top: 120px; width: 26px; height: 26px; border-radius: 50%; background: #16140f; }
+	.face::before { left: 80px; } .face::after { right: 80px; }
+	.balloon {
+		position: absolute; inset-block-start: 40px; inset-inline-end: 40px; width: 470px;
+		background: #fff; border: 5px solid #16140f; border-radius: 40px; padding: 26px 30px;
+	}
+	.balloon b { display: block; font-size: 54px; line-height: 1.05; }
+	.balloon span { display: block; font-size: 28px; margin-block-start: 10px; }
+	.balloon::after { content: ""; position: absolute; inset-block-end: -38px; inset-inline-end: 120px; border: 20px solid transparent; border-block-start: 22px solid #16140f; }
+	.cyan { background: #00a3d9; } .mag { background: #e4007c; }
+	.cap { position: absolute; inset-block-start: 0; inset-inline-start: 0; background: #fff; border-inline-end: 5px solid #16140f; border-block-end: 5px solid #16140f; padding: 6px 14px; font-size: 24px; font-weight: 800; }
+	.boom { position: absolute; inset: 0; display: grid; place-items: center; font-size: 96px; font-weight: 900; color: #16140f; }
+	.wide { grid-column: span 3; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; border: 0; background: transparent; }
+	.wide .p { height: 100%; }
+</style>
+</head>
+<body>
+	<header><h1>שובידי — מהדורת שבת</h1><nav><span>פרויקטים</span><span>צור קשר</span><span>EN</span></nav></header>
+	<div class="grid">
+		<div class="p hero">
+			<div class="face"></div>
+			<div class="balloon"><b>שלום, אני ברוך!</b><span>מפתח־ווב, מתמטיקאי, מנגן ומאייר.</span></div>
+		</div>
+		<div class="p cyan"><div class="cap">Sudoku Solver</div><div class="boom">9!</div></div>
+		<div class="p mag"><div class="cap">balloonz</div><div class="boom">פּוֹפּ!</div></div>
+		<div class="p wide">
+			<div class="p"><div class="cap">ICMP Tunnel</div></div>
+			<div class="p" style="background:#ffd400"><div class="cap">פרש</div></div>
+			<div class="p cyan"><div class="cap">סיני</div></div>
+			<div class="p"><div class="cap">BSoD</div><div class="boom" style="color:#0057b8">:(</div></div>
+		</div>
+	</div>
+</body>
+</html>
+

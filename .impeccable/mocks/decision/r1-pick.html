@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>Spiral tower sketch</title>
+<style>
+	* { box-sizing: border-box; margin: 0; }
+	html, body { width: 1440px; height: 900px; overflow: hidden; }
+	body { background: #6f8fb3; color: #2d2a26; font-family: "Segoe UI", Arial, sans-serif; position: relative; }
+	.tower { position: absolute; inset-block-end: 0; inset-inline-start: 50%; translate: 50% 0; width: 900px; height: 820px; }
+	.tier { position: absolute; inset-inline-start: 50%; translate: 50% 0; background: #c98b4a; border-block-start: 10px solid #e9e3d3; display: flex; align-items: center; justify-content: center; gap: 60px; }
+	.tier span { background: #2d2a26; color: #e9e3d3; padding: 6px 16px; font-size: 22px; font-weight: 700; }
+	.t1 { inset-block-end: 0; width: 900px; height: 170px; }
+	.t2 { inset-block-end: 170px; width: 740px; height: 150px; }
+	.t3 { inset-block-end: 320px; width: 590px; height: 140px; }
+	.t4 { inset-block-end: 460px; width: 440px; height: 130px; }
+	.t5 { inset-block-end: 590px; width: 300px; height: 120px; background: #a9713a; }
+	.title { position: absolute; inset-block-start: 56px; inset-inline-start: 72px; color: #e9e3d3; }
+	.title h1 { font-size: 84px; font-weight: 900; line-height: 1; color: #2d2a26; }
+	.title p { font-size: 26px; margin-block-start: 12px; color: #2d2a26; }
+	nav { position: absolute; inset-block-start: 40px; inset-inline-end: 56px; display: flex; gap: 26px; font-size: 20px; font-weight: 700; }
+</style>
+</head>
+<body>
+	<nav><span>קומות</span><span>קטלוג</span><span>צור קשר</span><span>EN</span></nav>
+	<div class="title"><h1>ShoobyD</h1><p>ברוך מוסטקיס · טפסו למעלה</p></div>
+	<div class="tower">
+		<div class="tier t1"><span>קוד</span><span>Sudoku</span><span>balloonz</span></div>
+		<div class="tier t2"><span>מתמטיקה</span><span>ICMP</span></div>
+		<div class="tier t3"><span>שפות</span><span>סינית</span></div>
+		<div class="tier t4"><span>מוזיקה</span></div>
+		<div class="tier t5"><span>?</span></div>
+	</div>
+</body>
+</html>
+

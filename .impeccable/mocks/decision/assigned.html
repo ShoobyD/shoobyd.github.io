@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>Planisphere sketch</title>
+<style>
+	* { box-sizing: border-box; margin: 0; }
+	html, body { width: 1440px; height: 900px; overflow: hidden; }
+	body { background: #0d1636; color: #f4f1e6; font-family: "Segoe UI", Arial, sans-serif; position: relative; }
+	/* the printed card behind the mask: navy sky disc */
+	.wheel {
+		position: absolute; inset-block-start: 50%; inset-inline-start: 50%;
+		width: 1180px; height: 1180px; translate: 50% -50%;
+		border-radius: 50%; background: #14204a;
+		box-shadow: 0 0 0 26px #1b2b63, 0 30px 80px rgba(0,0,0,.6);
+	}
+	/* interest ring on the rim */
+	.ring span {
+		position: absolute; inset-block-start: 50%; inset-inline-start: 50%;
+		font-size: 26px; letter-spacing: .08em; color: #f2b705; font-weight: 700;
+		transform-origin: 0 0;
+	}
+	/* the yellow mask with oval horizon window */
+	.mask {
+		position: absolute; inset-block-start: 50%; inset-inline-start: 50%;
+		width: 980px; height: 980px; translate: 50% -50%; border-radius: 50%;
+		background: radial-gradient(ellipse 360px 300px at 50% 46%, transparent 99.5%, #f2b705 100%);
+		pointer-events: none;
+	}
+	.stars { position: absolute; inset: 0; border-radius: 50%; overflow: hidden; }
+	.stars i { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: #f4f1e6; }
+	.stars i.b { width: 11px; height: 11px; box-shadow: 0 0 12px #f4f1e6; }
+	svg.lines { position: absolute; inset: 0; }
+	.pole {
+		position: absolute; inset-block-start: 45%; inset-inline-start: 50%; translate: 50% -50%;
+		text-align: center; width: 560px;
+	}
+	.rivet { width: 34px; height: 34px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff3b0, #b8860b 70%); margin: 0 auto 18px; }
+	.pole h1 { font-size: 76px; line-height: 1; font-weight: 800; }
+	.pole .nick { font-size: 34px; color: #3fb6c8; letter-spacing: .2em; margin-block-start: 10px; font-family: Consolas, monospace; }
+	.pole p { font-size: 18px; margin-block-start: 18px; }
+	.label { position: absolute; font-size: 16px; color: #7fd3de; font-style: italic; }
+	.mask-text { position: absolute; color: #14204a; font-weight: 800; }
+	.mask-text.title { inset-block-end: 150px; inset-inline-start: 50%; translate: 50% 0; font-size: 34px; letter-spacing: .3em; }
+	.mask-text.hint { inset-block-end: 112px; inset-inline-start: 50%; translate: 50% 0; font-size: 16px; }
+	nav { position: absolute; inset-block-start: 36px; inset-inline-end: 48px; display: flex; gap: 28px; font-size: 18px; color: #f2b705; }
+	.brand { position: absolute; inset-block-start: 30px; inset-inline-start: 48px; font-family: Consolas, monospace; font-size: 26px; color: #f2b705; }
+</style>
+</head>
+<body>
+	<div class="brand">✦ ShoobyD</div>
+	<nav><span>פרויקטים</span><span>קטלוג</span><span>צור קשר</span><span>EN</span></nav>
+	<div class="wheel">
+		<div class="stars">
+			<i class="b" style="top:30%;left:38%"></i><i style="top:33%;left:44%"></i><i class="b" style="top:28%;left:52%"></i>
+			<i style="top:38%;left:60%"></i><i class="b" style="top:58%;left:36%"></i><i style="top:62%;left:42%"></i>
+			<i style="top:55%;left:64%"></i><i class="b" style="top:60%;left:58%"></i><i style="top:24%;left:46%"></i>
+			<i style="top:42%;left:30%"></i><i style="top:47%;left:70%"></i><i class="b" style="top:66%;left:50%"></i>
+		</div>
+		<svg class="lines" viewBox="0 0 100 100" preserveAspectRatio="none">
+			<polyline points="38,30 44,33 52,28 60,38" fill="none" stroke="#3fb6c8" stroke-width=".18"/>
+			<polyline points="36,58 42,62 50,66 58,60 64,55" fill="none" stroke="#3fb6c8" stroke-width=".18"/>
+		</svg>
+		<div class="ring">
+			<span style="transform: rotate(-80deg) translate(470px)">מתמטיקה</span>
+			<span style="transform: rotate(-40deg) translate(470px)">גיטרה</span>
+			<span style="transform: rotate(0deg) translate(470px)">בלשנות</span>
+			<span style="transform: rotate(40deg) translate(470px)">איור</span>
+			<span style="transform: rotate(80deg) translate(470px)">בישול</span>
+			<span style="transform: rotate(120deg) translate(470px)">אסטרונומיה</span>
+			<span style="transform: rotate(160deg) translate(470px)">מיתולוגיה</span>
+			<span style="transform: rotate(200deg) translate(470px)">DIY</span>
+			<span style="transform: rotate(240deg) translate(470px)">קוד</span>
+		</div>
+	</div>
+	<div class="mask"></div>
+	<span class="label" style="top:300px;left:560px">SD-03 · Sudoku Solver</span>
+	<span class="label" style="top:600px;left:800px">SD-07 · balloonz</span>
+	<div class="pole">
+		<div class="rivet"></div>
+		<h1>ברוך מוסטקיס</h1>
+		<div class="nick">SHOOBYD</div>
+		<p>מפתח־ווב, מתמטיקאי בהכשרתו, מנגן, מאייר וסקרן מקצועי. סובבו את הגלגל.</p>
+	</div>
+	<div class="mask-text title">השמיים של שובידי</div>
+	<div class="mask-text hint">גררו את הטבעת ← מה זורח הלילה</div>
+</body>
+</html>
+
