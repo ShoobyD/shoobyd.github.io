@@ -28,7 +28,8 @@ interface HomeCopy {
 	code: { title: string; lead: string; doorHint: string; status: Record<ProjectStatus, string> };
 	math: { title: string; lead: string; aside: string };
 	languages: { title: string; quote: string; cite: string; topics: string[]; latin: string; latinLink: string };
-	making: { title: string; guitar: string; drawing: string; drawingLink: string; cooking: string; diy: string; stringsHint: string };
+	/** `stringsHint` is for a hovering pointer, `stringsHintTouch` for fingers (a sideways swipe). */
+	making: { title: string; guitar: string; drawing: string; drawingLink: string; cooking: string; diy: string; stringsHint: string; stringsHintTouch: string };
 	/** `babel`: the languages the heading passes through before it settles (the summit joke). */
 	summit: { title: string; wink: string; babel: string[]; contacts: { linkedin: string; email: string; github: string; cv: string } };
 }
@@ -73,6 +74,7 @@ export const home: Record<Lang, HomeCopy> = {
 			cooking: 'בישול',
 			diy: 'עשה־זאת־בעצמך',
 			stringsHint: 'העבירו את הסמן על פני המיתרים שליד המגדל.',
+			stringsHintTouch: 'החליקו לרוחב על המיתרים שליד המגדל.',
 		},
 		summit: {
 			title: 'בואו נדבר',
@@ -120,6 +122,7 @@ export const home: Record<Lang, HomeCopy> = {
 			cooking: 'Cooking',
 			diy: 'DIY',
 			stringsHint: 'Sweep the pointer across the strings by the tower.',
+			stringsHintTouch: 'Swipe sideways across the strings by the tower.',
 		},
 		summit: {
 			title: "Let's talk",

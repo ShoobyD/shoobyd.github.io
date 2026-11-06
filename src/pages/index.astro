@@ -98,6 +98,7 @@ const contacts = [
 	<TierSection id="making" title={c.making.title}>
 		<CraftList items={crafts} />
 		<p class="aside tower-hint">{c.making.stringsHint}</p>
+		<p class="aside tower-hint-touch">{c.making.stringsHintTouch}</p>
 	</TierSection>
 
 	<TierSection id="summit" title={c.summit.title} tone="night">
@@ -129,6 +130,11 @@ const contacts = [
 		scroll-behavior: auto;
 		scrollbar-width: none;
 	}
+	/* fingers: the browser takes vertical swipes (the climb) and pinch-zoom, and leaves sideways
+	 * swipes to the scene, where they strum the guitar strings on the making tier */
+	html.webgl body {
+		touch-action: pan-y pinch-zoom;
+	}
 	html.webgl::-webkit-scrollbar { display: none; }
 	html.webgl .sd-header {
 		position: fixed;
@@ -138,10 +144,15 @@ const contacts = [
 	html.webgl .sd-footer { position: relative; }
 	html.webgl .tier--night { background-image: none; }
 
-	/* hints that only make sense with the tower on screen, and a pointer to hover with */
-	.tower-hint { display: none; }
+	/* hints that only make sense with the tower on screen: `.tower-hint` for a pointer that can
+	 * hover, `.tower-hint-touch` for fingers */
+	.tower-hint,
+	.tower-hint-touch { display: none; }
 	@media (hover: hover) {
 		html.webgl .tower-hint { display: revert; }
+	}
+	@media (hover: none) {
+		html.webgl .tower-hint-touch { display: revert; }
 	}
 
 	/* the summit's stars, sown with two offset dot fields */

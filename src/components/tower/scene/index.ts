@@ -134,7 +134,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 		return { card, on, off };
 	});
 
-	const pointer = { x: 0, y: 0, sx: 0, sy: 0, ndc: new THREE.Vector2(), lastX: 0, moved: false, inUi: false };
+	const pointer = { x: 0, y: 0, sx: 0, sy: 0, ndc: new THREE.Vector2(), lastX: 0, lastY: 0, moved: false, inUi: false };
 	let nearest = 0;
 	let doorHover = -1;
 	function onPointerMove(e: PointerEvent) {
@@ -143,8 +143,19 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 		pointer.ndc.set(pointer.x, -pointer.y);
 		pointer.moved = true;
 		pointer.inUi = pointerInUi(e.target);
-		if (nearest === 4 && e.pointerType !== 'touch') strings.strum(e.clientX - pointer.lastX);
+		const dx = e.clientX - pointer.lastX;
+		const dy = e.clientY - pointer.lastY;
+		// a mouse or pen strums on any sweep; a finger only on a sideways swipe, because a vertical
+		// swipe is the scroll that climbs the tower (the page is `touch-action: pan-y` in 3D mode,
+		// so the browser leaves sideways moves to us and takes vertical ones as a scroll)
+		if (nearest === 4 && (e.pointerType !== 'touch' || Math.abs(dx) > Math.abs(dy))) strings.strum(dx);
 		pointer.lastX = e.clientX;
+		pointer.lastY = e.clientY;
+	}
+	// a new touch starts from where the finger lands, not from where the last one lifted
+	function onPointerDown(e: PointerEvent) {
+		pointer.lastX = e.clientX;
+		pointer.lastY = e.clientY;
 	}
 	// clicking a doorway opens its project; the pick happens at click time so taps work too
 	function onClick(e: MouseEvent) {
@@ -155,6 +166,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 		if (href) window.location.href = href;
 	}
 	window.addEventListener('pointermove', onPointerMove, { passive: true });
+	window.addEventListener('pointerdown', onPointerDown, { passive: true });
 	window.addEventListener('click', onClick);
 
 	// ---------- activation: carry the reading position over into the climb layout ----------
@@ -291,6 +303,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 				if (progress > 0) window.scrollTo({ top: scrollFor(sectionTops(sectionEls), progress), behavior: 'instant' });
 			}
 			window.removeEventListener('pointermove', onPointerMove);
+			window.removeEventListener('pointerdown', onPointerDown);
 			window.removeEventListener('click', onClick);
 			window.removeEventListener('resize', onResize);
 			layoutWatch.disconnect();
