@@ -1,8 +1,9 @@
 ---
 /**
  * Home: the spiral Tower of Babel (direction contract: .impeccable/surfaces/src-pages-index-astro.md).
- * This is the readable content layer — every tier as real HTML on the climbing sky. It is
- * the whole page today, and it stays the fallback once the 3D tower (step 6b) is layered on.
+ * The readable content layer — every tier as real HTML on the climbing sky — is the whole page
+ * without JavaScript, without WebGL, or with reduced motion. TowerScene layers the 3D climb over
+ * it once the page has painted (see src/components/tower/), reusing these same panels.
  */
 import Base from '../layouts/Base.astro';
 import TierSection from '../components/home/TierSection.vue';
@@ -10,6 +11,8 @@ import ProjectList from '../components/home/ProjectList.vue';
 import CraftList from '../components/home/CraftList.vue';
 import ContactList from '../components/home/ContactList.vue';
 import AltitudeGauge from '../components/home/AltitudeGauge.vue';
+import BabelTitle from '../components/home/BabelTitle.vue';
+import TowerScene from '../components/tower/TowerScene.vue';
 import { projects, projectName } from '../data/projects';
 import { home, links, tierAltitude, tierIds } from '../i18n/home';
 import type { Lang } from '../i18n/ui';
@@ -27,6 +30,9 @@ const projectItems = projects.map((p) => ({
 	statusLabel: c.code.status[p.status],
 	description: p.description[lang],
 }));
+
+/** One doorway in the tower per project card, in the same order. */
+const towerDoors = projects.map((p) => ({ id: p.id, href: p.href }));
 
 const [latinBefore, latinAfter = ''] = c.languages.latin.split('{link}');
 
@@ -46,6 +52,7 @@ const contacts = [
 ---
 
 <Base lang={lang}>
+	<TowerScene client:only="vue" tiers={[...tierIds]} doors={towerDoors} />
 	<AltitudeGauge client:idle label={c.gauge.label} unit={c.gauge.unit} tiers={gaugeTiers} />
 
 	<TierSection id="base" title={c.base.title} level={1}>
@@ -61,7 +68,7 @@ const contacts = [
 	</TierSection>
 
 	<TierSection id="code" title={c.code.title}>
-		<p class="lead dim">{c.code.lead}</p>
+		<p class="lead dim">{c.code.lead} <span class="tower-hint">{c.code.doorHint}</span></p>
 		<ProjectList items={projectItems} />
 	</TierSection>
 
@@ -86,9 +93,11 @@ const contacts = [
 
 	<TierSection id="making" title={c.making.title}>
 		<CraftList items={crafts} />
+		<p class="aside tower-hint">{c.making.stringsHint}</p>
 	</TierSection>
 
 	<TierSection id="summit" title={c.summit.title} tone="night">
+		<BabelTitle slot="title" client:visible text={c.summit.title} sequence={c.summit.babel} />
 		<p class="wink">{c.summit.wink}</p>
 		<ContactList items={contacts} />
 	</TierSection>
@@ -106,6 +115,29 @@ const contacts = [
 	body {
 		background: var(--sd-sky-climb);
 		background-attachment: scroll;
+	}
+
+	/* ---------- 3D mode (html.webgl, set by TowerScene) ----------
+	 * The camera does its own smoothing, so jumps (gauge links, keys) are instant; the header
+	 * stays put over the climb; the footer is lifted above the fixed canvas; and the painted
+	 * sky takes over from the CSS stars. */
+	html.webgl {
+		scroll-behavior: auto;
+		scrollbar-width: none;
+	}
+	html.webgl::-webkit-scrollbar { display: none; }
+	html.webgl .sd-header {
+		position: fixed;
+		inset-block-start: 0;
+		inset-inline: 0;
+	}
+	html.webgl .sd-footer { position: relative; }
+	html.webgl .tier--night { background-image: none; }
+
+	/* hints that only make sense with the tower on screen, and a pointer to hover with */
+	.tower-hint { display: none; }
+	@media (hover: hover) {
+		html.webgl .tower-hint { display: revert; }
 	}
 
 	/* the summit's stars, sown with two offset dot fields */

@@ -14,5 +14,11 @@ export default defineConfig({
 			prefixDefaultLocale: false,
 		},
 	},
+	vite: {
+		build: {
+			// the home page's 3D tower chunk bundles Three.js (~640 kB); it is loaded on demand only
+			chunkSizeWarningLimit: 700,
+		},
+	},
 });
 

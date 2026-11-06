@@ -1,0 +1,165 @@
+<script setup lang="ts">
+/**
+ * The 3D Tower of Babel: one progressive-enhancement island over the static home page.
+ * Mounted with `client:only`, so without JavaScript nothing of it exists. Once the page has
+ * painted it checks the visitor can take it (WebGL 2, no reduced-motion preference, no
+ * Save-Data), and only then downloads the scene and Three.js as a separate chunk. Any failure
+ * on the way (no GPU, a failed download, a lost context) leaves the static page untouched.
+ *
+ * Debug: `?no3d` keeps the static page, `?noshadow` renders without shadows.
+ */
+import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
+import type { DoorSpec, TowerHandle } from './scene';
+
+const props = defineProps<{
+	/** Tier ids in climbing order (sections `#tier-<id>`). */
+	tiers: string[];
+	/** One doorway per project card, in card order. */
+	doors: DoorSpec[];
+}>();
+
+const canvas = ref<HTMLCanvasElement | null>(null);
+/** Bumped after a teardown so a restart gets a fresh canvas (and a fresh GL context). */
+const generation = ref(0);
+
+let handle: TowerHandle | null = null;
+let starting = false;
+let alive = true;
+let lost = false;
+let motion: MediaQueryList | null = null;
+
+function hasWebGL2() {
+	try {
+		const gl = document.createElement('canvas').getContext('webgl2');
+		gl?.getExtension('WEBGL_lose_context')?.loseContext();
+		return !!gl;
+	} catch {
+		return false;
+	}
+}
+
+function wanted() {
+	if (lost || motion?.matches) return false;
+	if (new URLSearchParams(location.search).has('no3d')) return false;
+	const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
+	if (connection?.saveData) return false;
+	return true;
+}
+
+/** Resolves once the static page has painted and the main thread has a quiet moment. */
+function afterFirstPaint() {
+	return new Promise<void>((resolve) => {
+		requestAnimationFrame(() =>
+			requestAnimationFrame(() => {
+				if ('requestIdleCallback' in window) window.requestIdleCallback(() => resolve(), { timeout: 1500 });
+				else setTimeout(resolve, 200);
+			}),
+		);
+	});
+}
+
+async function start() {
+	if (handle || starting || !wanted() || !hasWebGL2()) return;
+	starting = true;
+	try {
+		await afterFirstPaint();
+		const { createTowerScene } = await import('./scene');
+		if (!alive || !wanted() || !canvas.value) return;
+		handle = await createTowerScene({
+			canvas: canvas.value,
+			tiers: props.tiers,
+			doors: props.doors,
+			onLost() {
+				lost = true;
+				stop();
+			},
+		});
+		if (!alive || !wanted()) stop();
+	} catch (err) {
+		console.warn('tower: staying on the static page', err);
+		stop();
+	} finally {
+		starting = false;
+	}
+}
+
+function stop() {
+	if (!handle) return;
+	handle.dispose();
+	handle = null;
+	generation.value++;
+}
+
+// turning reduced motion on mid-visit drops back to the static page; turning it off climbs again
+async function onMotionChange() {
+	if (motion?.matches) stop();
+	else {
+		await nextTick();
+		start();
+	}
+}
+
+onMounted(() => {
+	motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+	motion.addEventListener('change', onMotionChange);
+	start();
+});
+
+onBeforeUnmount(() => {
+	alive = false;
+	motion?.removeEventListener('change', onMotionChange);
+	stop();
+});
+</script>
+
+<template>
+	<canvas :key="generation" ref="canvas" class="tower-canvas" aria-hidden="true" />
+	<div class="tower-veil tower-veil--vignette" aria-hidden="true" />
+	<div class="tower-veil tower-veil--grain" aria-hidden="true" />
+</template>
+
+<style scoped>
+/*
+ * The canvas sits fixed behind the content (z-index 0, before the tiers in document order, so
+ * every later positioned element paints over it). It stays transparent until the scene has
+ * rendered its first frames and the root switches to `html.webgl`, then fades in over the sky.
+ */
+.tower-canvas,
+.tower-veil {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	inline-size: 100%;
+	block-size: 100%;
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity 1.2s var(--sd-ease);
+}
+
+.tower-canvas {
+	display: block;
+}
+
+html.webgl .tower-canvas {
+	opacity: 1;
+}
+
+/* a soft vignette and a film of grain, so the render reads as painted rather than computed */
+.tower-veil--vignette {
+	background: radial-gradient(120% 90% at 50% 45%, transparent 55%, rgb(20 17 14 / 0.38) 100%);
+}
+
+.tower-veil--grain {
+	mix-blend-mode: overlay;
+	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+html.webgl .tower-veil--vignette {
+	opacity: 1;
+}
+
+html.webgl .tower-veil--grain {
+	opacity: 0.09;
+}
+</style>
+

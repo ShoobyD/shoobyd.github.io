@@ -110,15 +110,18 @@ defineProps<{ items: ProjectItem[] }>();
 	border-color: rgb(233 227 211 / 0.25);
 }
 
+/* `is-lit` is set by the 3D tower while the visitor hovers this project's doorway in the wall */
 a.project:hover,
-a.project:focus-visible {
+a.project:focus-visible,
+a.project.is-lit {
 	background: rgb(242 195 126 / 0.12);
 	border-color: rgb(242 195 126 / 0.6);
 	transform: translateY(-2px);
 }
 
 a.project:hover .project__door,
-a.project:focus-visible .project__door {
+a.project:focus-visible .project__door,
+a.project.is-lit .project__door {
 	background: radial-gradient(circle at 50% 70%, #fff1c9, #ffb35c 55%, #c46a22);
 	border-color: var(--sd-limestone);
 }

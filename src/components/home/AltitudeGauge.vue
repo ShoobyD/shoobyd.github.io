@@ -1,10 +1,12 @@
 <script setup lang="ts">
 /**
  * The altitude gauge: the home page's navigation, drawn as the tower's height scale.
- * Tiers are plain anchor links (they work without JavaScript); once hydrated, the gauge
- * marks the tier in view and reads the current altitude in cubits from the scroll position.
+ * Tiers are plain anchor links (they work without JavaScript, and in the 3D climb they land on
+ * the tier's park); once hydrated, the gauge marks the tier in view and reads the current
+ * altitude in cubits from the scroll position, in either layout.
  */
 import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { isTowerActive, progressAt, sectionTops } from '../tower/mode';
 
 export interface GaugeTier {
 	id: string;
@@ -23,13 +25,30 @@ const altitude = ref(0);
 
 let frame = 0;
 let sections: HTMLElement[] = [];
+let layout: ResizeObserver | null = null;
 
 /**
- * A tier reads its exact altitude when its centre crosses the middle of the viewport;
- * between two centres the altitude is interpolated. The current tier is the nearest centre.
+ * In the 3D climb a tier is reached when its (tall) section's top meets the viewport's top,
+ * the same progress the camera and panels follow, so the gauge reads where the climb is going.
+ */
+function measureClimb() {
+	const progress = progressAt(sectionTops(sections), window.scrollY);
+	const i = Math.min(Math.floor(progress), props.tiers.length - 2);
+	const t = progress - i;
+	current.value = props.tiers[Math.round(progress)].id;
+	altitude.value = Math.round(props.tiers[i].altitude + (props.tiers[i + 1].altitude - props.tiers[i].altitude) * t);
+}
+
+/**
+ * On the static page a tier reads its exact altitude when its centre crosses the middle of the
+ * viewport; between two centres the altitude is interpolated. The current tier is the nearest centre.
  */
 function measure() {
 	frame = 0;
+	if (isTowerActive()) {
+		measureClimb();
+		return;
+	}
 	const probe = window.innerHeight * 0.5;
 	const centres = sections.map((el) => {
 		const r = el.getBoundingClientRect();
@@ -66,11 +85,15 @@ onMounted(() => {
 	measure();
 	window.addEventListener('scroll', schedule, { passive: true });
 	window.addEventListener('resize', schedule);
+	// the page changes height when the 3D climb switches on or off
+	layout = new ResizeObserver(schedule);
+	layout.observe(document.body);
 });
 
 onBeforeUnmount(() => {
 	window.removeEventListener('scroll', schedule);
 	window.removeEventListener('resize', schedule);
+	layout?.disconnect();
 	cancelAnimationFrame(frame);
 });
 </script>
