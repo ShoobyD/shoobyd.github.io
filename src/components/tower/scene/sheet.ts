@@ -1,7 +1,8 @@
 /**
  * Narrow screens: each fixed tier panel is a bottom sheet. Collapsed, it shows only its title and
  * the start of what follows, and the tower has the screen; its handle (the keystone, a real
- * button with `aria-expanded`) or a tap on the sheet opens it to nearly the full height.
+ * button with `aria-expanded`) or a tap on the sheet opens it to nearly the full height, and a
+ * finger can drag it open or closed.
  *
  * - The base tier starts open, so the introduction is read on arrival; every other tier starts
  *   collapsed, and moving to another tier collapses them all again.
@@ -88,14 +89,110 @@ export function createSheet(panels: HTMLElement[], startTier: number) {
 		handles[i]?.focus();
 	}
 
+	// ---------- dragging ----------
+	// A finger moves the sheet with it, then lets it settle open or collapsed by where it was
+	// left and how fast it was moving. What starts a drag:
+	// - on a collapsed sheet, a swipe up (a swipe down there still climbs the tower);
+	// - on an open one, any swipe on its handle or title band, or a swipe down on its content
+	//   when that is already scrolled to its top (otherwise the content scrolls as usual).
+	let drag: {
+		i: number;
+		y0: number;
+		/** where the sheet was when the drag started: 0 open, `range` collapsed */
+		from: number;
+		range: number;
+		/** null until the first move decides whether this is a drag at all */
+		on: boolean | null;
+		band: boolean;
+		offset: number;
+		samples: { y: number; t: number }[];
+	} | null = null;
+	/** a click that lands right after a drag (on what was under the finger) is swallowed */
+	let swallowUntil = 0;
+	const FLICK = 0.45; // px/ms
+
+	const onTouchStart = panels.map((p, i) => (e: TouchEvent) => {
+		if (!isNarrow() || e.touches.length !== 1 || !p.classList.contains('is-on')) return;
+		const y = e.touches[0].clientY;
+		const title = titles[i];
+		const bandEnd = title ? p.getBoundingClientRect().top + title.offsetTop + title.offsetHeight : 0;
+		const range = Math.max(0, p.offsetHeight - peekOf(i));
+		drag = {
+			i,
+			y0: y,
+			from: isCollapsed(i) ? range : 0,
+			range,
+			on: null,
+			band: y <= bandEnd,
+			offset: 0,
+			samples: [{ y, t: e.timeStamp }],
+		};
+	});
+
+	function onTouchMove(e: TouchEvent) {
+		if (!drag || e.touches.length !== 1) return;
+		const p = panels[drag.i];
+		const y = e.touches[0].clientY;
+		const dy = y - drag.y0;
+		if (drag.on === null) {
+			if (Math.abs(dy) < 4) return;
+			const collapsed = drag.from > 0;
+			drag.on = collapsed ? dy < 0 : drag.band || (dy > 0 && p.scrollTop <= 0);
+			if (!drag.on) {
+				drag = null;
+				return;
+			}
+			p.classList.add('is-sheet-dragging');
+		}
+		if (!drag.on) return;
+		e.preventDefault();
+		drag.offset = Math.min(drag.range, Math.max(0, drag.from + dy));
+		p.style.translate = `0 ${drag.offset}px`;
+		drag.samples.push({ y, t: e.timeStamp });
+		if (drag.samples.length > 6) drag.samples.shift();
+	}
+
+	function onTouchEnd(e: TouchEvent) {
+		if (!drag) return;
+		const d = drag;
+		drag = null;
+		if (!d.on) return;
+		const p = panels[d.i];
+		// the speed over the last moments only: a finger that stopped before lifting isn't a flick
+		const recent = d.samples.filter((s) => s.t >= e.timeStamp - 120);
+		const first = recent[0];
+		const last = recent[recent.length - 1];
+		const v = recent.length > 1 && last.t > first.t ? (last.y - first.y) / (last.t - first.t) : 0;
+		const open = v < -FLICK ? true : v > FLICK ? false : d.offset < d.range / 2;
+		// handing back to the class lets the transition carry the sheet on from where the finger left it
+		p.classList.remove('is-sheet-dragging');
+		p.style.removeProperty('translate');
+		set(d.i, open);
+		swallowUntil = e.timeStamp + 400;
+	}
+
+	function onClickCapture(e: MouseEvent) {
+		if (e.timeStamp > swallowUntil) return;
+		swallowUntil = 0;
+		e.preventDefault();
+		e.stopImmediatePropagation();
+	}
+
+	const peekOf = (i: number) => parseFloat(panels[i].style.getPropertyValue('--sheet-peek')) || 150;
+
 	const watch = new ResizeObserver(measure);
 	panels.forEach((p, i) => {
 		set(i, i === 0 && startTier === 0);
 		watch.observe(p);
 		handles[i]?.addEventListener('click', onHandle[i]);
+		p.addEventListener('click', onClickCapture, true);
 		p.addEventListener('click', onTap[i], true);
 		p.addEventListener('focusin', onFocus[i]);
+		p.addEventListener('touchstart', onTouchStart[i], { passive: true });
 	});
+	window.addEventListener('touchmove', onTouchMove, { passive: false });
+	window.addEventListener('touchend', onTouchEnd);
+	window.addEventListener('touchcancel', onTouchEnd);
 	window.addEventListener('keydown', onKey);
 	window.addEventListener('resize', measure);
 	measure();
@@ -115,8 +212,15 @@ export function createSheet(panels: HTMLElement[], startTier: number) {
 			watch.disconnect();
 			window.removeEventListener('keydown', onKey);
 			window.removeEventListener('resize', measure);
+			window.removeEventListener('touchmove', onTouchMove);
+			window.removeEventListener('touchend', onTouchEnd);
+			window.removeEventListener('touchcancel', onTouchEnd);
 			panels.forEach((p, i) => {
 				handles[i]?.removeEventListener('click', onHandle[i]);
+				p.removeEventListener('click', onClickCapture, true);
+				p.removeEventListener('touchstart', onTouchStart[i]);
+				p.classList.remove('is-sheet-dragging');
+				p.style.removeProperty('translate');
 				p.removeEventListener('click', onTap[i], true);
 				p.removeEventListener('focusin', onFocus[i]);
 				p.classList.remove(COLLAPSED);

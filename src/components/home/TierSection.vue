@@ -184,6 +184,12 @@ html.webgl .tier__panel.is-on {
 		overflow: hidden;
 	}
 
+	/* under a finger the sheet follows it exactly (an inline translate) and shows all it holds */
+	html.webgl .tier__panel.is-sheet-dragging {
+		--sheet-fade: 100vh;
+		transition: none;
+	}
+
 	/* the handle takes the keystone's place */
 	html.webgl .tier__panel::before {
 		display: none;
