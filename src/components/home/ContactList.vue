@@ -1,11 +1,15 @@
 <script setup lang="ts">
-/** The summit's contact links: a gold label and the handle itself. */
+/** The summit's contact links: a gold icon and label, and the handle itself. */
+import LinkIcon from '../../theme/components/LinkIcon.vue';
+import type { LinkIconName } from '../../theme/link-icons';
+
 export interface ContactItem {
 	id: string;
 	label: string;
 	value: string;
 	href: string;
 	external?: boolean;
+	icon?: LinkIconName;
 }
 
 defineProps<{ items: ContactItem[] }>();
@@ -19,7 +23,10 @@ defineProps<{ items: ContactItem[] }>();
 				:rel="item.external ? 'noopener' : undefined"
 				:target="item.external ? '_blank' : undefined"
 			>
-				<span class="contacts__label">{{ item.label }}</span>
+				<span class="contacts__label">
+					<LinkIcon v-if="item.icon" :name="item.icon" :size="18" />
+					{{ item.label }}
+				</span>
 				<bdi class="contacts__value">{{ item.value }}</bdi>
 			</a>
 		</li>
@@ -56,6 +63,9 @@ defineProps<{ items: ContactItem[] }>();
 }
 
 .contacts__label {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
 	font-size: 0.85rem;
 	font-weight: 700;
 	letter-spacing: 0.04em;
