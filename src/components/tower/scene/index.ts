@@ -31,6 +31,8 @@ import { createPortrait, type PortraitSpec } from './tiers/portrait';
 import { TOWER_CLASS, progressAt, scrollFor, sectionTops } from '../mode';
 
 export type { DoorSpec, PortraitSpec };
+// game mode rides in this chunk; it plugs in through the handle below and nothing else
+export { createGame, type Game, type GameEvents } from './game';
 
 export interface TowerOptions {
 	canvas: HTMLCanvasElement;
@@ -45,8 +47,9 @@ export interface TowerOptions {
 }
 
 /**
- * A takeover of the camera, for game mode (step 6c): while set, its target is blended in by
- * `blend` (0 = the climb, 1 = fully the director's shot) and the panel framing eases out.
+ * A takeover of the camera, for game mode (game/director.ts): while set, its target is blended
+ * in by `blend` (0 = the climb, 1 = fully the director's shot), and the panel framing and the
+ * panels themselves ease out with it.
  */
 export interface Director {
 	update(dt: number, time: number): { pos: THREE.Vector3; look: THREE.Vector3; blend: number; altitude?: number };
@@ -279,7 +282,8 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 
 		if (climb) {
 			enter = Math.min(1, enter + dt / 0.7);
-			climb.updatePanels(smooth, easeOut(enter));
+			// a director's shot fades the panels out with it (game mode hides them)
+			climb.updatePanels(smooth, easeOut(enter) * (1 - blend));
 			if (nearest !== lastTier) {
 				lastTier = nearest;
 				window.dispatchEvent(new CustomEvent('tower:tier', { detail: opts.tiers[nearest] }));

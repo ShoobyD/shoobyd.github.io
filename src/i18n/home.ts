@@ -44,6 +44,31 @@ interface HomeCopy {
 	making: { title: string; guitar: string; drawing: string; drawingLink: string; cooking: string; diy: string; stringsHint: string; stringsHintTouch: string };
 	/** `babel`: the languages the heading passes through before it settles (the summit joke). */
 	summit: { title: string; wink: string; babel: string[]; contacts: { linkedin: string; email: string; github: string; cv: string } };
+	game: GameCopy;
+}
+
+/**
+ * Game mode (only while the 3D tower is on screen): `enter` / `exit` label the header toggle,
+ * `cta` the summit's button. `{n}` is the brick count. `hint` is for a keyboard and pointer,
+ * `hintTouch` for fingers. `announce*` are read out by the screen-reader live region only.
+ */
+export interface GameCopy {
+	enter: string;
+	exit: string;
+	cta: string;
+	bricks: string;
+	best: string;
+	hint: string;
+	hintTouch: string;
+	perfect: string;
+	overTitle: string;
+	overText: string;
+	again: string;
+	secretTitle: string;
+	secretBody: string;
+	announceStart: string;
+	announceScore: string;
+	announceBest: string;
 }
 
 export const home: Record<Lang, HomeCopy> = {
@@ -98,6 +123,24 @@ export const home: Record<Lang, HomeCopy> = {
 			babel: ['Loquamur', '我们聊聊吧', 'Ας μιλήσουμε', "Let's talk"],
 			contacts: { linkedin: 'לינקדאין', email: 'אימייל', github: 'גיטהאב', cv: 'קורות־חיים' },
 		},
+		game: {
+			enter: 'מצב משחק',
+			exit: 'חזרה לטיפוס',
+			cta: 'הוסיפו קומה למגדל',
+			bricks: 'לבנים',
+			best: 'שיא',
+			hint: 'לחיצה, נגיעה או רווח מניחים לבנה · Esc ליציאה',
+			hintTouch: 'נגיעה מניחה לבנה',
+			perfect: 'מושלם!',
+			overTitle: 'המגדל קרס',
+			overText: 'הנחתם {n} לבנים לפני שהכול התבלבל.',
+			again: 'עוד סיבוב',
+			secretTitle: 'SD-08 · סוד נפתח',
+			secretBody: 'שמונה לבנים, ואף אחד עוד לא התחיל לדבר בשפה אחרת. בבל המקורית לא הגיעה לזה.',
+			announceStart: 'מצב משחק. לבנה נעה מעל הפסגה; רווח או Enter מניחים אותה, Esc יוצא.',
+			announceScore: 'לבנים: {n}',
+			announceBest: 'שיא חדש',
+		},
 	},
 	en: {
 		loader: 'Laying bricks…',
@@ -149,6 +192,24 @@ export const home: Record<Lang, HomeCopy> = {
 			wink: 'The summit is still under construction. Careful: above a certain altitude, languages start to get confused.',
 			babel: ['Loquamur', '我们聊聊吧', 'Ας μιλήσουμε', 'בואו נדבר'],
 			contacts: { linkedin: 'LinkedIn', email: 'Email', github: 'GitHub', cv: 'CV' },
+		},
+		game: {
+			enter: 'Game mode',
+			exit: 'Back to the climb',
+			cta: 'Add a tier to the tower',
+			bricks: 'BRICKS',
+			best: 'Best',
+			hint: 'Click, tap or press Space to drop a brick · Esc to leave',
+			hintTouch: 'Tap to drop a brick',
+			perfect: 'Perfect!',
+			overTitle: 'The tower fell',
+			overText: 'You laid {n} bricks before everything got confused.',
+			again: 'Again',
+			secretTitle: 'SD-08 · Secret unlocked',
+			secretBody: "Eight bricks, and nobody's language got scrambled yet. The original Babel never got this far.",
+			announceStart: 'Game mode. A brick slides over the summit; Space or Enter drops it, Escape leaves.',
+			announceScore: 'Bricks: {n}',
+			announceBest: 'New best',
 		},
 	},
 };

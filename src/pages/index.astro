@@ -4,6 +4,8 @@
  * The readable content layer — every tier as real HTML on the climbing sky — is the whole page
  * without JavaScript, without WebGL, or with reduced motion. TowerScene layers the 3D climb over
  * it once the page has painted (see src/components/tower/), reusing these same panels.
+ * Game mode's two ways in (the header toggle and the summit's CTA) are rendered here and wired
+ * by the island (TowerGame.vue); they show only while the 3D tower is live.
  */
 import Base from '../layouts/Base.astro';
 import TierSection from '../components/home/TierSection.vue';
@@ -60,8 +62,16 @@ const contacts = [
 
 <Base lang={lang}>
 	<TowerLoaderBoot slot="head" />
+	<button slot="header-actions" class="sd-control game-control" type="button" aria-pressed="false" data-tower-game="toggle">
+		<svg viewBox="0 0 20 20" aria-hidden="true">
+			<rect class="brick-icon__low" x="2" y="12" width="16" height="5" rx="1" />
+			<rect class="brick-icon__high" x="5" y="4" width="11" height="5" rx="1" />
+			<path class="brick-icon__drop" d="M10 9.5v1.6" />
+		</svg>
+		<span data-tower-game-label>{c.game.enter}</span>
+	</button>
 	<TowerLoader label={c.loader} />
-	<TowerScene client:only="vue" tiers={[...tierIds]} doors={towerDoors} portrait={towerPortrait} />
+	<TowerScene client:only="vue" tiers={[...tierIds]} doors={towerDoors} portrait={towerPortrait} game={c.game} />
 	<AltitudeGauge client:idle label={c.gauge.label} unit={c.gauge.unit} tiers={gaugeTiers} />
 
 	<TierSection id="base" title={c.base.title} level={1}>
@@ -117,6 +127,13 @@ const contacts = [
 		<BabelTitle slot="title" client:visible text={c.summit.title} sequence={c.summit.babel} />
 		<p class="wink">{c.summit.wink}</p>
 		<ContactList items={contacts} />
+		<button class="sd-control sd-control--gold game-control game-cta" type="button" data-tower-game="enter">
+			<svg viewBox="0 0 20 20" aria-hidden="true">
+				<rect class="brick-icon__low brick-icon__low--ink" x="2" y="12" width="16" height="5" rx="1" />
+				<rect class="brick-icon__high brick-icon__high--deep" x="5" y="4" width="11" height="5" rx="1" />
+			</svg>
+			<span>{c.game.cta}</span>
+		</button>
 	</TierSection>
 </Base>
 
@@ -154,6 +171,26 @@ const contacts = [
 		inset-inline: 0;
 	}
 	html.webgl .sd-footer { position: relative; }
+
+	/* game mode's controls exist only with the live tower: not in the static page, with reduced
+	 * motion, without WebGL, or under the loader (display: none also keeps them out of the tab order) */
+	html:not(.webgl) [data-tower-game],
+	html.sd-tower-loading [data-tower-game] { display: none; }
+
+	/* ---------- game mode (html.tower-game, set by TowerGame.vue) ----------
+	 * The page holds still (scroll and touch gestures belong to the game; a tap drops a brick),
+	 * and the gauge fades out with the panels (the scene fades those). Everything behind the game
+	 * is also `inert`, so focus cannot land there. */
+	html.webgl.tower-game { overflow: hidden; }
+	html.webgl.tower-game body { touch-action: none; }
+	html.webgl [data-tower-chrome] {
+		transition: opacity var(--sd-dur) var(--sd-ease), visibility 0s;
+	}
+	html.webgl.tower-game [data-tower-chrome] {
+		opacity: 0;
+		visibility: hidden;
+		transition: opacity var(--sd-dur) var(--sd-ease), visibility 0s linear var(--sd-dur);
+	}
 	html.webgl .tier--night { background-image: none; }
 
 	/* hints that only make sense with the tower on screen: `.tower-hint` for a pointer that can
@@ -268,6 +305,26 @@ const contacts = [
 		border-radius: var(--sd-pill);
 		font-size: 0.95rem;
 		font-weight: 600;
+	}
+
+	/* the brick glyph on game mode's controls: a course laid, the next one coming down */
+	.game-control svg {
+		flex: none;
+		inline-size: 18px;
+		block-size: 18px;
+	}
+	.brick-icon__low { fill: var(--sd-ochre); }
+	.brick-icon__high { fill: var(--sd-limestone); }
+	.brick-icon__low--ink { fill: var(--sd-ink); }
+	.brick-icon__high--deep { fill: var(--sd-ochre-deep); }
+	.brick-icon__drop {
+		fill: none;
+		stroke: var(--sd-limestone);
+		stroke-width: 1.6;
+		stroke-linecap: round;
+	}
+	.game-cta {
+		margin-block-start: var(--sd-space-5);
 	}
 
 	.wink {

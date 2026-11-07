@@ -99,7 +99,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-	<nav class="gauge" :aria-label="label">
+	<nav class="gauge" :aria-label="label" data-tower-chrome>
 		<p class="gauge__altitude" aria-hidden="true">
 			<b>{{ altitude }}</b>
 			<span>{{ unit }}</span>

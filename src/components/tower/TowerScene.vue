@@ -6,10 +6,14 @@
  * Save-Data), and only then downloads the scene and Three.js as a separate chunk. Any failure
  * on the way (no GPU, a failed download, a lost context) leaves the static page untouched.
  *
+ * While the scene is live it also mounts game mode's UI (TowerGame), handing it the scene handle.
+ *
  * Debug: `?no3d` keeps the static page, `?noshadow` renders without shadows.
  */
-import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
+import { markRaw, nextTick, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue';
 import { endLoading } from './mode';
+import TowerGame from './TowerGame.vue';
+import type { GameCopy } from '../../i18n/home';
 import type { DoorSpec, PortraitSpec, TowerHandle } from './scene';
 
 const props = defineProps<{
@@ -19,11 +23,16 @@ const props = defineProps<{
 	doors: DoorSpec[];
 	/** The self-portrait hung beside the strings on the making tier. */
 	portrait: PortraitSpec;
+	/** Game mode's copy (HUD, game-over card, toast, toggle labels). */
+	game: GameCopy;
 }>();
 
 const canvas = ref<HTMLCanvasElement | null>(null);
 /** Bumped after a teardown so a restart gets a fresh canvas (and a fresh GL context). */
 const generation = ref(0);
+/** The live scene, for game mode's UI; null while there is none (static page, teardown). */
+const live = shallowRef<TowerHandle | null>(null);
+const gameUi = ref<InstanceType<typeof TowerGame> | null>(null);
 
 let handle: TowerHandle | null = null;
 let starting = false;
@@ -88,6 +97,7 @@ async function start() {
 			},
 		});
 		if (!alive || !wanted()) stop();
+		else live.value = markRaw(handle);
 	} catch (err) {
 		console.warn('tower: staying on the static page', err);
 		stop();
@@ -99,6 +109,9 @@ async function start() {
 
 function stop() {
 	if (!handle) return;
+	// leave game mode (page classes, inert, focus) before the scene it runs in goes away
+	gameUi.value?.shutdown();
+	live.value = null;
 	handle.dispose();
 	handle = null;
 	generation.value++;
@@ -130,6 +143,7 @@ onBeforeUnmount(() => {
 	<canvas :key="generation" ref="canvas" class="tower-canvas" aria-hidden="true" />
 	<div class="tower-veil tower-veil--vignette" aria-hidden="true" />
 	<div class="tower-veil tower-veil--grain" aria-hidden="true" />
+	<TowerGame v-if="live" ref="gameUi" :tower="live" :copy="game" />
 </template>
 
 <style scoped>
