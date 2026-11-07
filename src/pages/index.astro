@@ -83,7 +83,7 @@ const elsewhere = [
 	<TowerScene client:only="vue" tiers={[...tierIds]} doors={towerDoors} portrait={towerPortrait} game={c.game} />
 	<AltitudeGauge client:idle label={c.gauge.label} unit={c.gauge.unit} tiers={gaugeTiers} />
 
-	<TierSection id="base" title={c.base.title} level={1}>
+	<TierSection id="base" sheetLabel={c.sheet.toggle} title={c.base.title} level={1}>
 		<p class="handle" lang="en" dir="ltr">ShoobyD</p>
 		<p class="lead">{c.base.lead}</p>
 		<SelfPortrait
@@ -102,18 +102,18 @@ const elsewhere = [
 		</p>
 	</TierSection>
 
-	<TierSection id="code" title={c.code.title}>
+	<TierSection id="code" sheetLabel={c.sheet.toggle} title={c.code.title}>
 		<p class="lead dim">{c.code.lead} <span class="tower-hint">{c.code.doorHint}</span></p>
 		<ProjectList items={projectItems} />
 	</TierSection>
 
-	<TierSection id="math" title={c.math.title}>
+	<TierSection id="math" sheetLabel={c.sheet.toggle} title={c.math.title}>
 		<p class="lead">{c.math.lead}</p>
 		<p class="formula" dir="ltr" aria-hidden="true">e<sup>iπ</sup> + 1 = 0</p>
 		<p class="aside">{c.math.aside}</p>
 	</TierSection>
 
-	<TierSection id="languages" title={c.languages.title}>
+	<TierSection id="languages" sheetLabel={c.sheet.toggle} title={c.languages.title}>
 		<blockquote>
 			<p>{c.languages.quote}</p>
 			<cite>{c.languages.cite}</cite>
@@ -126,13 +126,13 @@ const elsewhere = [
 		</p>
 	</TierSection>
 
-	<TierSection id="making" title={c.making.title}>
+	<TierSection id="making" sheetLabel={c.sheet.toggle} title={c.making.title}>
 		<CraftList items={crafts} />
 		<p class="aside tower-hint">{c.making.stringsHint}</p>
 		<p class="aside tower-hint-touch">{c.making.stringsHintTouch}</p>
 	</TierSection>
 
-	<TierSection id="summit" title={c.summit.title} tone="night">
+	<TierSection id="summit" sheetLabel={c.sheet.toggle} title={c.summit.title} tone="night">
 		<BabelTitle slot="title" client:visible text={c.summit.title} sequence={c.summit.babel} />
 		<p class="wink">{c.summit.wink}</p>
 		<ContactList items={contacts} />

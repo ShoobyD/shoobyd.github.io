@@ -16,12 +16,20 @@ defineProps<{
 	level?: 1 | 2;
 	/** Extra class on the section, for per-tier atmosphere (e.g. stars at the summit). */
 	tone?: string;
+	/** Accessible name of the sheet handle (narrow screens open and close the panel with it). */
+	sheetLabel: string;
 }>();
 </script>
 
 <template>
 	<section :id="`tier-${id}`" class="tier" :class="tone && `tier--${tone}`" :aria-labelledby="`tier-${id}-title`">
 		<ArchPanel as="article" class="tier__panel" data-tier-panel>
+			<!-- the keystone, as the handle of the bottom sheet the panel becomes on narrow screens -->
+			<button class="tier__sheet" type="button" :aria-label="sheetLabel" aria-expanded="true" data-sheet-handle>
+				<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+					<path d="M5 9l7 7 7-7" />
+				</svg>
+			</button>
 			<component :is="level === 1 ? 'h1' : 'h2'" :id="`tier-${id}-title`" class="tier__title">
 				<slot name="title">{{ title }}</slot>
 			</component>
@@ -49,6 +57,49 @@ defineProps<{
 
 h2.tier__title {
 	margin-block-end: var(--sd-space-4);
+}
+
+/* the sheet handle: a larger keystone carrying a chevron that points where the sheet will go
+ * (down while open, up while collapsed). Shown only where the panel is a sheet. */
+.tier__sheet {
+	display: none;
+	position: absolute;
+	z-index: 1;
+	inset-block-start: -1px;
+	inset-inline: 0;
+	margin-inline: auto;
+	inline-size: 44px;
+	block-size: 30px;
+	padding: 0;
+	place-items: center;
+	color: var(--sd-ink);
+	background: var(--sd-limestone);
+	border: 0;
+	clip-path: polygon(0 0, 100% 0, 80% 100%, 20% 100%);
+	cursor: pointer;
+	touch-action: none;
+}
+
+.tier__sheet svg {
+	inline-size: 14px;
+	block-size: 14px;
+	margin-block-start: -3px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 3.2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	transition: rotate var(--sd-dur) var(--sd-ease);
+}
+
+.tier__sheet[aria-expanded="false"] svg {
+	rotate: 180deg;
+}
+
+.tier__sheet:focus-visible {
+	outline: 2px solid var(--sd-focus);
+	outline-offset: 2px;
+	clip-path: none;
 }
 
 @media (max-width: 47.5rem) {

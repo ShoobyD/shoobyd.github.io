@@ -23,6 +23,8 @@ interface HomeCopy {
 	/** Shown on the full-screen loader while the 3D tower is being prepared. */
 	loader: string;
 	gauge: { label: string; unit: string; tiers: Record<TierId, string> };
+	/** The handle that opens and closes a tier panel on narrow screens (its state is aria-expanded). */
+	sheet: { toggle: string };
 	/**
 	 * The self-portrait in the base panel: `portraitAlt` describes the drawing, `portraitOpen`
 	 * labels the link that enlarges it, `portraitCaption` / `portraitClose` belong to the dialog.
@@ -120,6 +122,7 @@ export const home: Record<Lang, HomeCopy> = {
 			unit: 'אמות',
 			tiers: { base: 'יסוד', code: 'קוד', math: 'מתמטיקה', languages: 'שפות', making: 'יצירה', summit: 'פסגה' },
 		},
+		sheet: { toggle: 'תוכן הקומה' },
 		base: {
 			title: 'ברוך מוסטקיס',
 			lead: 'מפתח־ווב, מתמטיקאי בהכשרתו. טפסו למעלה.',
@@ -218,6 +221,7 @@ export const home: Record<Lang, HomeCopy> = {
 			unit: 'cubits',
 			tiers: { base: 'Base', code: 'Code', math: 'Math', languages: 'Languages', making: 'Making', summit: 'Summit' },
 		},
+		sheet: { toggle: 'Tier content' },
 		base: {
 			title: 'Baruch Mustakis',
 			lead: 'Web developer, mathematician by training. Climb up.',
