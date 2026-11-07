@@ -49,6 +49,8 @@ export function createStrings(scene: THREE.Scene, mats: Materials) {
 			transparent: true,
 			depthWrite: false,
 			blending: THREE.AdditiveBlending,
+			// a string is a flat strip of light: draw both faces, so it still glows seen from behind
+			side: THREE.DoubleSide,
 			vertexShader,
 			fragmentShader,
 		});
@@ -71,7 +73,10 @@ export function createStrings(scene: THREE.Scene, mats: Materials) {
 		},
 		update(dt: number, time: number, progress: number) {
 			shared.uTime.value = time;
-			shared.uCol.value.setRGB(2.4, 1.6, 0.75).multiplyScalar(1 - sstep(0.5, 1.4, Math.abs(progress - 4)));
+			// always on the tower, like the languages tier's glyphs: a faint glow from afar that
+			// brightens to full as the climb reaches the making tier
+			const near = 1 - sstep(0.4, 1.6, Math.abs(progress - 4));
+			shared.uCol.value.setRGB(2.4, 1.6, 0.75).multiplyScalar(0.12 + 0.88 * near);
 			shared.uAmp.value = lerp(shared.uAmp.value, HUM, damp(1.4, dt));
 		},
 	};
