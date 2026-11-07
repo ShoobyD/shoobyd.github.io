@@ -58,6 +58,13 @@ const contacts = [
 	{ id: 'github', label: c.summit.contacts.github, value: 'ShoobyD', href: links.github, external: true },
 	{ id: 'cv', label: c.summit.contacts.cv, value: 'PDF', href: links.cv, external: true },
 ];
+
+/** Other profiles, a lighter row under the main contacts. */
+const elsewhere = [
+	{ id: 'facebook', label: c.summit.elsewhere.facebook, href: links.facebook },
+	{ id: 'deviantart', label: c.summit.elsewhere.deviantart, href: links.deviantart },
+	{ id: 'wikipedia', label: c.summit.elsewhere.wikipedia, href: links.wikipedia },
+];
 ---
 
 <Base lang={lang}>
@@ -127,6 +134,14 @@ const contacts = [
 		<BabelTitle slot="title" client:visible text={c.summit.title} sequence={c.summit.babel} />
 		<p class="wink">{c.summit.wink}</p>
 		<ContactList items={contacts} />
+		<div class="elsewhere">
+			<span class="elsewhere__lead" id="elsewhere-lead">{c.summit.alsoOn}</span>
+			<ul class="chips chips--links" aria-labelledby="elsewhere-lead">
+				{elsewhere.map((profile) => (
+					<li><a href={profile.href} rel="noopener" target="_blank"><bdi>{profile.label}</bdi></a></li>
+				))}
+			</ul>
+		</div>
 		<button class="sd-control sd-control--gold game-control game-cta" type="button" data-tower-game="enter">
 			<svg viewBox="0 0 20 20" aria-hidden="true">
 				<rect class="brick-icon__low brick-icon__low--ink" x="2" y="12" width="16" height="5" rx="1" />
@@ -305,6 +320,39 @@ const contacts = [
 		border-radius: var(--sd-pill);
 		font-size: 0.95rem;
 		font-weight: 600;
+	}
+
+	/* the summit's other profiles: the same pills, as links that warm to gold like the contacts */
+	.elsewhere {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: var(--sd-space-2) var(--sd-space-3);
+		margin-block: var(--sd-space-3) var(--sd-space-4);
+	}
+	.elsewhere__lead {
+		font-size: 0.85rem;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		color: var(--sd-gold);
+	}
+	.chips--links {
+		margin: 0;
+	}
+	.chips--links li {
+		padding: 0;
+	}
+	.chips--links a {
+		display: block;
+		padding-block: 5px;
+		padding-inline: 13px;
+		border-radius: inherit;
+		text-decoration: none;
+		transition: background var(--sd-dur-fast), color var(--sd-dur-fast);
+	}
+	.chips--links li:has(a:hover, a:focus-visible) {
+		border-color: rgb(242 195 126 / 0.65);
+		background: rgb(242 195 126 / 0.1);
 	}
 
 	/* the brick glyph on game mode's controls: a course laid, the next one coming down */

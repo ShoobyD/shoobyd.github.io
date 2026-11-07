@@ -43,7 +43,15 @@ interface HomeCopy {
 	/** `stringsHint` is for a hovering pointer, `stringsHintTouch` for fingers (a sideways swipe). */
 	making: { title: string; guitar: string; drawing: string; drawingLink: string; cooking: string; diy: string; stringsHint: string; stringsHintTouch: string };
 	/** `babel`: the languages the heading passes through before it settles (the summit joke). */
-	summit: { title: string; wink: string; babel: string[]; contacts: { linkedin: string; email: string; github: string; cv: string } };
+	/** `contacts` are the main ways to reach him; `alsoOn` / `elsewhere` the lighter row of other profiles under them. */
+	summit: {
+		title: string;
+		wink: string;
+		babel: string[];
+		contacts: { linkedin: string; email: string; github: string; cv: string };
+		alsoOn: string;
+		elsewhere: { facebook: string; deviantart: string; wikipedia: string };
+	};
 	game: GameCopy;
 }
 
@@ -153,6 +161,8 @@ export const home: Record<Lang, HomeCopy> = {
 			wink: 'הפסגה עדיין בבנייה. זהירות: מעל גובה מסוים השפות מתחילות להתבלבל.',
 			babel: ['Loquamur', '我们聊聊吧', 'Ας μιλήσουμε', "Let's talk"],
 			contacts: { linkedin: 'לינקדאין', email: 'אימייל', github: 'גיטהאב', cv: 'קורות־חיים' },
+			alsoOn: 'גם ב:',
+			elsewhere: { facebook: 'פייסבוק', deviantart: 'DeviantArt', wikipedia: 'ויקיפדיה' },
 		},
 		game: {
 			enter: 'מצב משחק',
@@ -248,6 +258,8 @@ export const home: Record<Lang, HomeCopy> = {
 			wink: 'The summit is still under construction. Careful: above a certain altitude, languages start to get confused.',
 			babel: ['Loquamur', '我们聊聊吧', 'Ας μιλήσουμε', 'בואו נדבר'],
 			contacts: { linkedin: 'LinkedIn', email: 'Email', github: 'GitHub', cv: 'CV' },
+			alsoOn: 'Also on:',
+			elsewhere: { facebook: 'Facebook', deviantart: 'DeviantArt', wikipedia: 'Wikipedia' },
 		},
 		game: {
 			enter: 'Game mode',
@@ -303,5 +315,8 @@ export const links = {
 	github: 'https://github.com/ShoobyD',
 	/** The public CV (no phone number); the full one is kept off the site. */
 	cv: '/files/baruch-mustakis-cv.pdf',
+	facebook: 'https://www.facebook.com/ShoobyD',
+	deviantart: 'https://www.deviantart.com/shoobyd',
+	wikipedia: 'https://he.wikipedia.org/wiki/%D7%9E%D7%A9%D7%AA%D7%9E%D7%A9:ShoobyD',
 } as const;
 
