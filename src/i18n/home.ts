@@ -51,6 +51,8 @@ interface HomeCopy {
 		contacts: { linkedin: string; email: string; github: string; cv: string };
 		alsoOn: string;
 		elsewhere: { facebook: string; deviantart: string; wikipedia: string };
+		/** The dialog that shows the CV in place. */
+		cvView: { title: string; download: string; close: string };
 	};
 	game: GameCopy;
 }
@@ -163,6 +165,7 @@ export const home: Record<Lang, HomeCopy> = {
 			contacts: { linkedin: 'לינקדאין', email: 'אימייל', github: 'גיטהאב', cv: 'קורות־חיים' },
 			alsoOn: 'גם ב:',
 			elsewhere: { facebook: 'פייסבוק', deviantart: 'DeviantArt', wikipedia: 'ויקיפדיה' },
+			cvView: { title: 'קורות־חיים', download: 'הורדה', close: 'סגירה' },
 		},
 		game: {
 			enter: 'מצב משחק',
@@ -260,6 +263,7 @@ export const home: Record<Lang, HomeCopy> = {
 			contacts: { linkedin: 'LinkedIn', email: 'Email', github: 'GitHub', cv: 'CV' },
 			alsoOn: 'Also on:',
 			elsewhere: { facebook: 'Facebook', deviantart: 'DeviantArt', wikipedia: 'Wikipedia' },
+			cvView: { title: 'CV', download: 'Download', close: 'Close' },
 		},
 		game: {
 			enter: 'Game mode',

@@ -10,6 +10,8 @@ export interface ContactItem {
 	href: string;
 	external?: boolean;
 	icon?: LinkIconName;
+	/** Marks the link for a viewer that may open it in place (e.g. `cv`, see CvViewer.astro). */
+	opens?: string;
 }
 
 defineProps<{ items: ContactItem[] }>();
@@ -22,6 +24,7 @@ defineProps<{ items: ContactItem[] }>();
 				:href="item.href"
 				:rel="item.external ? 'noopener' : undefined"
 				:target="item.external ? '_blank' : undefined"
+				:data-opens="item.opens"
 			>
 				<span class="contacts__label">
 					<LinkIcon v-if="item.icon" :name="item.icon" :size="18" />

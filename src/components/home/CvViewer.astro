@@ -1,0 +1,137 @@
+---
+/**
+ * The CV, read in place: a link carrying `data-opens="cv"` (the summit's CV row) opens this
+ * dialog with the PDF shown full size over the tower, a download button and a close button.
+ *
+ * Progressive: the dialog only takes over where the browser can show a PDF inline
+ * (`navigator.pdfViewerEnabled`) on a screen wide enough to read it. Anywhere else (phones, no
+ * JavaScript) the link keeps doing what it always did: open the PDF itself. The PDF is only
+ * fetched when the dialog first opens.
+ */
+import LinkIcon from '../../theme/components/LinkIcon.vue';
+
+interface Props {
+	/** URL of the PDF. */
+	src: string;
+	/** The dialog's title, also the frame's accessible name. */
+	title: string;
+	downloadLabel: string;
+	closeLabel: string;
+	/** File name suggested when downloading. */
+	fileName: string;
+}
+
+const { src, title, downloadLabel, closeLabel, fileName } = Astro.props;
+---
+
+<dialog class="cv-view" aria-labelledby="cv-view-title" data-cv-view data-src={src}>
+	<header class="cv-view__bar">
+		<h2 id="cv-view-title" class="cv-view__title">
+			<LinkIcon name="cv" size={20} />
+			{title}
+		</h2>
+		<div class="cv-view__actions">
+			<a class="sd-control sd-control--gold" href={src} download={fileName}>{downloadLabel}</a>
+			<form method="dialog">
+				<button class="sd-control" type="submit">{closeLabel}</button>
+			</form>
+		</div>
+	</header>
+	<!-- the frame gets its src on first open, so the PDF isn't fetched with the page -->
+	<iframe class="cv-view__frame" title={title}></iframe>
+</dialog>
+
+<script>
+	const view = document.querySelector<HTMLDialogElement>('[data-cv-view]');
+	const frame = view?.querySelector<HTMLIFrameElement>('.cv-view__frame');
+	const wide = window.matchMedia('(min-width: 48rem)');
+	const canShowPdf = () => (navigator as Navigator & { pdfViewerEnabled?: boolean }).pdfViewerEnabled === true && wide.matches;
+
+	if (view && frame && typeof view.showModal === 'function') {
+		document.querySelectorAll<HTMLAnchorElement>('a[data-opens="cv"]').forEach((link) => {
+			link.addEventListener('click', (e) => {
+				if (!canShowPdf() || e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return; // a new tab stays a new tab
+				e.preventDefault();
+				// no thumbnail pane, fitted to the width: the page reads at its largest
+				if (!frame.src) frame.src = `${view.dataset.src ?? ''}#navpanes=0&view=FitH`;
+				view.showModal();
+			});
+		});
+		// a click on the backdrop (outside the sheet) closes it, like Esc and the close button
+		view.addEventListener('click', (e) => {
+			if (e.target === view) view.close();
+		});
+	}
+</script>
+
+<style>
+	.cv-view {
+		inline-size: min(92vw, 62rem);
+		block-size: min(92vh, 72rem);
+		max-inline-size: none;
+		max-block-size: none;
+		padding: 0;
+		display: none;
+		flex-direction: column;
+		color: var(--sd-text);
+		background: linear-gradient(180deg, var(--sd-glass), var(--sd-glass-strong));
+		backdrop-filter: blur(16px);
+		border: 1px solid var(--sd-line);
+		border-radius: 10px;
+		box-shadow: var(--sd-shadow-panel);
+		overflow: hidden;
+	}
+	.cv-view[open] {
+		display: flex;
+		animation: cv-in var(--sd-dur) var(--sd-ease);
+	}
+	@keyframes cv-in {
+		from { opacity: 0; transform: translateY(14px) scale(0.98); }
+	}
+	.cv-view::backdrop {
+		background: rgb(14 12 10 / 0.72);
+		backdrop-filter: blur(6px);
+	}
+
+	.cv-view__bar {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--sd-space-3);
+		padding-block: var(--sd-space-3);
+		padding-inline: var(--sd-space-5);
+		border-block-end: 1px solid var(--sd-line);
+	}
+	.cv-view__title {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--sd-space-2);
+		font-size: 1.35rem;
+		color: var(--sd-text);
+	}
+	.cv-view__title :global(.sd-link-icon) {
+		color: var(--sd-gold);
+	}
+	.cv-view__actions {
+		display: flex;
+		gap: var(--sd-space-2);
+	}
+	.cv-view__actions form {
+		display: contents;
+	}
+
+	.cv-view__frame {
+		flex: 1;
+		inline-size: 100%;
+		min-block-size: 0;
+		border: 0;
+		background: var(--sd-limestone);
+	}
+
+	/* the page under the open dialog stays where it is */
+	:global(html:has(dialog.cv-view[open])) {
+		overflow: hidden;
+	}
+</style>
+

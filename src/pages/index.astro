@@ -12,6 +12,7 @@ import TierSection from '../components/home/TierSection.vue';
 import ProjectList from '../components/home/ProjectList.vue';
 import CraftList from '../components/home/CraftList.vue';
 import ContactList from '../components/home/ContactList.vue';
+import CvViewer from '../components/home/CvViewer.astro';
 import LinkIcon from '../theme/components/LinkIcon.vue';
 import AltitudeGauge from '../components/home/AltitudeGauge.vue';
 import BabelTitle from '../components/home/BabelTitle.vue';
@@ -57,7 +58,7 @@ const contacts = [
 	{ id: 'linkedin', icon: 'linkedin' as const, label: c.summit.contacts.linkedin, value: 'in/ShoobyD', href: links.linkedin, external: true },
 	{ id: 'email', icon: 'email' as const, label: c.summit.contacts.email, value: 'bmusty@gmail.com', href: links.email },
 	{ id: 'github', icon: 'github' as const, label: c.summit.contacts.github, value: 'ShoobyD', href: links.github, external: true },
-	{ id: 'cv', icon: 'cv' as const, label: c.summit.contacts.cv, value: 'PDF', href: links.cv, external: true },
+	{ id: 'cv', icon: 'cv' as const, label: c.summit.contacts.cv, value: 'PDF', href: links.cv, external: true, opens: 'cv' },
 ];
 
 /** Other profiles, a lighter row under the main contacts. */
@@ -135,6 +136,13 @@ const elsewhere = [
 		<BabelTitle slot="title" client:visible text={c.summit.title} sequence={c.summit.babel} />
 		<p class="wink">{c.summit.wink}</p>
 		<ContactList items={contacts} />
+		<CvViewer
+			src={links.cv}
+			title={c.summit.cvView.title}
+			downloadLabel={c.summit.cvView.download}
+			closeLabel={c.summit.cvView.close}
+			fileName="Baruch-Mustakis-CV.pdf"
+		/>
 		<div class="elsewhere">
 			<span class="elsewhere__lead" id="elsewhere-lead">{c.summit.alsoOn}</span>
 			<ul class="chips chips--links" aria-labelledby="elsewhere-lead">
