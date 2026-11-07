@@ -202,15 +202,47 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 	// the static layout's progress; then the root class flips the layout and the scroll position
 	// is mapped onto the tall climb spans so the visitor stays on the tier they were reading.
 	let climb: Climb | null = null;
-	let smooth = progressAt(sectionTops(sectionEls), window.scrollY);
+	// A link straight to a tier (`/#tier-summit`, where /contact/ redirects) parks the climb on it
+	// exactly: the static page can't always scroll the last tier's top up to the viewport, so its
+	// scroll position alone would land just below it. It holds while the page is still within a
+	// tier of the link (layout settling and scroll anchoring move it a little); a visitor who has
+	// scrolled further away keeps their own place.
+	const linkedTier = (() => {
+		const id = /^#tier-([\w-]+)$/.exec(location.hash)?.[1];
+		const i = id ? opts.tiers.indexOf(id) : -1;
+		return i >= 0 ? i : null;
+	})();
+	const readingNow = () => {
+		const at = progressAt(sectionTops(sectionEls), window.scrollY);
+		return linkedTier !== null && Math.abs(at - linkedTier) < 1 ? linkedTier : at;
+	};
+	/**
+	 * The tier the climb stays parked on while the layout settles after arriving by such a link
+	 * (panels docking, fonts, the mode switch all re-measure the sections); the visitor's first
+	 * wheel, touch, key or click lets go of it.
+	 */
+	let pinned: number | null = null;
+	const PIN_RELEASE = ['wheel', 'touchstart', 'keydown', 'pointerdown'] as const;
+	function unpin() {
+		pinned = null;
+		PIN_RELEASE.forEach((type) => window.removeEventListener(type, unpin, true));
+	}
+	function holdPin() {
+		if (pinned !== null) climb?.goTier(pinned);
+	}
+	let smooth = readingNow();
 	const intro = { from: 0, play: smooth < 0.05 };
 	let enter = 0;
 
 	function activate(now: number) {
-		const reading = progressAt(sectionTops(sectionEls), window.scrollY);
+		const reading = readingNow();
 		root.classList.add(TOWER_CLASS);
 		climb = createClimb(sectionEls, panelEls);
 		if (reading > 0) climb.goTo(reading);
+		if (linkedTier !== null && reading === linkedTier) {
+			pinned = linkedTier;
+			PIN_RELEASE.forEach((type) => window.addEventListener(type, unpin, { capture: true, passive: true }));
+		}
 		smooth = climb.progress;
 		// the intro dolly only plays when arriving at the base
 		intro.play = reading < 0.05;
@@ -222,10 +254,14 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 		stage.setSize(window.innerWidth, window.innerHeight);
 		rig.resize(narrow);
 		climb?.measure();
+		holdPin();
 	}
 	window.addEventListener('resize', onResize);
 	// section heights change with fonts, panel content and the mode switch itself
-	const layoutWatch = new ResizeObserver(() => climb?.measure());
+	const layoutWatch = new ResizeObserver(() => {
+		climb?.measure();
+		holdPin();
+	});
 	layoutWatch.observe(document.body);
 
 	function onContextLost(e: Event) {
@@ -336,6 +372,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 			window.removeEventListener('click', onClick);
 			window.removeEventListener('resize', onResize);
 			layoutWatch.disconnect();
+			unpin();
 			opts.canvas.removeEventListener('webglcontextlost', onContextLost);
 			cardHandlers.forEach((h) => {
 				if (!h) return;

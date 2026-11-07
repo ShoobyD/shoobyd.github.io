@@ -7,6 +7,10 @@ export default defineConfig({
 	site: 'https://shoobyd.github.io',
 	trailingSlash: 'always',
 	integrations: [vue()],
+	redirects: {
+		// the old contact page: contact now lives at the tower's summit
+		'/contact/': '/#tier-summit',
+	},
 	i18n: {
 		defaultLocale: 'he',
 		locales: ['he', 'en'],
