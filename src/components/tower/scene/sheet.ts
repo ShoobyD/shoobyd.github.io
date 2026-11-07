@@ -29,6 +29,8 @@ export function createSheet(panels: HTMLElement[], startTier: number) {
 	const titles = panels.map((p) => p.querySelector<HTMLElement>('.tier__title'));
 	let tier = startTier;
 	let game = false;
+	/** the bottom of the fixed header, measured with the sheets */
+	let headerBottom = 0;
 
 	function set(i: number, open: boolean) {
 		const p = panels[i];
@@ -60,7 +62,8 @@ export function createSheet(panels: HTMLElement[], startTier: number) {
 			const t = titles[i];
 			if (t) p.style.setProperty('--sheet-peek', `${t.offsetTop + t.offsetHeight + PEEK_BELOW_TITLE}px`);
 		});
-		if (header) root.style.setProperty('--sheet-top', `${Math.round(header.getBoundingClientRect().bottom + 6)}px`);
+		headerBottom = header ? Math.round(header.getBoundingClientRect().bottom) : 0;
+		root.style.setProperty('--sheet-top', `${headerBottom + 6}px`);
 		syncRoot();
 	}
 
@@ -198,6 +201,18 @@ export function createSheet(panels: HTMLElement[], startTier: number) {
 	measure();
 
 	return {
+		/**
+		 * How far (px) to lift the tower so it sits in the middle of the room between the header and
+		 * the top of tier `i`'s sheet, wherever that is right now (open, collapsed, mid-drag or
+		 * mid-transition).
+		 */
+		lift(i: number) {
+			const p = panels[i];
+			if (!p) return 0;
+			// the box includes the sheet's translate (and the climb's small drift)
+			const sheetTop = Math.min(window.innerHeight, p.getBoundingClientRect().top);
+			return window.innerHeight / 2 - (headerBottom + sheetTop) / 2;
+		},
 		/**
 		 * Called every frame with the tier in view and the one the climb is heading to: a new tier
 		 * in view (or game mode) collapses the sheets.

@@ -205,6 +205,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 	let climb: Climb | null = null;
 	// narrow screens: the panels are bottom sheets (see ./sheet.ts)
 	let sheet: Sheet | null = null;
+	let lift: number | null = null;
 	// A link straight to a tier (`/#tier-summit`, where /contact/ redirects) parks the climb on it
 	// exactly: the static page can't always scroll the last tier's top up to the viewport, so its
 	// scroll position alone would land just below it. It holds while the page is still within a
@@ -306,7 +307,12 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 			shot.look.lerp(d.look, blend);
 			if (d.altitude !== undefined) altitude = lerp(altitude, d.altitude, blend);
 		}
-		rig.apply(shot, narrow, 1 - blend);
+		// narrow screens: the tower rises into the room above the sheet in view, following it as it
+		// opens, collapses or is dragged (eased, so changing tiers doesn't jolt the frame)
+		const liftTo = narrow && sheet ? sheet.lift(nearest) : null;
+		if (liftTo === null) lift = null;
+		else lift = lift === null ? liftTo : lift + (liftTo - lift) * damp(9, dt);
+		rig.apply(shot, narrow, 1 - blend, lift ?? undefined);
 
 		const atmo = sky.update(altitude, rig.theta, time, camera);
 		stage.renderer.toneMappingExposure = atmo.exposure;

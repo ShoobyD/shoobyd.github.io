@@ -80,5 +80,16 @@ defineProps<{ items: ContactItem[] }>();
 	font-size: 1.08rem;
 	overflow-wrap: anywhere;
 }
+
+/* narrow screens: a little tighter, so the open summit sheet holds them all on small phones
+ * (the rows stay about 44px tall) */
+@media (max-width: 47.5rem) {
+	.contacts {
+		gap: 6px;
+	}
+	.contacts a {
+		padding-block: 8px;
+	}
+}
 </style>
 

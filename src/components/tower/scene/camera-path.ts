@@ -67,15 +67,16 @@ export function createCameraRig(camera: THREE.PerspectiveCamera) {
 		},
 		/**
 		 * Points the camera. `framing` (0..1) scales the view offset that keeps the tower clear of
-		 * the panel; a takeover such as game mode can lower it to centre the tower.
+		 * the panel; a takeover such as game mode can lower it to centre the tower. On narrow
+		 * screens the panel is a bottom sheet and the tower is lifted instead, by `lift` px: into
+		 * the middle of the room the sheet leaves (see ./sheet.ts), 20% of the height without one.
 		 */
-		apply(target: { pos: THREE.Vector3; look: THREE.Vector3 }, narrow: boolean, framing = 1) {
+		apply(target: { pos: THREE.Vector3; look: THREE.Vector3 }, narrow: boolean, framing = 1, lift?: number) {
 			camera.position.copy(target.pos);
 			camera.lookAt(target.look);
 			const w = window.innerWidth, h = window.innerHeight;
 			const offX = narrow ? 0 : side * w * 0.155 * framing;
-			// on narrow screens the panel docks at the bottom, so the tower is lifted instead
-			const offY = narrow ? h * 0.2 * framing : 0;
+			const offY = narrow ? (lift ?? h * 0.2) * framing : 0;
 			camera.setViewOffset(w, h, offX, offY, w, h);
 			camera.updateProjectionMatrix();
 		},
