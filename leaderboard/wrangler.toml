@@ -1,0 +1,21 @@
+# Leaderboard API for the Tower of Babel game on shoobyd.github.io.
+# Deployed separately from the site (which stays static on GitHub Pages):
+#   npm run migrate:remote && npm run deploy
+# The admin key for deleting entries is a secret, never stored here:
+#   npx wrangler secret put ADMIN_TOKEN
+
+name = "shoobyd-tower-leaderboard"
+main = "src/index.ts"
+compatibility_date = "2026-10-01"
+
+[vars]
+# origins allowed to call the API (the live site, plus local dev and preview)
+ALLOWED_ORIGINS = "https://shoobyd.github.io,http://localhost:4321,http://localhost:4399"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "tower-leaderboard"
+# placeholder for local development; replaced with the real id when the database is created (step L2)
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
+
