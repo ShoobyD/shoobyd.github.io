@@ -68,9 +68,23 @@ const contacts = [
 		<p class="handle" lang="en" dir="ltr">ShoobyD</p>
 		<p class="lead">{c.base.lead}</p>
 		<figure class="portrait">
-			<span class="portrait__mat">
-				<Image src={selfPortrait} alt={c.base.portraitAlt} widths={[260, 520]} sizes="15rem" loading="eager" />
-			</span>
+			<!-- without JavaScript the link simply opens the drawing; with it, the dialog below -->
+			<a class="portrait__open" href={selfPortrait.src} aria-label={c.base.portraitOpen} data-portrait-open>
+				<span class="portrait__mat">
+					<Image src={selfPortrait} alt={c.base.portraitAlt} widths={[260, 520]} sizes="15rem" loading="eager" />
+				</span>
+			</a>
+			<dialog class="portrait-view" aria-label={c.base.portraitCaption} data-portrait-view>
+				<figure class="portrait-view__figure">
+					<span class="portrait-view__mat">
+						<Image src={selfPortrait} alt={c.base.portraitAlt} widths={[557]} sizes="min(88vw, 46rem)" loading="lazy" />
+					</span>
+					<figcaption>{c.base.portraitCaption}</figcaption>
+				</figure>
+				<form method="dialog" class="portrait-view__close">
+					<button class="sd-control" type="submit">{c.base.portraitClose}</button>
+				</form>
+			</dialog>
 		</figure>
 		<p class="hint">
 			<svg viewBox="0 0 20 20" aria-hidden="true">
@@ -117,6 +131,22 @@ const contacts = [
 		<ContactList items={contacts} />
 	</TierSection>
 </Base>
+
+<script>
+	// the self-portrait opens enlarged in a modal dialog: Esc, the close button or a click on the
+	// backdrop close it, and focus returns to the drawing (native <dialog> behaviour)
+	const open = document.querySelector<HTMLAnchorElement>('[data-portrait-open]');
+	const view = document.querySelector<HTMLDialogElement>('[data-portrait-view]');
+	if (open && view && typeof view.showModal === 'function') {
+		open.addEventListener('click', (e) => {
+			e.preventDefault();
+			view.showModal();
+		});
+		view.addEventListener('click', (e) => {
+			if (e.target === view) view.close();
+		});
+	}
+</script>
 
 <style is:global>
 	html {
@@ -193,21 +223,39 @@ const contacts = [
 	.dim {
 		color: var(--sd-text-dim);
 	}
-	/* the self-portrait: a pen drawing on a limestone mat, hung slightly askew */
+	/* the self-portrait: a pen drawing on a limestone mat, hung slightly askew; hovering or
+	 * focusing it straightens it on its nail and lifts it off the wall, a click enlarges it */
 	.portrait {
 		max-inline-size: 15rem;
 		margin-block: var(--sd-space-5) 0;
-		margin-inline: 0;
+		margin-inline: auto;
 	}
-	.portrait__mat {
+	.portrait__open {
+		display: block;
+		border-radius: 3px;
+		cursor: zoom-in;
+	}
+	.portrait__mat,
+	.portrait-view__mat {
 		display: block;
 		padding: 10px;
 		background: var(--sd-limestone);
 		border-radius: 3px;
 		box-shadow: 0 14px 30px -12px rgb(10 8 6 / 0.7), inset 0 0 0 1px rgb(45 42 38 / 0.15);
-		transform: rotate(-1.4deg);
 	}
-	.portrait img {
+	.portrait__mat {
+		transform: rotate(-1.4deg);
+		transition:
+			transform var(--sd-dur) var(--sd-ease),
+			box-shadow var(--sd-dur) var(--sd-ease);
+	}
+	.portrait__open:hover .portrait__mat,
+	.portrait__open:focus-visible .portrait__mat {
+		transform: translateY(-4px);
+		box-shadow: 0 24px 40px -14px rgb(10 8 6 / 0.75), inset 0 0 0 1px rgb(45 42 38 / 0.15);
+	}
+	.portrait img,
+	.portrait-view img {
 		display: block;
 		inline-size: 100%;
 		block-size: auto;
@@ -215,6 +263,49 @@ const contacts = [
 	}
 	@media (max-width: 47.5rem) {
 		.portrait { max-inline-size: 11rem; }
+	}
+
+	/* the enlarged drawing: a native modal dialog over a darkened, blurred page */
+	.portrait-view {
+		inline-size: min(88vw, 46rem);
+		max-block-size: 92vh;
+		padding: 0;
+		overflow: visible;
+		color: var(--sd-text);
+		background: none;
+		border: 0;
+	}
+	.portrait-view::backdrop {
+		background: rgb(14 12 10 / 0.72);
+		backdrop-filter: blur(6px);
+	}
+	.portrait-view[open] {
+		animation: portrait-in var(--sd-dur) var(--sd-ease);
+	}
+	@keyframes portrait-in {
+		from { opacity: 0; transform: translateY(12px) scale(0.97); }
+	}
+	.portrait-view__figure {
+		margin: 0;
+	}
+	.portrait-view__mat {
+		padding: 14px;
+	}
+	.portrait-view figcaption {
+		margin-block-start: var(--sd-space-4);
+		font-family: var(--sd-font-serif);
+		font-size: 1.15rem;
+		text-align: center;
+		text-shadow: var(--sd-shadow-text);
+	}
+	.portrait-view__close {
+		display: flex;
+		justify-content: center;
+		margin-block-start: var(--sd-space-4);
+	}
+	/* the page under the open dialog stays where it is */
+	html:has(.portrait-view[open]) {
+		overflow: hidden;
 	}
 
 	.hint {

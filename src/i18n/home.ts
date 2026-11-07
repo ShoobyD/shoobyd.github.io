@@ -23,8 +23,19 @@ interface HomeCopy {
 	/** Shown on the full-screen loader while the 3D tower is being prepared. */
 	loader: string;
 	gauge: { label: string; unit: string; tiers: Record<TierId, string> };
-	/** `portraitAlt` describes the self-portrait drawing shown in the base panel. */
-	base: { title: string; lead: string; hint: string; portraitAlt: string };
+	/**
+	 * The self-portrait in the base panel: `portraitAlt` describes the drawing, `portraitOpen`
+	 * labels the link that enlarges it, `portraitCaption` / `portraitClose` belong to the dialog.
+	 */
+	base: {
+		title: string;
+		lead: string;
+		hint: string;
+		portraitAlt: string;
+		portraitOpen: string;
+		portraitCaption: string;
+		portraitClose: string;
+	};
 	/** `doorHint`, like `making.stringsHint`, is shown only while the 3D tower is on screen. */
 	code: { title: string; lead: string; doorHint: string; status: Record<ProjectStatus, string> };
 	math: { title: string; lead: string; aside: string };
@@ -48,6 +59,9 @@ export const home: Record<Lang, HomeCopy> = {
 			lead: 'מפתח־ווב, מתמטיקאי בהכשרתו. טפסו למעלה.',
 			hint: 'גללו כדי לטפס',
 			portraitAlt: 'דיוקן עצמי בקווי עט: ברוך יושב מול מחשב, יד על הפנים, ומביט במסך כחול של שגיאה.',
+			portraitOpen: 'הגדלת הדיוקן העצמי',
+			portraitCaption: 'דיוקן עצמי. קורה גם לטובים ביותר.',
+			portraitClose: 'סגירה',
 		},
 		code: {
 			title: 'קוד',
@@ -97,6 +111,9 @@ export const home: Record<Lang, HomeCopy> = {
 			lead: 'Web developer, mathematician by training. Climb up.',
 			hint: 'Scroll to climb',
 			portraitAlt: 'A self-portrait in pen: Baruch at a computer, hand on his face, staring at a blue error screen.',
+			portraitOpen: 'Enlarge the self-portrait',
+			portraitCaption: 'Self-portrait. It happens to the best of us.',
+			portraitClose: 'Close',
 		},
 		code: {
 			title: 'Code',

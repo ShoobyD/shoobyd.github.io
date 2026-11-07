@@ -30,7 +30,8 @@ export function createClimb(sections: HTMLElement[], panels: HTMLElement[]) {
 	function onKey(e: KeyboardEvent) {
 		if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
 		const t = e.target as HTMLElement | null;
-		if (t?.closest?.('input, textarea, select, [contenteditable]')) return;
+		// form fields keep their keys, and so does an open dialog (the enlarged self-portrait)
+		if (t?.closest?.('input, textarea, select, [contenteditable], dialog[open]')) return;
 		const cur = Math.round(raw);
 		let to: number | null = null;
 		if (e.key === 'ArrowDown' || e.key === 'PageDown') to = cur + 1;
