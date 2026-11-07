@@ -15,7 +15,6 @@ ALLOWED_ORIGINS = "https://shoobyd.github.io,http://localhost:4321,http://localh
 [[d1_databases]]
 binding = "DB"
 database_name = "tower-leaderboard"
-# placeholder for local development; replaced with the real id when the database is created (step L2)
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "c24e624a-0129-4862-9bba-01407b558cd2"
 migrations_dir = "migrations"
 
