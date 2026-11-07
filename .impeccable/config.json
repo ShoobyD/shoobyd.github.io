@@ -29,6 +29,15 @@
         ],
         "createdAt": "2026-11-06T03:27:03.546Z",
         "reason": "Claude: spent round-0 decision sketch, eliminated by re-roll; not shipping UI"
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/previews/leaderboard/leaderboard-preview.html"
+        ],
+        "createdAt": "2026-11-07T14:58:39.373Z",
+        "reason": "Claude: review viewer page, light text (#e9e3d3/#cfc7b4/#f2c37e) on #1d1b18 is >9:1; detector misreads the background"
       }
     ]
   }
