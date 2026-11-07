@@ -15,6 +15,7 @@
  */
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import ArchPanel from '../../theme/components/ArchPanel.vue';
+import GameBoard from './GameBoard.vue';
 import type { GameCopy } from '../../i18n/home';
 import type { Game, TowerHandle } from './scene';
 
@@ -39,6 +40,9 @@ const overText = ref('');
 const announcement = ref('');
 const dialog = ref<HTMLDialogElement | null>(null);
 const againBtn = ref<HTMLButtonElement | null>(null);
+/** The run that just ended, for the leaderboard; `boardRun` is bumped per run so it reloads. */
+const lastRun = ref({ score: 0, durationMs: 0 });
+const boardRun = ref(0);
 
 let game: Game | null = null;
 let alive = true;
@@ -174,15 +178,20 @@ onMounted(async () => {
 			if (newBest) text = `${text}. ${props.copy.announceBest}`;
 			announce(text);
 		},
-		onOver(n) {
+		onOver(n, durationMs) {
 			overText.value = fill(props.copy.overText, n);
+			// start loading the board now, so it is usually there by the time the card comes up
+			lastRun.value = { score: n, durationMs };
+			boardRun.value++;
 			announce(overText.value);
 			// let the brick tumble before the card comes up
 			window.clearTimeout(timers.over);
 			timers.over = window.setTimeout(() => {
 				if (!active.value || !game?.over || !dialog.value || dialog.value.open) return;
 				dialog.value.showModal();
-				againBtn.value?.focus();
+				// a run that made the board starts on its name field; otherwise on "again"
+				const nameField = dialog.value.querySelector<HTMLInputElement>('#board-name');
+				(nameField ?? againBtn.value)?.focus();
 			}, 700);
 		},
 		onSecret() {
@@ -246,6 +255,15 @@ onBeforeUnmount(() => {
 		<ArchPanel as="div" class="game-over__card">
 			<h2 id="game-over-title">{{ copy.overTitle }}</h2>
 			<p id="game-over-text">{{ overText }}</p>
+			<GameBoard
+				v-if="boardRun > 0"
+				:copy="copy.board"
+				:score="lastRun.score"
+				:duration-ms="lastRun.durationMs"
+				:run="boardRun"
+				@announce="announce"
+				@added="againBtn?.focus()"
+			/>
 			<div class="game-over__actions">
 				<button ref="againBtn" class="sd-control sd-control--gold" type="button" @click="again">{{ copy.again }}</button>
 				<button class="sd-control" type="button" @click="exit()">{{ copy.exit }}</button>
@@ -391,10 +409,12 @@ onBeforeUnmount(() => {
 
 /* ---------- the game-over card: an arch panel in a native modal dialog ---------- */
 .game-over {
-	inline-size: min(25rem, calc(100% - 2 * var(--sd-gutter)));
+	/* wide enough for the leaderboard; tall cards scroll inside the viewport */
+	inline-size: min(28rem, calc(100% - 2 * var(--sd-gutter)));
+	max-block-size: calc(100dvh - 2 * var(--sd-space-4));
+	overflow-y: auto;
 	max-inline-size: none;
 	padding: 0;
-	overflow: visible;
 	color: var(--sd-text);
 	background: none;
 	border: 0;

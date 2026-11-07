@@ -69,6 +69,37 @@ export interface GameCopy {
 	announceStart: string;
 	announceScore: string;
 	announceBest: string;
+	board: BoardCopy;
+}
+
+/** The shared leaderboard on the game-over card. `{n}` / `{min}` are filled in by the game. */
+export interface BoardCopy {
+	title: string;
+	loading: string;
+	unavailable: string;
+	qualifies: string;
+	nameLabel: string;
+	namePlaceholder: string;
+	submit: string;
+	submitting: string;
+	yourSpot: string;
+	added: string;
+	short: string;
+	/** Read by screen readers for each row: "{rank}. {name}, {score} bricks". */
+	rowLabel: string;
+	/** One message per reason the server can refuse a name or a run, plus `network`. */
+	errors: Record<
+		| 'name_empty'
+		| 'name_long'
+		| 'name_chars'
+		| 'name_banned'
+		| 'rate_limited'
+		| 'too_fast'
+		| 'score_invalid'
+		| 'not_on_board'
+		| 'network',
+		string
+	>;
 }
 
 export const home: Record<Lang, HomeCopy> = {
@@ -140,6 +171,31 @@ export const home: Record<Lang, HomeCopy> = {
 			announceStart: 'מצב משחק. לבנה נעה מעל הפסגה; רווח או Enter מניחים אותה, Esc יוצא.',
 			announceScore: 'לבנים: {n}',
 			announceBest: 'שיא חדש',
+			board: {
+				title: 'בוני המגדל',
+				loading: 'טוענים את הלוח…',
+				unavailable: 'הלוח לא זמין כרגע.',
+				qualifies: 'נכנסתם לעשרת הראשונים!',
+				nameLabel: 'השם שלכם בלוח',
+				namePlaceholder: 'עד 20 תווים',
+				submit: 'הוספה ללוח',
+				submitting: 'מוסיפים…',
+				yourSpot: 'המקום שלכם',
+				added: 'נוספתם ללוח במקום {n}. המגדל זוכר.',
+				short: 'ללוח נכנסים מ־{min} לבנים. חסרות לכם {n}.',
+				rowLabel: 'מקום {rank}: {name}, {score} לבנים',
+				errors: {
+					name_empty: 'כתבו שם, ולו של מישהו אחר.',
+					name_long: 'עד 20 תווים.',
+					name_chars: 'רק אותיות, ספרות ורווחים, ונקודה, מקף או גרש.',
+					name_banned: 'השם הזה לא ייחקק במגדל. נסו אחר.',
+					rate_limited: 'יותר מדי ניסיונות. נסו שוב בעוד דקה.',
+					too_fast: 'התוצאה הזאת לא נראית אפשרית, ולכן לא נשמרה.',
+					score_invalid: 'משהו בתוצאה השתבש, והיא לא נשמרה.',
+					not_on_board: 'בינתיים מישהו עקף אתכם. הלוח עודכן.',
+					network: 'לא הצלחנו להגיע ללוח. נסו שוב.',
+				},
+			},
 		},
 	},
 	en: {
@@ -210,6 +266,31 @@ export const home: Record<Lang, HomeCopy> = {
 			announceStart: 'Game mode. A brick slides over the summit; Space or Enter drops it, Escape leaves.',
 			announceScore: 'Bricks: {n}',
 			announceBest: 'New best',
+			board: {
+				title: 'Tower builders',
+				loading: 'Loading the board…',
+				unavailable: "The board isn't available right now.",
+				qualifies: 'You made the top ten!',
+				nameLabel: 'Your name on the board',
+				namePlaceholder: 'Up to 20 characters',
+				submit: 'Add to the board',
+				submitting: 'Adding…',
+				yourSpot: 'Your spot',
+				added: 'You’re on the board at number {n}. The tower remembers.',
+				short: 'The board starts at {min} bricks. You were {n} short.',
+				rowLabel: 'Number {rank}: {name}, {score} bricks',
+				errors: {
+					name_empty: "Write a name, even if it isn't yours.",
+					name_long: 'Up to 20 characters.',
+					name_chars: 'Only letters, digits and spaces, plus a dot, hyphen or apostrophe.',
+					name_banned: "That name won't be carved into the tower. Try another.",
+					rate_limited: 'Too many tries. Try again in a minute.',
+					too_fast: "That score doesn't look possible, so it wasn't saved.",
+					score_invalid: "Something was off with that run, so it wasn't saved.",
+					not_on_board: 'Someone overtook you in the meantime. The board is updated.',
+					network: "Couldn't reach the board. Try again.",
+				},
+			},
 		},
 	},
 };
