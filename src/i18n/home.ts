@@ -301,6 +301,7 @@ export const links = {
 	linkedin: 'https://www.linkedin.com/in/ShoobyD/',
 	email: 'mailto:bmusty@gmail.com',
 	github: 'https://github.com/ShoobyD',
-	cv: '/assets/files/Curriculum%20Vitae.pdf',
+	/** The public CV (no phone number); the full one is kept off the site. */
+	cv: '/files/baruch-mustakis-cv.pdf',
 } as const;
 
