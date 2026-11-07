@@ -26,7 +26,8 @@ import { disposeScene } from './dispose';
 import { createDoors, type DoorSpec } from './tiers/doors';
 import { createArmillary } from './tiers/armillary';
 import { createGlyphs } from './tiers/glyphs';
-import { createStrings } from './tiers/strings';
+import { STRING_COUNT, createStrings } from './tiers/strings';
+import { createGuitarSound } from './tiers/guitar-sound';
 import { createPortrait, type PortraitSpec } from './tiers/portrait';
 import { TOWER_CLASS, progressAt, scrollFor, sectionTops } from '../mode';
 
@@ -149,6 +150,8 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 	});
 
 	const pointer = { x: 0, y: 0, sx: 0, sy: 0, ndc: new THREE.Vector2(), lastX: 0, lastY: 0, moved: false, inUi: false };
+	/** The strings' notes; silent until the visitor's first click, tap or key press. */
+	const guitar = createGuitarSound();
 	let nearest = 0;
 	let doorHover = -1;
 	function onPointerMove(e: PointerEvent) {
@@ -162,7 +165,17 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 		// a mouse or pen strums on any sweep; a finger only on a sideways swipe, because a vertical
 		// swipe is the scroll that climbs the tower (the page is `touch-action: pan-y` in 3D mode,
 		// so the browser leaves sideways moves to us and takes vertical ones as a scroll)
-		if (nearest === 4 && (e.pointerType !== 'touch' || Math.abs(dx) > Math.abs(dy))) strings.strum(dx);
+		if (nearest === 4 && (e.pointerType !== 'touch' || Math.abs(dx) > Math.abs(dy))) {
+			// each string the pointer crossed rings and sounds its note, harder for a faster sweep
+			const strength = Math.min(1, Math.max(0.35, Math.hypot(dx, dy) / 40));
+			for (const k of strings.track(pointer.ndc, camera)) {
+				strings.pluck(k, strength);
+				// heard where it stands: the low strings to the left, the high ones to the right
+				guitar.pluck(k, strength, (((STRING_COUNT - 1) / 2 - k) / STRING_COUNT) * 0.8);
+			}
+		} else {
+			strings.resetTracking();
+		}
 		pointer.lastX = e.clientX;
 		pointer.lastY = e.clientY;
 	}
@@ -170,6 +183,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 	function onPointerDown(e: PointerEvent) {
 		pointer.lastX = e.clientX;
 		pointer.lastY = e.clientY;
+		strings.resetTracking();
 	}
 	// clicking a doorway opens its project; the pick happens at click time so taps work too
 	function onClick(e: MouseEvent) {
@@ -333,6 +347,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 			});
 			document.body.style.cursor = '';
 			glyphs.dispose();
+			guitar.dispose();
 			disposeScene(scene);
 			stage.dispose();
 		},
