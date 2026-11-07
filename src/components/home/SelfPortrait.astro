@@ -1,0 +1,217 @@
+---
+/**
+ * Baruch's self-portrait (his pen drawing of himself facing a blue error screen): a small framed
+ * drawing on a limestone mat, hung slightly askew. Hovering or focusing it straightens it on its
+ * nail and lifts it off the wall; a click enlarges it in a modal dialog that grows out of the
+ * small drawing and shrinks back into it on close.
+ *
+ * Content-agnostic: the image and every string come in as props. Without JavaScript the link
+ * simply opens the drawing. With reduced motion the dialog opens and closes without animation.
+ * (The 3D climb ignores keys from inside an open dialog; see `onKey` in tower/scene/climb.ts.)
+ */
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+
+interface Props {
+	image: ImageMetadata;
+	/** Describes the drawing, for both the small and the enlarged image. */
+	alt: string;
+	/** Labels the link that enlarges it. */
+	openLabel: string;
+	/** Shown under the enlarged drawing; also names the dialog. */
+	caption: string;
+	closeLabel: string;
+}
+
+const { image, alt, openLabel, caption, closeLabel } = Astro.props;
+---
+
+<figure class="portrait" data-self-portrait>
+	<a class="portrait__open" href={image.src} aria-label={openLabel}>
+		<span class="portrait__mat">
+			<Image src={image} alt={alt} widths={[260, 520]} sizes="15rem" loading="eager" />
+		</span>
+	</a>
+	<dialog class="portrait-view" aria-label={caption}>
+		<figure class="portrait-view__figure">
+			<span class="portrait-view__mat">
+				<Image src={image} alt={alt} widths={[image.width]} sizes="min(88vw, 46rem)" loading="lazy" />
+			</span>
+			<figcaption>{caption}</figcaption>
+		</figure>
+		<form method="dialog" class="portrait-view__close">
+			<button class="sd-control" type="submit">{closeLabel}</button>
+		</form>
+	</dialog>
+</figure>
+
+<script>
+	/*
+	 * The enlarged drawing grows out of the small one (a FLIP: the large drawing starts exactly
+	 * over the small one — same place, size and tilt — and animates to its own place), and shrinks
+	 * back into it on close. Esc, the close button or a click on the backdrop close it; focus
+	 * returns to the drawing (native <dialog>).
+	 */
+	const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+	const easing = 'cubic-bezier(0.22, 1, 0.36, 1)';
+	const duration = 520;
+
+	function setUp(root: HTMLElement) {
+		const open = root.querySelector<HTMLAnchorElement>('.portrait__open');
+		const view = root.querySelector<HTMLDialogElement>('.portrait-view');
+		const thumb = open?.querySelector<HTMLElement>('.portrait__mat');
+		const big = view?.querySelector<HTMLElement>('.portrait-view__mat');
+		if (!open || !view || !thumb || !big || typeof view.showModal !== 'function') return;
+		const extras = [...view.querySelectorAll<HTMLElement>('figcaption, .portrait-view__close')];
+		let closing = false;
+
+		/** The transform that lays the large drawing over the small one, as it sits right now. */
+		function fromThumb() {
+			const small = thumb!.getBoundingClientRect();
+			const large = big!.getBoundingClientRect();
+			const dx = small.x + small.width / 2 - (large.x + large.width / 2);
+			const dy = small.y + small.height / 2 - (large.y + large.height / 2);
+			const scale = small.width / large.width;
+			const tilt = open!.matches(':hover, :focus-visible') ? 0 : -1.4;
+			return `translate(${dx}px, ${dy}px) scale(${scale}) rotate(${tilt}deg)`;
+		}
+
+		function backdrop(keyframes: Keyframe[]) {
+			try {
+				view!.animate(keyframes, { duration, easing, fill: 'forwards', pseudoElement: '::backdrop' });
+			} catch {
+				// a browser that cannot animate ::backdrop just shows it at once
+			}
+		}
+
+		open.addEventListener('click', (e) => {
+			e.preventDefault();
+			view.showModal();
+			if (reduced.matches) return;
+			thumb.style.visibility = 'hidden';
+			big.animate([{ transform: fromThumb() }, { transform: 'none' }], { duration, easing });
+			backdrop([{ opacity: 0 }, { opacity: 1 }]);
+			extras.forEach((el) =>
+				el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, delay: duration * 0.6, easing, fill: 'backwards' }),
+			);
+		});
+
+		async function close() {
+			if (closing || !view!.open) return;
+			if (reduced.matches) {
+				view!.close();
+				return;
+			}
+			closing = true;
+			extras.forEach((el) => el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 140, fill: 'forwards' }));
+			backdrop([{ opacity: 1 }, { opacity: 0 }]);
+			const shrink = big!.animate([{ transform: 'none' }, { transform: fromThumb() }], { duration, easing, fill: 'forwards' });
+			await shrink.finished.catch(() => {});
+			view!.close();
+			thumb!.style.visibility = '';
+			view!.getAnimations({ subtree: true }).forEach((a) => a.cancel());
+			closing = false;
+		}
+
+		// every way out runs the shrink: Esc (cancel), the close button, a click on the backdrop
+		view.addEventListener('cancel', (e) => {
+			e.preventDefault();
+			close();
+		});
+		view.querySelector('.portrait-view__close')?.addEventListener('submit', (e) => {
+			e.preventDefault();
+			close();
+		});
+		view.addEventListener('click', (e) => {
+			if (e.target === view) close();
+		});
+		view.addEventListener('close', () => {
+			thumb.style.visibility = '';
+		});
+	}
+
+	document.querySelectorAll<HTMLElement>('[data-self-portrait]').forEach(setUp);
+</script>
+
+<style>
+	.portrait {
+		max-inline-size: 15rem;
+		margin-block: var(--sd-space-5) 0;
+		margin-inline: auto;
+	}
+	.portrait__open {
+		display: block;
+		border-radius: 3px;
+		cursor: zoom-in;
+	}
+	.portrait__mat,
+	.portrait-view__mat {
+		display: block;
+		padding: 10px;
+		background: var(--sd-limestone);
+		border-radius: 3px;
+		box-shadow: 0 14px 30px -12px rgb(10 8 6 / 0.7), inset 0 0 0 1px rgb(45 42 38 / 0.15);
+	}
+	.portrait__mat {
+		transform: rotate(-1.4deg);
+		transition:
+			transform var(--sd-dur) var(--sd-ease),
+			box-shadow var(--sd-dur) var(--sd-ease);
+	}
+	.portrait__open:hover .portrait__mat,
+	.portrait__open:focus-visible .portrait__mat {
+		transform: translateY(-4px);
+		box-shadow: 0 24px 40px -14px rgb(10 8 6 / 0.75), inset 0 0 0 1px rgb(45 42 38 / 0.15);
+	}
+	/* <Image> renders its own <img>, outside this component's style scope */
+	.portrait__mat :global(img),
+	.portrait-view__mat :global(img) {
+		display: block;
+		inline-size: 100%;
+		block-size: auto;
+		border-radius: 1px;
+	}
+	@media (max-width: 47.5rem) {
+		.portrait { max-inline-size: 11rem; }
+	}
+
+	/* the enlarged drawing: a native modal dialog over a darkened, blurred page */
+	.portrait-view {
+		inline-size: min(88vw, 46rem);
+		max-block-size: 92vh;
+		padding: 0;
+		overflow: visible;
+		color: var(--sd-text);
+		background: none;
+		border: 0;
+	}
+	.portrait-view::backdrop {
+		background: rgb(14 12 10 / 0.72);
+		backdrop-filter: blur(6px);
+	}
+	.portrait-view__figure {
+		margin: 0;
+	}
+	/* the opening and closing motion is a FLIP from the small drawing (see the script above) */
+	.portrait-view__mat {
+		padding: 14px;
+		transform-origin: center;
+	}
+	.portrait-view figcaption {
+		margin-block-start: var(--sd-space-4);
+		font-family: var(--sd-font-serif);
+		font-size: 1.15rem;
+		text-align: center;
+		text-shadow: var(--sd-shadow-text);
+	}
+	.portrait-view__close {
+		display: flex;
+		justify-content: center;
+		margin-block-start: var(--sd-space-4);
+	}
+	/* the page under the open dialog stays where it is */
+	:global(html:has(dialog.portrait-view[open])) {
+		overflow: hidden;
+	}
+</style>
+

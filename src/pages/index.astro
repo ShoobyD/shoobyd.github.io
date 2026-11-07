@@ -12,10 +12,10 @@ import CraftList from '../components/home/CraftList.vue';
 import ContactList from '../components/home/ContactList.vue';
 import AltitudeGauge from '../components/home/AltitudeGauge.vue';
 import BabelTitle from '../components/home/BabelTitle.vue';
+import SelfPortrait from '../components/home/SelfPortrait.astro';
 import TowerScene from '../components/tower/TowerScene.vue';
 import TowerLoader from '../components/tower/TowerLoader.astro';
 import TowerLoaderBoot from '../components/tower/TowerLoaderBoot.astro';
-import { Image } from 'astro:assets';
 import selfPortrait from '../assets/images/self-portrait-bsod.jpg';
 import { projects, projectName } from '../data/projects';
 import { home, links, tierAltitude, tierIds } from '../i18n/home';
@@ -67,25 +67,13 @@ const contacts = [
 	<TierSection id="base" title={c.base.title} level={1}>
 		<p class="handle" lang="en" dir="ltr">ShoobyD</p>
 		<p class="lead">{c.base.lead}</p>
-		<figure class="portrait">
-			<!-- without JavaScript the link simply opens the drawing; with it, the dialog below -->
-			<a class="portrait__open" href={selfPortrait.src} aria-label={c.base.portraitOpen} data-portrait-open>
-				<span class="portrait__mat">
-					<Image src={selfPortrait} alt={c.base.portraitAlt} widths={[260, 520]} sizes="15rem" loading="eager" />
-				</span>
-			</a>
-			<dialog class="portrait-view" aria-label={c.base.portraitCaption} data-portrait-view>
-				<figure class="portrait-view__figure">
-					<span class="portrait-view__mat">
-						<Image src={selfPortrait} alt={c.base.portraitAlt} widths={[557]} sizes="min(88vw, 46rem)" loading="lazy" />
-					</span>
-					<figcaption>{c.base.portraitCaption}</figcaption>
-				</figure>
-				<form method="dialog" class="portrait-view__close">
-					<button class="sd-control" type="submit">{c.base.portraitClose}</button>
-				</form>
-			</dialog>
-		</figure>
+		<SelfPortrait
+			image={selfPortrait}
+			alt={c.base.portraitAlt}
+			openLabel={c.base.portraitOpen}
+			caption={c.base.portraitCaption}
+			closeLabel={c.base.portraitClose}
+		/>
 		<p class="hint">
 			<svg viewBox="0 0 20 20" aria-hidden="true">
 				<rect x="6" y="2" width="8" height="13" rx="4" fill="none" stroke="currentColor" stroke-width="1.5" />
@@ -131,92 +119,6 @@ const contacts = [
 		<ContactList items={contacts} />
 	</TierSection>
 </Base>
-
-<script>
-	/*
-	 * The self-portrait opens enlarged in a modal dialog, growing out of the small drawing in the
-	 * panel (a FLIP: the large drawing starts exactly over the small one — same place, size and
-	 * tilt — and animates to its own place), and shrinks back into it on close. Esc, the close
-	 * button or a click on the backdrop close it; focus returns to the drawing (native <dialog>).
-	 * With reduced motion it simply opens and closes.
-	 */
-	const open = document.querySelector<HTMLAnchorElement>('[data-portrait-open]');
-	const view = document.querySelector<HTMLDialogElement>('[data-portrait-view]');
-	const thumb = open?.querySelector<HTMLElement>('.portrait__mat');
-	const big = view?.querySelector<HTMLElement>('.portrait-view__mat');
-	const extras = view ? [...view.querySelectorAll<HTMLElement>('figcaption, .portrait-view__close')] : [];
-
-	if (open && view && thumb && big && typeof view.showModal === 'function') {
-		const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-		const easing = 'cubic-bezier(0.22, 1, 0.36, 1)';
-		const duration = 520;
-		let closing = false;
-
-		/** The transform that lays the large drawing over the small one, as it sits right now. */
-		function fromThumb() {
-			const small = thumb!.getBoundingClientRect();
-			const large = big!.getBoundingClientRect();
-			const dx = small.x + small.width / 2 - (large.x + large.width / 2);
-			const dy = small.y + small.height / 2 - (large.y + large.height / 2);
-			const scale = small.width / large.width;
-			const tilt = open!.matches(':hover, :focus-visible') ? 0 : -1.4;
-			return `translate(${dx}px, ${dy}px) scale(${scale}) rotate(${tilt}deg)`;
-		}
-
-		function backdrop(keyframes: Keyframe[], ms: number) {
-			try {
-				view!.animate(keyframes, { duration: ms, easing, fill: 'forwards', pseudoElement: '::backdrop' });
-			} catch {
-				// a browser that cannot animate ::backdrop just shows it at once
-			}
-		}
-
-		open.addEventListener('click', (e) => {
-			e.preventDefault();
-			view.showModal();
-			if (reduced.matches) return;
-			thumb.style.visibility = 'hidden';
-			big.animate([{ transform: fromThumb() }, { transform: 'none' }], { duration, easing });
-			backdrop([{ opacity: 0 }, { opacity: 1 }], duration);
-			extras.forEach((el) =>
-				el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, delay: duration * 0.6, easing, fill: 'backwards' }),
-			);
-		});
-
-		async function close() {
-			if (closing || !view!.open) return;
-			if (reduced.matches) {
-				view!.close();
-				return;
-			}
-			closing = true;
-			extras.forEach((el) => el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 140, fill: 'forwards' }));
-			backdrop([{ opacity: 1 }, { opacity: 0 }], duration);
-			const shrink = big!.animate([{ transform: 'none' }, { transform: fromThumb() }], { duration, easing, fill: 'forwards' });
-			await shrink.finished.catch(() => {});
-			view!.close();
-			thumb!.style.visibility = '';
-			view!.getAnimations({ subtree: true }).forEach((a) => a.cancel());
-			closing = false;
-		}
-
-		// every way out runs the shrink: Esc (cancel), the close button, a click on the backdrop
-		view.addEventListener('cancel', (e) => {
-			e.preventDefault();
-			close();
-		});
-		view.querySelector('.portrait-view__close')?.addEventListener('submit', (e) => {
-			e.preventDefault();
-			close();
-		});
-		view.addEventListener('click', (e) => {
-			if (e.target === view) close();
-		});
-		view.addEventListener('close', () => {
-			thumb.style.visibility = '';
-		});
-	}
-</script>
 
 <style is:global>
 	html {
@@ -293,89 +195,6 @@ const contacts = [
 	.dim {
 		color: var(--sd-text-dim);
 	}
-	/* the self-portrait: a pen drawing on a limestone mat, hung slightly askew; hovering or
-	 * focusing it straightens it on its nail and lifts it off the wall, a click enlarges it */
-	.portrait {
-		max-inline-size: 15rem;
-		margin-block: var(--sd-space-5) 0;
-		margin-inline: auto;
-	}
-	.portrait__open {
-		display: block;
-		border-radius: 3px;
-		cursor: zoom-in;
-	}
-	.portrait__mat,
-	.portrait-view__mat {
-		display: block;
-		padding: 10px;
-		background: var(--sd-limestone);
-		border-radius: 3px;
-		box-shadow: 0 14px 30px -12px rgb(10 8 6 / 0.7), inset 0 0 0 1px rgb(45 42 38 / 0.15);
-	}
-	.portrait__mat {
-		transform: rotate(-1.4deg);
-		transition:
-			transform var(--sd-dur) var(--sd-ease),
-			box-shadow var(--sd-dur) var(--sd-ease);
-	}
-	.portrait__open:hover .portrait__mat,
-	.portrait__open:focus-visible .portrait__mat {
-		transform: translateY(-4px);
-		box-shadow: 0 24px 40px -14px rgb(10 8 6 / 0.75), inset 0 0 0 1px rgb(45 42 38 / 0.15);
-	}
-	.portrait img,
-	.portrait-view img {
-		display: block;
-		inline-size: 100%;
-		block-size: auto;
-		border-radius: 1px;
-	}
-	@media (max-width: 47.5rem) {
-		.portrait { max-inline-size: 11rem; }
-	}
-
-	/* the enlarged drawing: a native modal dialog over a darkened, blurred page */
-	.portrait-view {
-		inline-size: min(88vw, 46rem);
-		max-block-size: 92vh;
-		padding: 0;
-		overflow: visible;
-		color: var(--sd-text);
-		background: none;
-		border: 0;
-	}
-	.portrait-view::backdrop {
-		background: rgb(14 12 10 / 0.72);
-		backdrop-filter: blur(6px);
-	}
-	/* the opening and closing motion is a FLIP from the small drawing (see the script above) */
-	.portrait-view__mat {
-		transform-origin: center;
-	}
-	.portrait-view__figure {
-		margin: 0;
-	}
-	.portrait-view__mat {
-		padding: 14px;
-	}
-	.portrait-view figcaption {
-		margin-block-start: var(--sd-space-4);
-		font-family: var(--sd-font-serif);
-		font-size: 1.15rem;
-		text-align: center;
-		text-shadow: var(--sd-shadow-text);
-	}
-	.portrait-view__close {
-		display: flex;
-		justify-content: center;
-		margin-block-start: var(--sd-space-4);
-	}
-	/* the page under the open dialog stays where it is */
-	html:has(.portrait-view[open]) {
-		overflow: hidden;
-	}
-
 	.hint {
 		display: flex;
 		align-items: center;
