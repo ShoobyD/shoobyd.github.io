@@ -215,6 +215,12 @@ const elsewhere = [
 		visibility: hidden;
 		transition: opacity var(--sd-dur) var(--sd-ease), visibility 0s linear var(--sd-dur);
 	}
+	/* an open bottom sheet (narrow screens) runs under the altitude gauge: the gauge dims and
+	 * steps aside for it until the sheet collapses */
+	html.webgl.sd-sheet-open [data-tower-chrome] {
+		opacity: 0.2;
+		pointer-events: none;
+	}
 	html.webgl .tier--night { background-image: none; }
 
 	/* hints that only make sense with the tower on screen: `.tower-hint` for a pointer that can

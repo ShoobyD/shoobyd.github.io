@@ -21,6 +21,7 @@ import { createSummit } from './summit';
 import { createClouds } from './clouds';
 import { createCameraRig } from './camera-path';
 import { createClimb, type Climb } from './climb';
+import { createSheet, type Sheet } from './sheet';
 import { createLoop } from './loop';
 import { disposeScene } from './dispose';
 import { createDoors, type DoorSpec } from './tiers/doors';
@@ -202,6 +203,8 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 	// the static layout's progress; then the root class flips the layout and the scroll position
 	// is mapped onto the tall climb spans so the visitor stays on the tier they were reading.
 	let climb: Climb | null = null;
+	// narrow screens: the panels are bottom sheets (see ./sheet.ts)
+	let sheet: Sheet | null = null;
 	// A link straight to a tier (`/#tier-summit`, where /contact/ redirects) parks the climb on it
 	// exactly: the static page can't always scroll the last tier's top up to the viewport, so its
 	// scroll position alone would land just below it. It holds while the page is still within a
@@ -238,6 +241,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 		const reading = readingNow();
 		root.classList.add(TOWER_CLASS);
 		climb = createClimb(sectionEls, panelEls);
+		sheet = createSheet(panelEls, Math.round(reading));
 		if (reading > 0) climb.goTo(reading);
 		if (linkedTier !== null && reading === linkedTier) {
 			pinned = linkedTier;
@@ -334,6 +338,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 			enter = Math.min(1, enter + dt / 0.7);
 			// a director's shot fades the panels out with it (game mode hides them)
 			climb.updatePanels(smooth, easeOut(enter) * (1 - blend));
+			sheet?.update(nearest, Math.round(climb.progress));
 			if (nearest !== lastTier) {
 				lastTier = nearest;
 				window.dispatchEvent(new CustomEvent('tower:tier', { detail: opts.tiers[nearest] }));
@@ -364,6 +369,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 				// hand the reading position back to the static layout
 				const progress = climb.progress;
 				climb.dispose();
+				sheet?.dispose();
 				root.classList.remove(TOWER_CLASS);
 				if (progress > 0) window.scrollTo({ top: scrollFor(sectionTops(sectionEls), progress), behavior: 'instant' });
 			}

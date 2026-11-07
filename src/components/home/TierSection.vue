@@ -143,18 +143,54 @@ html.webgl .tier__panel.is-on {
 	pointer-events: auto;
 }
 
-/* narrow screens: the panel docks along the bottom edge and the tower rises above it */
+/* narrow screens: the panel is a bottom sheet (../tower/scene/sheet.ts keeps its state). Open,
+ * it rises to just under the header; collapsed, it slides down until only its peek (the title
+ * and the start of the next lines, fading out) is left above the bottom edge, and the tower
+ * has the screen. It moves with `translate`, which composes with the climb's `transform`. */
+@property --sheet-fade {
+	syntax: "<length>";
+	inherits: false;
+	initial-value: 0px;
+}
+
 @media (max-width: 47.5rem) {
 	html.webgl .tier__panel {
-		inset-inline: 12px;
-		inset-block: auto 12px;
+		--sheet-fade: 100vh;
+		inset-inline: 8px;
+		inset-block: auto 0;
 		margin-block: 0;
 		inline-size: auto;
-		max-block-size: 50vh;
-		padding-block: 2.7rem 1.3rem;
+		max-block-size: calc(100svh - var(--sheet-top, 72px));
+		padding-block: 2.9rem 1.3rem;
 		padding-inline: 1.3rem;
 		border-start-start-radius: 50% 2.6rem;
 		border-start-end-radius: 50% 2.6rem;
+		border-end-start-radius: 0;
+		border-end-end-radius: 0;
+		border-block-end: 0;
+		mask-image: linear-gradient(
+			to bottom,
+			#000 calc(var(--sheet-peek, 150px) - 2.6rem + var(--sheet-fade)),
+			transparent calc(var(--sheet-peek, 150px) - 0.2rem + var(--sheet-fade))
+		);
+		transition:
+			translate 420ms var(--sd-ease),
+			--sheet-fade 420ms var(--sd-ease);
+	}
+
+	html.webgl .tier__panel.is-sheet-collapsed {
+		--sheet-fade: 0px;
+		translate: 0 calc(100% - var(--sheet-peek, 150px));
+		overflow: hidden;
+	}
+
+	/* the handle takes the keystone's place */
+	html.webgl .tier__panel::before {
+		display: none;
+	}
+
+	html.webgl .tier__sheet {
+		display: grid;
 	}
 }
 </style>
