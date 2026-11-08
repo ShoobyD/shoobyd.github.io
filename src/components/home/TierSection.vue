@@ -169,11 +169,31 @@ html.webgl .tier__panel {
 html.webgl .tier__body {
 	flex: 1 1 auto;
 	min-block-size: 0;
-	overflow: auto;
+	/* only up and down; a tilted picture's corner (the self-portrait hangs askew) mustn't make it
+	 * scroll either way, so a few pixels of room below take it in */
+	overflow: hidden auto;
 	overscroll-behavior: contain;
 	scrollbar-width: thin;
 	margin-inline-end: -1.3rem;
 	padding-inline-end: 1.3rem;
+	margin-block-end: -8px;
+	padding-block-end: 8px;
+	/* soft edges where it scrolls: at the top once scrolled (the content slips under the title), at
+	 * the bottom while there is more below; the climb sets them (scene/climb.ts) */
+	mask-image: linear-gradient(to bottom, transparent, #000 var(--fade-top), #000 calc(100% - var(--fade-bottom)), transparent);
+	transition: --fade-top var(--sd-dur-fast), --fade-bottom var(--sd-dur-fast);
+}
+
+@property --fade-top {
+	syntax: "<length>";
+	inherits: false;
+	initial-value: 0px;
+}
+
+@property --fade-bottom {
+	syntax: "<length>";
+	inherits: false;
+	initial-value: 0px;
 }
 
 html.webgl .tier__panel.is-on {
@@ -225,6 +245,9 @@ html.webgl .tier__panel.is-on {
 		overflow: visible;
 		margin-inline-end: 0;
 		padding-inline-end: 0;
+		margin-block-end: 0;
+		padding-block-end: 0;
+		mask-image: none;
 	}
 
 	html.webgl .tier__panel.is-sheet-collapsed {

@@ -25,6 +25,8 @@ export function createClimb(sections: HTMLElement[], panels: HTMLElement[]) {
 		tops = sectionTops(sections);
 		holds = sectionHolds(sections);
 		read();
+		// content grows without its box growing (fonts, images): the fades follow
+		edges.forEach((e) => e());
 	};
 
 	/** Jumps the scroll to a tier's park; the camera then flies there on its own smoothing. */
@@ -79,6 +81,24 @@ export function createClimb(sections: HTMLElement[], panels: HTMLElement[]) {
 		if (Math.round(raw) !== i) goTier(i);
 	});
 
+	// a panel whose content scrolls (wide screens, a short window) fades it at the top once scrolled
+	// and at the bottom while there is more below (TierSection.vue)
+	const bodies = panels.map((p) => p.querySelector<HTMLElement>('.tier__body'));
+	const FADE = '28px';
+	const edges = bodies.map((b) => () => {
+		if (!b) return;
+		const more = b.scrollHeight - b.clientHeight - b.scrollTop;
+		b.style.setProperty('--fade-top', b.scrollTop > 1 ? FADE : '0px');
+		b.style.setProperty('--fade-bottom', more > 1 ? FADE : '0px');
+	});
+	const watchEdges = new ResizeObserver(() => edges.forEach((e) => e()));
+	bodies.forEach((b, i) => {
+		if (!b) return;
+		b.addEventListener('scroll', edges[i], { passive: true });
+		watchEdges.observe(b);
+		edges[i]();
+	});
+
 	window.addEventListener('scroll', read, { passive: true });
 	window.addEventListener('keydown', onKey);
 	panels.forEach((p, i) => p.addEventListener('focusin', onFocus[i]));
@@ -122,6 +142,13 @@ export function createClimb(sections: HTMLElement[], panels: HTMLElement[]) {
 		dispose() {
 			window.removeEventListener('scroll', read);
 			window.removeEventListener('keydown', onKey);
+			watchEdges.disconnect();
+			bodies.forEach((b, i) => {
+				if (!b) return;
+				b.removeEventListener('scroll', edges[i]);
+				b.style.removeProperty('--fade-top');
+				b.style.removeProperty('--fade-bottom');
+			});
 			panels.forEach((p, i) => {
 				p.removeEventListener('focusin', onFocus[i]);
 				p.style.removeProperty('opacity');
