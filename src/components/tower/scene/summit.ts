@@ -49,7 +49,15 @@ export function createSummit(tower: THREE.Group, { rnd, range }: Random, mats: M
 	);
 	floor.position.y = Y5 + 0.06;
 	floor.receiveShadow = true;
-	const plinth = new THREE.Mesh(new THREE.BoxGeometry(2.9, 2.0, 2.9), mats.limestone);
+	// the plinth is laid in pale dressed stone, coursed like the bricks, so it reads as masonry
+	// waiting for the next course rather than a bare block
+	const plinthTex = brick.clone();
+	plinthTex.repeat.set(1.6, 1.1);
+	plinthTex.needsUpdate = true;
+	const plinth = new THREE.Mesh(
+		new THREE.BoxGeometry(2.9, 2.0, 2.9),
+		new THREE.MeshStandardMaterial({ map: plinthTex, color: 0xcdbf9f, roughness: 0.95 }),
+	);
 	plinth.position.y = Y5 + 1.0;
 	plinth.castShadow = plinth.receiveShadow = true;
 	tower.add(floor, plinth);

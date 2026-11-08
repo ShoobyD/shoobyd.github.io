@@ -15,9 +15,10 @@ const ENV = {
 	sun: colors(['#ffb877', '#fff1dc', '#ffa565', '#a9bcff']),
 	hemiSky: colors(['#a8c0dd', '#bcd0e6', '#f0b890', '#3a4c80']),
 	hemiGround: colors(['#8a6a44', '#8a7450', '#6e4f38', '#1e2030']),
-	cloud: colors(['#ffe2cc', '#e6edf6', '#ffc9a6', '#4b5a85']),
-	sunI: [2.6, 3.1, 2.5, 0.8],
-	hemiI: [1.05, 1.25, 0.95, 0.75],
+	// night clouds stay dark so the landscape shows through, and the moon lights the summit
+	cloud: colors(['#ffe2cc', '#e6edf6', '#ffc9a6', '#3a466e']),
+	sunI: [2.6, 3.1, 2.5, 1.35],
+	hemiI: [1.05, 1.25, 0.95, 0.95],
 	elevation: [11, 46, 15, 32],
 	azimuth: [0.95, 0.55, -0.75, -0.5],
 	stars: [0, 0, 0.12, 1],
@@ -66,7 +67,7 @@ const fragmentShader = /* glsl */ `
 		float ang = atan(dot(d, t2), dot(d, t1));
 		float ray = 0.5 + 0.5 * sin(ang * 23.0 + sin(ang * 7.0) * 2.0 + uTime * 0.04);
 		col += uSunCol * uRays * pow(s, 3.0) * ray * smoothstep(-0.04, 0.12, h);
-		// twinkling stars, denser along a milky band
+		// twinkling stars, denser along a milky band, dimming in the haze low over the horizon
 		if (uStars > 0.001) {
 			vec3 p = d * 260.0;
 			vec3 c = floor(p);
@@ -75,7 +76,7 @@ const fragmentShader = /* glsl */ `
 			float st = step(0.982, r) * smoothstep(0.32, 0.0, length(f));
 			float tw = 0.6 + 0.4 * sin(uTime * 2.5 + r * 90.0);
 			float band = 0.5 + 0.5 * smoothstep(0.75, 0.0, abs(dot(d, normalize(vec3(0.4, 0.6, 0.7)))));
-			col += vec3(1.0, 0.95, 0.85) * st * tw * uStars * 2.6 * smoothstep(0.02, 0.3, h) * band;
+			col += vec3(1.0, 0.95, 0.85) * st * tw * uStars * 2.6 * smoothstep(0.0, 0.15, h) * band;
 		}
 		gl_FragColor = vec4(col, 1.0);
 	}`;

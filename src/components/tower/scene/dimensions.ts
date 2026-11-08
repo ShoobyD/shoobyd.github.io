@@ -40,7 +40,7 @@ export const PARK: Park[] = [
 	{ th: 3.8, dist: 37, y: 18.5, look: 15.8 },
 	{ th: 5.4, dist: 34, y: 24.5, look: 21.6 },
 	{ th: 7.0, dist: 31, y: 30.5, look: 27.4 },
-	{ th: 8.6, dist: 29, y: 45, look: 33.2 },
+	{ th: 8.6, dist: 29, y: 44.5, look: 36 },
 ];
 export const LAST_TIER = PARK.length - 1;
 
