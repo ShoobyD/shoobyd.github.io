@@ -106,6 +106,11 @@ export function createSheet(panels: HTMLElement[], startTier: number) {
 		e.stopPropagation();
 		set(i, true);
 	});
+	// a collapsed sheet shows its peek from the top: whatever scrolls its (hidden) overflow, it
+	// goes back (overflow: hidden still lets scripts and focus scroll a box)
+	const onScroll = panels.map((p, i) => () => {
+		if (isCollapsed(i) && p.scrollTop !== 0) p.scrollTop = 0;
+	});
 	const onFocus = panels.map((_, i) => (e: FocusEvent) => {
 		if (isNarrow() && isCollapsed(i) && e.target !== handles[i]) set(i, true);
 	});
@@ -237,6 +242,7 @@ export function createSheet(panels: HTMLElement[], startTier: number) {
 		p.addEventListener('click', onTap[i], true);
 		p.addEventListener('focusin', onFocus[i]);
 		p.addEventListener('touchstart', onTouchStart[i], { passive: true });
+		p.addEventListener('scroll', onScroll[i], { passive: true });
 	});
 	window.addEventListener('touchmove', onTouchMove, { passive: false });
 	window.addEventListener('touchend', onTouchEnd);
@@ -283,6 +289,7 @@ export function createSheet(panels: HTMLElement[], startTier: number) {
 				handles[i]?.removeEventListener('click', onHandle[i]);
 				p.removeEventListener('click', onClickCapture, true);
 				p.removeEventListener('touchstart', onTouchStart[i]);
+				p.removeEventListener('scroll', onScroll[i]);
 				p.classList.remove('is-sheet-dragging');
 				p.style.removeProperty('translate');
 				p.removeEventListener('click', onTap[i], true);

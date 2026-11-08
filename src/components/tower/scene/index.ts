@@ -167,11 +167,14 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 		stopNow.classList.add('is-new');
 	}
 	showNow(0);
-	/** Scrolls the code panel (not the page) just enough to show the lit card, when it overflows. */
+	/**
+	 * Scrolls the code panel (not the page) just enough to show the lit card, when it overflows.
+	 * Not while it is a collapsed mobile sheet: that one only shows its peek, from its top.
+	 */
 	function revealCard(i: number) {
 		const card = cards[i];
 		const panel = card?.closest<HTMLElement>('[data-tier-panel]');
-		if (!card || !panel || panel.scrollHeight <= panel.clientHeight) return;
+		if (!card || !panel || panel.classList.contains('is-sheet-collapsed') || panel.scrollHeight <= panel.clientHeight) return;
 		const c = card.getBoundingClientRect();
 		const p = panel.getBoundingClientRect();
 		if (c.top < p.top + 12) panel.scrollTop -= p.top + 12 - c.top;
