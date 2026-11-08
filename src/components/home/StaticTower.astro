@@ -4,7 +4,8 @@
  * up): one picture of the whole tower with every tier's point of interest turned to the front
  * (rendered by scripts/render-tower-still.mjs). As the page scrolls the tower moves the other
  * way, so each tier's focus comes level with that tier's panel: beside it on wide screens, just
- * above it on phones. It is close at each tier and draws back a little on the way between two.
+ * above it on phones. It is close at each tier and draws back a little on the way between two;
+ * at the base, where the page opens, it shows the whole tower, and closes in on the way up.
  * With reduced motion it doesn't travel: it holds each tier's view and fades to the next one's.
  * With Save-Data it isn't fetched at all.
  *
@@ -99,8 +100,28 @@ const srcset = sources.map((s, i) => `${s.src} ${WIDTHS[i]}w`).join(', ');
 		function aim() {
 			const { i, t } = where();
 			const { near, far } = zoom();
+			// from the base to the code tier: out of the whole tower, in to the doors
+			if (i === 0) {
+				const whole = overview();
+				const e = t * t * (3 - 2 * t);
+				const s = whole.s + (near - whole.s) * e;
+				return framing(whole.focus + (foci[1] - whole.focus) * e, whole.y + (spot(1) - whole.y) * e, s);
+			}
 			const target = spot(i) + (spot(i + 1) - spot(i)) * t;
 			return framing(foci[i] + (foci[i + 1] - foci[i]) * t, target, near - (near - far) * away(t));
+		}
+
+		/**
+		 * The base tier's view: the whole tower, as on landing in the 3D climb. It fits the room below
+		 * the header, its middle in the middle of it: beside the panel on wide screens (the window's
+		 * height), above it on a phone (down to just past the panel's top, so its ground tucks under).
+		 */
+		function overview() {
+			const top = 72;
+			const bottom = phone.matches ? panels[0].getBoundingClientRect().top + 36 : window.innerHeight;
+			const room = Math.max(160, bottom - top);
+			const s = Math.min((room * 0.94) / img!.offsetHeight, (box!.clientWidth * 0.96) / img!.offsetWidth);
+			return { s, focus: 0.5, y: top + room / 2 };
 		}
 
 		/** Reduced motion: the view of the tier nearest the middle of the window, held still. */
@@ -112,7 +133,8 @@ const srcset = sources.map((s, i) => `${s.src} ${WIDTHS[i]}w`).join(', ');
 			if (k === shownTier && !force) return;
 			const apply = () => {
 				shownTier = k;
-				const f = framing(foci[k], spot(k, true), zoom().near);
+				const whole = overview();
+				const f = k === 0 ? framing(whole.focus, whole.y, whole.s) : framing(foci[k], spot(k, true), zoom().near);
 				img!.style.transform = `translate(${f.x.toFixed(1)}px, ${f.y.toFixed(1)}px) scale(${f.s.toFixed(4)})`;
 				box!.classList.remove('is-fading');
 			};
