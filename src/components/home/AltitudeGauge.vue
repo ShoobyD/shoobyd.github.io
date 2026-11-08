@@ -6,7 +6,7 @@
  * altitude in cubits from the scroll position, in either layout.
  */
 import { onBeforeUnmount, onMounted, ref } from 'vue';
-import { isTowerActive, progressAt, sectionTops } from '../tower/mode';
+import { isTowerActive, progressAt, sectionHolds, sectionTops } from '../tower/mode';
 
 export interface GaugeTier {
 	id: string;
@@ -32,7 +32,7 @@ let layout: ResizeObserver | null = null;
  * the same progress the camera and panels follow, so the gauge reads where the climb is going.
  */
 function measureClimb() {
-	const progress = progressAt(sectionTops(sections), window.scrollY);
+	const progress = progressAt(sectionTops(sections), window.scrollY, sectionHolds(sections));
 	const i = Math.min(Math.floor(progress), props.tiers.length - 2);
 	const t = progress - i;
 	current.value = props.tiers[Math.round(progress)].id;

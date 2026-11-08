@@ -26,21 +26,41 @@ export function sectionTops(sections: HTMLElement[]) {
 	return sections.map((el) => el.getBoundingClientRect().top + y);
 }
 
-/** Fractional tier progress (0 .. sections - 1) for a scroll position. */
-export function progressAt(tops: number[], scrollY: number) {
+/**
+ * In the 3D climb a tier marked `data-stops` holds the climb for a while: its section is taller
+ * than the usual 1.5 viewports (TierSection.vue), and over that extra length, from the section's
+ * top, the progress stays on the tier while the scroll steps through its stops. This is each
+ * section's hold in px (0 for the others, and for all of them on the static page).
+ */
+export function sectionHolds(sections: HTMLElement[]) {
+	const climbing = isTowerActive();
+	return sections.map((el) =>
+		climbing && el.dataset.stops ? Math.max(0, el.getBoundingClientRect().height - 1.5 * window.innerHeight) : 0,
+	);
+}
+
+/**
+ * Fractional tier progress (0 .. sections - 1) for a scroll position. Within a tier's hold
+ * (`holds`, see `sectionHolds`) it stays on that tier; past it, it moves on to the next.
+ */
+export function progressAt(tops: number[], scrollY: number, holds: number[] = []) {
 	const last = tops.length - 1;
 	if (scrollY <= tops[0]) return 0;
 	if (scrollY >= tops[last]) return last;
 	let i = 0;
 	while (i < last - 1 && scrollY >= tops[i + 1]) i++;
-	return i + (scrollY - tops[i]) / (tops[i + 1] - tops[i]);
+	const start = tops[i] + (holds[i] ?? 0);
+	if (scrollY <= start) return i;
+	return i + (scrollY - start) / (tops[i + 1] - start);
 }
 
-/** The scroll position for a fractional tier progress (inverse of `progressAt`). */
-export function scrollFor(tops: number[], progress: number) {
+/** The scroll position for a fractional tier progress (inverse of `progressAt`; a whole tier lands at the start of its hold). */
+export function scrollFor(tops: number[], progress: number, holds: number[] = []) {
 	const last = tops.length - 1;
 	const i = Math.min(Math.floor(progress), last - 1);
 	const t = Math.min(1, progress - i);
-	return tops[i] + (tops[i + 1] - tops[i]) * t;
+	if (t <= 0) return tops[i];
+	const start = tops[i] + (holds[i] ?? 0);
+	return start + (tops[i + 1] - start) * t;
 }
 

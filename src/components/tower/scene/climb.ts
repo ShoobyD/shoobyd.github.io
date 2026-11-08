@@ -4,19 +4,21 @@
  * Panels stay real, focusable DOM; this only sets their opacity and transform.
  */
 import { clamp, sstep } from './util';
-import { progressAt, scrollFor, sectionTops } from '../mode';
+import { progressAt, scrollFor, sectionHolds, sectionTops } from '../mode';
 
 export function createClimb(sections: HTMLElement[], panels: HTMLElement[]) {
 	const last = sections.length - 1;
 	let tops = sectionTops(sections);
-	let raw = progressAt(tops, window.scrollY);
+	let holds = sectionHolds(sections);
+	let raw = progressAt(tops, window.scrollY, holds);
 	const shown = panels.map(() => ({ o: -1, ty: NaN }));
 
 	const read = () => {
-		raw = progressAt(tops, window.scrollY);
+		raw = progressAt(tops, window.scrollY, holds);
 	};
 	const measure = () => {
 		tops = sectionTops(sections);
+		holds = sectionHolds(sections);
 		read();
 	};
 
@@ -63,7 +65,7 @@ export function createClimb(sections: HTMLElement[], panels: HTMLElement[]) {
 		goTier,
 		/** Scrolls to a fractional progress (used to carry the reading position across a layout switch). */
 		goTo(p: number) {
-			window.scrollTo({ top: scrollFor(tops, p), behavior: 'instant' });
+			window.scrollTo({ top: scrollFor(tops, p, holds), behavior: 'instant' });
 			read();
 		},
 		/**
