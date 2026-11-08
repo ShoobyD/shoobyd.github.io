@@ -1,13 +1,15 @@
 ---
 /**
  * The tower for the static page (no 3D: reduced motion, no WebGL2, Save-Data, or the scene gave
- * up): one picture of the whole tower with every tier's point of interest turned to the front
- * (rendered by scripts/render-tower-still.mjs). As the page scrolls the tower moves the other
- * way, so each tier's focus comes level with that tier's panel: beside it on wide screens, just
- * above it on phones. It is close at each tier and draws back a little on the way between two;
- * at the base, where the page opens, it shows the whole tower, and closes in on the way up.
+ * up): one picture of the whole tower with every tier's point of interest turned to the front,
+ * standing on its ground: a band of the plain laid side by side across the whole window (both
+ * rendered by scripts/render-tower-still.mjs, from one camera, so they line up exactly). As the
+ * page scrolls the tower moves the other way, so each tier's focus comes level with that tier's
+ * panel: beside it on wide screens, just above it on phones. It is close at each tier and draws
+ * back a little on the way between two; at the base, where the page opens, it shows the whole
+ * tower, and closes in on the way up. The ground moves and scales with it.
  * With reduced motion it doesn't travel: it holds each tier's view and fades to the next one's.
- * With Save-Data it isn't fetched at all.
+ * With Save-Data none of it is fetched.
  *
  * Decorative (`aria-hidden`; the panels carry the content), and only there with JavaScript: the
  * script picks the image size and does the placing, so without it nothing is fetched. Hidden
@@ -15,36 +17,53 @@
  */
 import { getImage } from 'astro:assets';
 import tower from '../../assets/images/tower-front.webp';
+import groundTile from '../../assets/images/tower-ground.webp';
 import still from '../../data/tower-front.json';
 
 /** Served widths; the script's `sizes` picks one for the zoomed-in size on screen. */
 const WIDTHS = [900, 1500, 2100];
 const sources = await Promise.all(WIDTHS.map((width) => getImage({ src: tower, width, format: 'webp', quality: 80 })));
 const srcset = sources.map((s, i) => `${s.src} ${WIDTHS[i]}w`).join(', ');
+const ground = await getImage({ src: groundTile, format: 'webp', quality: 80 });
+const layout = { foci: still.foci, axis: still.axis, size: [still.width, still.height], ground: { ...still.ground, src: ground.src } };
 ---
 
-<!-- the picture itself is added by the script below (without JavaScript nothing is fetched) -->
-<div class="static-tower" data-static-tower data-srcset={srcset} data-foci={JSON.stringify(still.foci)} data-size={`${still.width}x${still.height}`} aria-hidden="true"></div>
+<!-- the pictures themselves are added by the script below (without JavaScript nothing is fetched) -->
+<div class="static-tower-ground" data-static-ground aria-hidden="true"></div>
+<div class="static-tower" data-static-tower data-srcset={srcset} data-layout={JSON.stringify(layout)} aria-hidden="true"></div>
 
 <script>
 	import { isTowerActive } from '../tower/mode';
 
+	interface Layout {
+		foci: number[];
+		axis: number;
+		size: [number, number];
+		ground: { width: number; height: number; top: number; axis: number; below: string; src: string };
+	}
+
 	const box = document.querySelector<HTMLElement>('[data-static-tower]');
+	const groundLayer = document.querySelector<HTMLElement>('[data-static-ground]');
 	const img = box ? document.createElement('img') : null;
 	const sections = ['base', 'code', 'math', 'languages', 'making', 'summit'].map((id) => document.getElementById(`tier-${id}`));
 
-	if (box && img && sections.every(Boolean)) {
+	if (box && groundLayer && img && sections.every(Boolean)) {
 		const tiers = sections as HTMLElement[];
 		const panels = tiers.map((s) => s.querySelector<HTMLElement>('[data-tier-panel]')!);
-		const foci = JSON.parse(box.dataset.foci ?? '[]') as number[];
+		const layout = JSON.parse(box.dataset.layout ?? '{}') as Layout;
+		const { foci } = layout;
 		const phone = window.matchMedia('(max-width: 47.5rem)');
-		const [w, h] = (box.dataset.size ?? '').split('x').map(Number);
 		img.className = 'static-tower__img';
 		img.alt = '';
 		img.decoding = 'async';
-		img.width = w;
-		img.height = h;
+		[img.width, img.height] = layout.size;
 		box.append(img);
+		/** The ground: one long strip of the tile, repeated; it carries on in the plain's colour below. */
+		const ground = document.createElement('div');
+		ground.className = 'static-tower__ground';
+		groundLayer.append(ground);
+		/** Tiles in the strip, either side of the one under the tower: enough to fill the window when drawn back. */
+		const TILES = 15;
 
 		/** How close the tower is: at a tier, and the least it draws back to half-way between two. */
 		const zoom = () => (phone.matches ? { near: 2.3, far: 1.9 } : { near: 2.4, far: 1.95 });
@@ -57,7 +76,7 @@ const srcset = sources.map((s, i) => `${s.src} ${WIDTHS[i]}w`).join(', ');
 
 		/** Reduced motion: the tower doesn't travel; it fades from one tier's view to the next. */
 		const still = window.matchMedia('(prefers-reduced-motion: reduce)');
-		// Save-Data: the picture is decoration, so it isn't fetched at all (the box never shows)
+		// Save-Data: the pictures are decoration, so they aren't fetched at all (nothing shows)
 		const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
 		if (!saveData) {
 			// the size to fetch: the picture is drawn this much wider than its base width
@@ -113,16 +132,50 @@ const srcset = sources.map((s, i) => `${s.src} ${WIDTHS[i]}w`).join(', ');
 
 		/**
 		 * The base tier's view: the whole tower, as on landing in the 3D climb. It fits the room below
-		 * the header, its middle in the middle of it: beside the panel on wide screens (the window's
-		 * height), above it on a phone (down to just past the panel's top, so its ground tucks under).
+		 * the header, its middle in the middle of it: beside the panel on wide screens (leaving the
+		 * bottom of the window to the plain it stands on), above it on a phone (down to just past the
+		 * panel's top, so its foot tucks under).
 		 */
 		function overview() {
 			const top = 72;
-			const bottom = phone.matches ? panels[0].getBoundingClientRect().top + 36 : window.innerHeight;
+			const bottom = phone.matches ? panels[0].getBoundingClientRect().top + 36 : window.innerHeight - Math.max(110, window.innerHeight * 0.17);
 			const room = Math.max(160, bottom - top);
 			const s = Math.min((room * 0.94) / img!.offsetHeight, (box!.clientWidth * 0.96) / img!.offsetWidth);
 			return { s, focus: 0.5, y: top + room / 2 };
 		}
+
+		/** Sizes the ground strip to the tower as drawn at scale 1 (the tile at the tower's pixel scale). */
+		function sizeGround() {
+			const k = img!.offsetWidth / layout.size[0];
+			const tileW = layout.ground.width * k, tileH = layout.ground.height * k;
+			ground.style.inlineSize = `${(TILES * tileW).toFixed(1)}px`;
+			ground.style.blockSize = `${(tileH + img!.offsetHeight * 2).toFixed(1)}px`;
+			ground.style.backgroundSize = `${tileW.toFixed(1)}px ${tileH.toFixed(1)}px, 100% 100%`;
+			ground.style.backgroundImage = `url("${layout.ground.src}"), linear-gradient(${layout.ground.below}, ${layout.ground.below})`;
+			ground.style.backgroundPosition = `0 0, 0 ${tileH.toFixed(1)}px`;
+			return { tileW, tileH };
+		}
+
+		/** Draws the tower at framing `f`, and its ground under it with the same move and scale. */
+		function place(f: { x: number; y: number; s: number }) {
+			img!.style.transform = `translate(${f.x.toFixed(1)}px, ${f.y.toFixed(1)}px) scale(${f.s.toFixed(4)})`;
+			const { tileW } = groundSize;
+			const w0 = img!.offsetWidth, h0 = img!.offsetHeight;
+			// the tower's top-left corner on screen before its transform, and the ground strip's
+			const b = box!.getBoundingClientRect();
+			const rtl = getComputedStyle(box!).direction === 'rtl';
+			const imgX = b.left + (rtl ? b.width - w0 : 0), imgY = b.top;
+			const layer = groundLayer!.getBoundingClientRect();
+			const gw = TILES * tileW;
+			const groundX = layer.left + (rtl ? layer.width - gw : 0), groundY = layer.top;
+			// in the tower's own (unscaled) coordinates: the strip's axis column under the tower's axis,
+			// its top where the band starts
+			const stripAxis = Math.floor(TILES / 2) * tileW + layout.ground.axis * tileW;
+			const lx = layout.axis * w0 - stripAxis, ly = layout.ground.top * h0;
+			const tx = imgX + f.x + f.s * lx - groundX, ty = imgY + f.y + f.s * ly - groundY;
+			ground.style.transform = `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px) scale(${f.s.toFixed(4)})`;
+		}
+		let groundSize = { tileW: 0, tileH: 0 };
 
 		/** Reduced motion: the view of the tier nearest the middle of the window, held still. */
 		let shownTier = -1;
@@ -134,14 +187,15 @@ const srcset = sources.map((s, i) => `${s.src} ${WIDTHS[i]}w`).join(', ');
 			const apply = () => {
 				shownTier = k;
 				const whole = overview();
-				const f = k === 0 ? framing(whole.focus, whole.y, whole.s) : framing(foci[k], spot(k, true), zoom().near);
-				img!.style.transform = `translate(${f.x.toFixed(1)}px, ${f.y.toFixed(1)}px) scale(${f.s.toFixed(4)})`;
+				place(k === 0 ? framing(whole.focus, whole.y, whole.s) : framing(foci[k], spot(k, true), zoom().near));
 				box!.classList.remove('is-fading');
+				groundLayer!.classList.remove('is-fading');
 			};
 			window.clearTimeout(fading);
 			if (force || shownTier < 0) return apply();
 			// out, the new view set while it can't be seen, back in
 			box!.classList.add('is-fading');
+			groundLayer!.classList.add('is-fading');
 			fading = window.setTimeout(apply, 220);
 		}
 
@@ -153,6 +207,7 @@ const srcset = sources.map((s, i) => `${s.src} ${WIDTHS[i]}w`).join(', ');
 		function draw(time: number) {
 			frame = 0;
 			if (isTowerActive() || !img!.complete || !img!.naturalWidth) return;
+			if (first) groundSize = sizeGround();
 			if (still.matches) {
 				hold(first);
 				first = false;
@@ -166,7 +221,7 @@ const srcset = sources.map((s, i) => `${s.src} ${WIDTHS[i]}w`).join(', ');
 			now.x += (to.x - now.x) * k;
 			now.y += (to.y - now.y) * k;
 			now.s += (to.s - now.s) * k;
-			img!.style.transform = `translate(${now.x.toFixed(1)}px, ${now.y.toFixed(1)}px) scale(${now.s.toFixed(4)})`;
+			place(now);
 			if (Math.abs(to.y - now.y) > 0.3 || Math.abs(to.s - now.s) > 0.0005 || Math.abs(to.x - now.x) > 0.3) schedule();
 			else last = 0;
 		}
@@ -176,6 +231,7 @@ const srcset = sources.map((s, i) => `${s.src} ${WIDTHS[i]}w`).join(', ');
 
 		img.addEventListener('load', () => {
 			box.dataset.ready = '';
+			groundLayer.dataset.ready = '';
 			first = true;
 			schedule();
 		});
@@ -192,26 +248,35 @@ const srcset = sources.map((s, i) => `${s.src} ${WIDTHS[i]}w`).join(', ');
 </script>
 
 <style>
-	.static-tower {
+	.static-tower,
+	.static-tower-ground {
 		display: none;
 		position: fixed;
 		z-index: 0;
 		inset-block: 0;
-		inset-inline-end: 0;
-		inline-size: 60vw;
 		overflow: hidden;
 		pointer-events: none;
 		transition: opacity 0.22s ease;
 	}
+	.static-tower {
+		inset-inline-end: 0;
+		inline-size: 60vw;
+	}
+	/* the ground runs the whole width, under the panels too */
+	.static-tower-ground {
+		inset-inline: 0;
+	}
 	/* reduced motion: between two tiers' views the tower fades out and back in, instead of travelling */
-	.static-tower.is-fading {
+	.static-tower.is-fading,
+	.static-tower-ground.is-fading {
 		opacity: 0;
 	}
 	/* shown once its picture is in, only on the static page */
-	:global(html:not(.webgl)) .static-tower[data-ready] {
+	:global(html:not(.webgl)) .static-tower[data-ready],
+	:global(html:not(.webgl)) .static-tower-ground[data-ready] {
 		display: block;
 	}
-	/* towards the panels the picture fades out */
+	/* towards the panels the tower fades out */
 	:global([dir="rtl"]) .static-tower {
 		mask-image: linear-gradient(to right, #000 72%, transparent);
 	}
@@ -219,7 +284,7 @@ const srcset = sources.map((s, i) => `${s.src} ${WIDTHS[i]}w`).join(', ');
 		mask-image: linear-gradient(to left, #000 72%, transparent);
 	}
 
-	/* the picture is created by the script, so it is outside this file's scope */
+	/* the pictures are created by the script, so they are outside this file's scope */
 	.static-tower :global(.static-tower__img) {
 		position: absolute;
 		inset-block-start: 0;
@@ -227,6 +292,14 @@ const srcset = sources.map((s, i) => `${s.src} ${WIDTHS[i]}w`).join(', ');
 		inline-size: 46vw;
 		block-size: auto;
 		max-inline-size: none;
+		transform-origin: 0 0;
+		will-change: transform;
+	}
+	.static-tower-ground :global(.static-tower__ground) {
+		position: absolute;
+		inset-block-start: 0;
+		inset-inline-start: 0;
+		background-repeat: repeat-x, no-repeat;
 		transform-origin: 0 0;
 		will-change: transform;
 	}
