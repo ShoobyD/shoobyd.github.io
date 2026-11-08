@@ -46,10 +46,12 @@ const W = 1200, H = 2160, DPR = 2;
 /** From far away and nearly orthographic, so the tiers keep their proportions. */
 const DIST = 150, FOV = 22.1, CAMERA_Y = 26.2, LOOK_Y = 15.3;
 /**
- * The horizon: this far above the tower's foot (in frame heights), behind its base. Houses and
- * trees standing beyond it are left out, so nothing floats above the plain's edge.
+ * The horizon: where the plain meets the sky behind the tower, level with this height on the
+ * tower's front (about the first tier's ledge). The camera looks down on the plain from well
+ * above it, so the plain runs on behind the tower that far up. Houses and trees standing beyond it
+ * are left out, so nothing floats above the plain's edge.
  */
-const HORIZON = 0.075;
+const HORIZON_Y = 6.8;
 /** The houses' band: from a little above the horizon (for the roofs there) to this far below the foot. */
 const ROOFS = 0.02, BAND_DOWN = 0.16;
 /**
@@ -131,13 +133,13 @@ try {
 	await wait(2500);
 
 	// where each focus lands, and where the tower stands on the ground, as the camera draws them
-	const marks = await page.evaluate((FRONT, FOCUS_Y) => {
+	const marks = await page.evaluate((FRONT, FOCUS_Y, HORIZON_Y) => {
 		const { camera } = window.__tower;
 		const v = camera.position.clone();
 		const at = (r, y) => (1 - v.set(Math.cos(FRONT) * r, y, Math.sin(FRONT) * r).project(camera).y) / 2;
-		return { foci: FOCUS_Y.map((y) => at(12, y)), foot: at(15, 0) };
-	}, FRONT, FOCUS_Y);
-	const horizon = marks.foot - HORIZON;
+		return { foci: FOCUS_Y.map((y) => at(12, y)), foot: at(15, 0), horizon: at(15, HORIZON_Y) };
+	}, FRONT, FOCUS_Y, HORIZON_Y);
+	const { horizon } = marks;
 	const towerShot = await page.screenshot({ encoding: 'base64' });
 
 	// the plain alone, for its colours
