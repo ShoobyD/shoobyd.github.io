@@ -62,8 +62,10 @@ interface HomeCopy {
 /**
  * Game mode (only while the 3D tower is on screen): `enter` / `exit` label the header toggle,
  * `cue` the label floating over the tower's top on touch screens (a click or tap there starts
- * the game). `{n}` is the brick count. `hint` is for a keyboard and pointer,
- * `hintTouch` for fingers. `announce*` are read out by the screen-reader live region only.
+ * the game). `{n}` is the brick count, and `{bricks}` the count in words (`brickCount`, see
+ * `countBricks`: "one brick" reads better than "1 bricks"). `overNone` replaces `overText` when no
+ * brick was laid. `hint` is for a keyboard and pointer, `hintTouch` for fingers. `announce*` are
+ * read out by the screen-reader live region only.
  */
 export interface GameCopy {
 	enter: string;
@@ -76,6 +78,8 @@ export interface GameCopy {
 	perfect: string;
 	overTitle: string;
 	overText: string;
+	overNone: string;
+	brickCount: BrickCount;
 	again: string;
 	secretTitle: string;
 	secretBody: string;
@@ -85,7 +89,19 @@ export interface GameCopy {
 	board: BoardCopy;
 }
 
-/** The shared leaderboard on the game-over card. `{n}` / `{min}` are filled in by the game. */
+/** A number of bricks in words: `one` for a single brick, `many` (with `{n}`) for any other count. */
+export interface BrickCount {
+	one: string;
+	many: string;
+}
+
+/** "one brick" / "12 bricks" (and their Hebrew), for every message that counts bricks. */
+export const countBricks = (c: BrickCount, n: number) => (n === 1 ? c.one : c.many.replace('{n}', String(n)));
+
+/**
+ * The shared leaderboard on the game-over card, filled in by the game: `{n}` a rank, and the
+ * counts of bricks in words (`{min}`, `{score}`, and `shortBy` for how many were missing).
+ */
 export interface BoardCopy {
 	title: string;
 	loading: string;
@@ -98,6 +114,8 @@ export interface BoardCopy {
 	yourSpot: string;
 	added: string;
 	short: string;
+	/** The missing bricks after `short`, in a sentence of their own (its verb agrees with the count). */
+	shortBy: BrickCount;
 	/** Read by screen readers for each row: "{rank}. {name}, {score} bricks". */
 	rowLabel: string;
 	/** One message per reason the server can refuse a name or a run, plus `network`. */
@@ -181,7 +199,9 @@ export const home: Record<Lang, HomeCopy> = {
 			hintTouch: 'נגיעה מניחה לבנה',
 			perfect: 'מושלם!',
 			overTitle: 'המגדל קרס',
-			overText: 'הנחתם {n} לבנים לפני שהכול התבלבל.',
+			overText: 'הנחתם {bricks} לפני שהכול התבלבל.',
+			overNone: 'הלבנה הראשונה כבר בלבלה את הכול.',
+			brickCount: { one: 'לבנה אחת', many: '{n} לבנים' },
 			again: 'עוד סיבוב',
 			secretTitle: 'SD-08 · סוד נפתח',
 			secretBody: 'שמונה לבנים, ואף אחד עוד לא התחיל לדבר בשפה אחרת. בבל המקורית לא הגיעה לזה.',
@@ -199,8 +219,9 @@ export const home: Record<Lang, HomeCopy> = {
 				submitting: 'מוסיפים…',
 				yourSpot: 'המקום שלכם',
 				added: 'נוספתם ללוח במקום {n}. המגדל זוכר.',
-				short: 'ללוח נכנסים מ־{min} לבנים. חסרות לכם {n}.',
-				rowLabel: 'מקום {rank}: {name}, {score} לבנים',
+				short: 'כדי להיכנס ללוח צריך לפחות {min}. {missing}',
+				shortBy: { one: 'חסרה לכם לבנה אחת.', many: 'חסרות לכם {n} לבנים.' },
+				rowLabel: 'מקום {rank}: {name}, {score}',
 				errors: {
 					name_empty: 'כתבו שם, ולו של מישהו אחר.',
 					name_long: 'עד 20 תווים.',
@@ -280,7 +301,9 @@ export const home: Record<Lang, HomeCopy> = {
 			hintTouch: 'Tap to drop a brick',
 			perfect: 'Perfect!',
 			overTitle: 'The tower fell',
-			overText: 'You laid {n} bricks before everything got confused.',
+			overText: 'You laid {bricks} before everything got confused.',
+			overNone: 'The very first brick confused everything.',
+			brickCount: { one: 'one brick', many: '{n} bricks' },
 			again: 'Again',
 			secretTitle: 'SD-08 · Secret unlocked',
 			secretBody: "Eight bricks, and nobody's language got scrambled yet. The original Babel never got this far.",
@@ -298,8 +321,9 @@ export const home: Record<Lang, HomeCopy> = {
 				submitting: 'Adding…',
 				yourSpot: 'Your spot',
 				added: 'You’re on the board at number {n}. The tower remembers.',
-				short: 'The board starts at {min} bricks. You were {n} short.',
-				rowLabel: 'Number {rank}: {name}, {score} bricks',
+				short: 'The board starts at {min}. {missing}',
+				shortBy: { one: 'You were one brick short.', many: 'You were {n} bricks short.' },
+				rowLabel: 'Number {rank}: {name}, {score}',
 				errors: {
 					name_empty: "Write a name, even if it isn't yours.",
 					name_long: 'Up to 20 characters.',

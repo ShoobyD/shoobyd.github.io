@@ -8,7 +8,7 @@
  * as it stands); this component only predicts whether to offer the field, and shows the answer.
  */
 import { computed, nextTick, ref, watch } from 'vue';
-import type { BoardCopy } from '../../i18n/home';
+import { countBricks, type BoardCopy, type BrickCount } from '../../i18n/home';
 import {
 	BOARD_SIZE,
 	NAME_MAX,
@@ -23,6 +23,8 @@ import {
 
 const props = defineProps<{
 	copy: BoardCopy;
+	/** How a number of bricks reads ("one brick" / "12 bricks"). */
+	count: BrickCount;
 	/** Bricks laid in the run that just ended. */
 	score: number;
 	durationMs: number;
@@ -65,7 +67,7 @@ const rows = computed(() => {
 const shortBy = computed(() => {
 	if (status.value !== 'ready' || canJoin.value || addedId.value !== null || board.value.length < BOARD_SIZE) return null;
 	const min = board.value[BOARD_SIZE - 1].score + 1;
-	return { min, n: Math.max(1, min - props.score) };
+	return { min: countBricks(props.count, min), missing: countBricks(props.copy.shortBy, Math.max(1, min - props.score)) };
 });
 
 async function load() {
@@ -172,7 +174,7 @@ watch(() => props.run, load, { immediate: true });
 						:class="{ 'is-you': row.you, 'is-slot': row.slot, 'is-top': i < 3 }"
 						:aria-current="row.you && !row.slot ? 'true' : undefined"
 					>
-						<span class="sd-visually-hidden">{{ fill(copy.rowLabel, { rank: i + 1, name: row.name, score: row.score }) }}</span>
+						<span class="sd-visually-hidden">{{ fill(copy.rowLabel, { rank: i + 1, name: row.name, score: countBricks(count, row.score) }) }}</span>
 						<span class="board__rank" aria-hidden="true">{{ i + 1 }}</span>
 						<!-- the cell keeps the page's direction; <bdi> isolates a name written in the other one -->
 						<span class="board__name" aria-hidden="true"><bdi>{{ row.name }}</bdi></span>

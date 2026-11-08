@@ -17,7 +17,7 @@
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import ArchPanel from '../../theme/components/ArchPanel.vue';
 import GameBoard from './GameBoard.vue';
-import type { GameCopy } from '../../i18n/home';
+import { countBricks, type GameCopy } from '../../i18n/home';
 import type { Game, TowerHandle } from './scene';
 
 const props = defineProps<{
@@ -186,7 +186,7 @@ onMounted(async () => {
 			announce(text);
 		},
 		onOver(n, durationMs) {
-			overText.value = fill(props.copy.overText, n);
+			overText.value = n === 0 ? props.copy.overNone : props.copy.overText.replace('{bricks}', countBricks(props.copy.brickCount, n));
 			// start loading the board now, so it is usually there by the time the card comes up
 			lastRun.value = { score: n, durationMs };
 			boardRun.value++;
@@ -266,6 +266,7 @@ onBeforeUnmount(() => {
 			<GameBoard
 				v-if="boardRun > 0"
 				:copy="copy.board"
+				:count="copy.brickCount"
 				:score="lastRun.score"
 				:duration-ms="lastRun.durationMs"
 				:run="boardRun"
