@@ -157,7 +157,10 @@ const layout = { foci: still.foci, axis: still.axis, size: [still.width, still.h
 			const edge = layout.ground.horizon * tileH;
 			const { far, near } = layout.ground;
 			ground.style.inlineSize = `${(TILES * tileW).toFixed(1)}px`;
-			ground.style.blockSize = `${(tileH + img!.offsetHeight * 2).toFixed(1)}px`;
+			// tall enough to reach the bottom of the window even drawn at its smallest (the whole tower,
+			// at the base): a full window's height at that scale, from wherever its top is on screen
+			const least = Math.min(overview().s, zoom().far);
+			ground.style.blockSize = `${(tileH + Math.max(img!.offsetHeight * 2, window.innerHeight / least)).toFixed(1)}px`;
 			ground.style.backgroundImage = `url("${layout.ground.src}"), linear-gradient(transparent ${edge.toFixed(1)}px, ${far} ${edge.toFixed(1)}px, ${near} ${tileH.toFixed(1)}px, ${near})`;
 			ground.style.backgroundSize = `${tileW.toFixed(1)}px ${tileH.toFixed(1)}px, 100% 100%`;
 			ground.style.backgroundPosition = '0 0, 0 0';
