@@ -5,6 +5,8 @@
  * (rendered by scripts/render-tower-still.mjs). As the page scrolls the tower moves the other
  * way, so each tier's focus comes level with that tier's panel: beside it on wide screens, just
  * above it on phones. It is close at each tier and draws back a little on the way between two.
+ * With reduced motion it doesn't travel: it holds each tier's view and fades to the next one's.
+ * With Save-Data it isn't fetched at all.
  *
  * Decorative (`aria-hidden`; the panels carry the content), and only there with JavaScript: the
  * script picks the image size and does the placing, so without it nothing is fetched. Hidden
@@ -52,34 +54,73 @@ const srcset = sources.map((s, i) => `${s.src} ${WIDTHS[i]}w`).join(', ');
 			return x * x * (3 - 2 * x);
 		};
 
-		// the size to fetch: the picture is drawn this much wider than its base width
-		img.sizes = `calc(${phone.matches ? '100vw' : '46vw'} * ${zoom().near})`;
-		img.srcset = box.dataset.srcset ?? '';
+		/** Reduced motion: the tower doesn't travel; it fades from one tier's view to the next. */
+		const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+		// Save-Data: the picture is decoration, so it isn't fetched at all (the box never shows)
+		const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+		if (!saveData) {
+			// the size to fetch: the picture is drawn this much wider than its base width
+			img.sizes = `calc(${phone.matches ? '100vw' : '46vw'} * ${zoom().near})`;
+			img.srcset = box.dataset.srcset ?? '';
+		}
 
-		/** Where the tower should be for the current scroll (translate x/y and scale). */
-		function aim() {
-			const w0 = img!.offsetWidth;
-			const h0 = img!.offsetHeight;
-			const boxW = box!.clientWidth;
-			// each tier's anchor in the page, and where its focus should sit on screen: level with the
-			// middle of its panel, or (phone) just above the panel's top
+		/** Where tier `k`'s focus should sit on screen: level with the middle of its panel, or (phone) just above the panel's top. */
+		function spot(k: number, centred = false) {
+			const r = panels[k].getBoundingClientRect();
+			// as it would be with its tier centred in the window (for the view that holds still)
+			let shift = 0;
+			if (centred) {
+				const sr = tiers[k].getBoundingClientRect();
+				shift = sr.top + sr.height / 2 - window.innerHeight / 2;
+			}
+			return phone.matches ? Math.max(72, r.top - shift - 34) : r.top - shift + r.height / 2;
+		}
+
+		/** Where the scroll is among the tiers: between tier `i` and the next, `t` of the way. */
+		function where() {
 			const centres = tiers.map((s) => s.offsetTop + s.offsetHeight / 2);
 			const mid = window.scrollY + window.innerHeight / 2;
 			let i = 0;
 			while (i < tiers.length - 2 && mid > centres[i + 1]) i++;
-			const t = Math.min(1, Math.max(0, (mid - centres[i]) / (centres[i + 1] - centres[i])));
-			const spot = (k: number) => {
-				const r = panels[k].getBoundingClientRect();
-				return phone.matches ? Math.max(72, r.top - 34) : r.top + r.height / 2;
-			};
-			const target = spot(i) + (spot(i + 1) - spot(i)) * t;
-			const focus = (foci[i] + (foci[i + 1] - foci[i]) * t) * h0;
-			const { near, far } = zoom();
-			const s = near - (near - far) * away(t);
+			return { i, t: Math.min(1, Math.max(0, (mid - centres[i]) / (centres[i + 1] - centres[i]))) };
+		}
+
+		/** The transform that puts `focus` (a fraction of the picture's height) at `y` on screen, at scale `s`. */
+		function framing(focus: number, y: number, s: number) {
+			const w0 = img!.offsetWidth;
+			const boxW = box!.clientWidth;
 			// the image sits at the box's inline-start edge: in RTL that is its right edge
 			const rtl = getComputedStyle(box!).direction === 'rtl';
 			const left = boxW / 2 - (s * w0) / 2;
-			return { x: left - (rtl ? boxW - w0 : 0), y: target - s * focus, s };
+			return { x: left - (rtl ? boxW - w0 : 0), y: y - s * focus * img!.offsetHeight, s };
+		}
+
+		/** Where the tower should be for the current scroll (translate x/y and scale). */
+		function aim() {
+			const { i, t } = where();
+			const { near, far } = zoom();
+			const target = spot(i) + (spot(i + 1) - spot(i)) * t;
+			return framing(foci[i] + (foci[i + 1] - foci[i]) * t, target, near - (near - far) * away(t));
+		}
+
+		/** Reduced motion: the view of the tier nearest the middle of the window, held still. */
+		let shownTier = -1;
+		let fading = 0;
+		function hold(force: boolean) {
+			const { i, t } = where();
+			const k = t < 0.5 ? i : i + 1;
+			if (k === shownTier && !force) return;
+			const apply = () => {
+				shownTier = k;
+				const f = framing(foci[k], spot(k, true), zoom().near);
+				img!.style.transform = `translate(${f.x.toFixed(1)}px, ${f.y.toFixed(1)}px) scale(${f.s.toFixed(4)})`;
+				box!.classList.remove('is-fading');
+			};
+			window.clearTimeout(fading);
+			if (force || shownTier < 0) return apply();
+			// out, the new view set while it can't be seen, back in
+			box!.classList.add('is-fading');
+			fading = window.setTimeout(apply, 220);
 		}
 
 		// eased toward its aim every frame, so a wheel's steps come out smooth
@@ -89,7 +130,12 @@ const srcset = sources.map((s, i) => `${s.src} ${WIDTHS[i]}w`).join(', ');
 		let last = 0;
 		function draw(time: number) {
 			frame = 0;
-			if (isTowerActive() || !img!.complete) return;
+			if (isTowerActive() || !img!.complete || !img!.naturalWidth) return;
+			if (still.matches) {
+				hold(first);
+				first = false;
+				return;
+			}
 			const to = aim();
 			const dt = last ? Math.min(0.1, (time - last) / 1000) : 0;
 			last = time;
@@ -112,15 +158,14 @@ const srcset = sources.map((s, i) => `${s.src} ${WIDTHS[i]}w`).join(', ');
 			schedule();
 		});
 		window.addEventListener('scroll', schedule, { passive: true });
-		window.addEventListener('resize', () => {
+		const replace = () => {
 			first = true;
 			schedule();
-		});
+		};
+		window.addEventListener('resize', replace);
+		still.addEventListener('change', replace);
 		// the static layout comes back if the 3D tower stops (or is never there): place it again then
-		new ResizeObserver(() => {
-			first = true;
-			schedule();
-		}).observe(document.body);
+		new ResizeObserver(replace).observe(document.body);
 	}
 </script>
 
@@ -134,6 +179,11 @@ const srcset = sources.map((s, i) => `${s.src} ${WIDTHS[i]}w`).join(', ');
 		inline-size: 60vw;
 		overflow: hidden;
 		pointer-events: none;
+		transition: opacity 0.22s ease;
+	}
+	/* reduced motion: between two tiers' views the tower fades out and back in, instead of travelling */
+	.static-tower.is-fading {
+		opacity: 0;
 	}
 	/* shown once its picture is in, only on the static page */
 	:global(html:not(.webgl)) .static-tower[data-ready] {
