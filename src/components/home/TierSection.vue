@@ -16,13 +16,26 @@ defineProps<{
 	level?: 1 | 2;
 	/** Extra class on the section, for per-tier atmosphere (e.g. stars at the summit). */
 	tone?: string;
+	/**
+	 * In the 3D climb, the number of stops the tier holds the climb for (e.g. one per project on
+	 * the code tier): its scroll span grows by half a viewport per stop after the first, and the
+	 * scroll steps through them before the climb moves on (see ../tower/mode.ts).
+	 */
+	stops?: number;
 	/** Accessible name of the sheet handle (narrow screens open and close the panel with it). */
 	sheetLabel: string;
 }>();
 </script>
 
 <template>
-	<section :id="`tier-${id}`" class="tier" :class="tone && `tier--${tone}`" :aria-labelledby="`tier-${id}-title`">
+	<section
+		:id="`tier-${id}`"
+		class="tier"
+		:class="tone && `tier--${tone}`"
+		:aria-labelledby="`tier-${id}-title`"
+		:data-stops="stops"
+		:style="stops ? { '--stops': stops } : undefined"
+	>
 		<ArchPanel as="article" class="tier__panel" data-tier-panel>
 			<!-- the keystone, as the handle of the bottom sheet the panel becomes on narrow screens -->
 			<button class="tier__sheet" type="button" :aria-label="sheetLabel" aria-expanded="true" data-sheet-handle>
@@ -120,6 +133,11 @@ html.webgl .tier {
 
 html.webgl .tier:last-of-type {
 	block-size: 100vh;
+}
+
+/* a tier with stops holds the climb: half a viewport more per stop after the first */
+html.webgl .tier[data-stops] {
+	block-size: calc(150vh + (var(--stops) - 1) * 50vh);
 }
 
 html.webgl .tier__panel {

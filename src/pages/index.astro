@@ -102,7 +102,7 @@ const elsewhere = [
 		</p>
 	</TierSection>
 
-	<TierSection id="code" sheetLabel={c.sheet.toggle} title={c.code.title}>
+	<TierSection id="code" sheetLabel={c.sheet.toggle} title={c.code.title} stops={projectItems.length}>
 		<p class="lead dim">{c.code.lead} <span class="tower-hint">{c.code.doorHint}</span></p>
 		<ProjectList items={projectItems} />
 	</TierSection>

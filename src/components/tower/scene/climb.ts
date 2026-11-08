@@ -2,6 +2,10 @@
  * The DOM half of the climb: reads scroll progress from the tier sections, steers to a tier
  * (keyboard, focus), and fades/slides each fixed panel in and out around its tier.
  * Panels stay real, focusable DOM; this only sets their opacity and transform.
+ *
+ * A tier with stops (`data-stops`, e.g. one per project on the code tier) holds the climb while
+ * the scroll steps through them (see ../mode.ts); `stop` reads where in them the scroll is, and
+ * the arrow and page keys step through them one at a time like tiers.
  */
 import { clamp, sstep } from './util';
 import { progressAt, scrollFor, sectionHolds, sectionTops } from '../mode';
@@ -12,6 +16,7 @@ export function createClimb(sections: HTMLElement[], panels: HTMLElement[]) {
 	let holds = sectionHolds(sections);
 	let raw = progressAt(tops, window.scrollY, holds);
 	const shown = panels.map(() => ({ o: -1, ty: NaN }));
+	const stopCounts = sections.map((s) => Number(s.dataset.stops) || 0);
 
 	const read = () => {
 		raw = progressAt(tops, window.scrollY, holds);
@@ -28,20 +33,44 @@ export function createClimb(sections: HTMLElement[], panels: HTMLElement[]) {
 		read();
 	}
 
-	// arrow / page keys step one tier at a time; Home and End go to the base and the summit
+	/** Tier `i`'s stop `k` as a scroll position: its hold spread evenly over its stops. */
+	const stopScroll = (i: number, k: number) => tops[i] + (holds[i] * k) / Math.max(1, stopCounts[i] - 1);
+
+	/** Where in its stops the scroll is (fractional, 0 .. count - 1) while a tier holds the climb, else null. */
+	function stopNow() {
+		const i = Math.round(raw);
+		if (raw !== i || !holds[i] || stopCounts[i] < 2) return null;
+		const at = clamp((window.scrollY - tops[i]) / holds[i], 0, 1) * (stopCounts[i] - 1);
+		return { tier: i, at };
+	}
+
+	function goStop(i: number, k: number) {
+		window.scrollTo({ top: stopScroll(i, k), behavior: 'instant' });
+		read();
+	}
+
+	// arrow / page keys step one tier (or one stop) at a time; Home and End go to the base and the summit
 	function onKey(e: KeyboardEvent) {
 		if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
 		const t = e.target as HTMLElement | null;
 		// form fields keep their keys, and so does an open dialog (the enlarged self-portrait)
 		if (t?.closest?.('input, textarea, select, [contenteditable], dialog[open]')) return;
-		const cur = Math.round(raw);
-		let to: number | null = null;
-		if (e.key === 'ArrowDown' || e.key === 'PageDown') to = cur + 1;
-		else if (e.key === 'ArrowUp' || e.key === 'PageUp') to = cur - 1;
-		else if (e.key === 'Home') to = 0;
-		else if (e.key === 'End') to = last;
-		if (to === null) return;
+		const down = e.key === 'ArrowDown' || e.key === 'PageDown';
+		const up = e.key === 'ArrowUp' || e.key === 'PageUp';
+		if (!down && !up && e.key !== 'Home' && e.key !== 'End') return;
 		e.preventDefault();
+		const cur = Math.round(raw);
+		const stop = stopNow();
+		if (stop) {
+			const k = Math.round(stop.at);
+			if (down && k < stopCounts[cur] - 1) return goStop(cur, k + 1);
+			if (up && k > 0) return goStop(cur, k - 1);
+		}
+		if (e.key === 'Home') return goTier(0);
+		if (e.key === 'End') return goTier(last);
+		const to = clamp(cur + (down ? 1 : -1), 0, last);
+		// stepping back down into a tier with stops lands on its last one
+		if (up && to !== cur && holds[to]) return goStop(to, stopCounts[to] - 1);
 		goTier(to);
 	}
 
@@ -60,6 +89,10 @@ export function createClimb(sections: HTMLElement[], panels: HTMLElement[]) {
 		},
 		get tops() {
 			return tops;
+		},
+		/** The tier holding the climb and where in its stops the scroll is (fractional), or null. */
+		get stop() {
+			return stopNow();
 		},
 		measure,
 		goTier,

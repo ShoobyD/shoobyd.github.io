@@ -131,17 +131,40 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 
 	// ---------- page wiring ----------
 	const cards = opts.doors.map((d) => document.querySelector<HTMLElement>(`[data-project="${CSS.escape(d.id)}"]`));
+	/**
+	 * The lit project (door and card together): one pointed at (a doorway under the pointer, or a
+	 * card hovered or focused) wins; otherwise the code tier's stop the scroll is at (see climb.ts).
+	 */
+	let cardHover = -1;
+	let stopHot = -1;
 	let hot = -1;
-	function setHot(i: number) {
+	function showHot() {
+		const i = doorHover >= 0 ? doorHover : cardHover >= 0 ? cardHover : stopHot;
+		if (i === hot) return;
 		hot = i;
 		doors.setHot(i);
 		cards.forEach((c, k) => c?.classList.toggle('is-lit', k === i));
+		if (i >= 0 && i === stopHot) revealCard(i);
+	}
+	/** Scrolls the code panel (not the page) just enough to show the lit card, when it overflows. */
+	function revealCard(i: number) {
+		const card = cards[i];
+		const panel = card?.closest<HTMLElement>('[data-tier-panel]');
+		if (!card || !panel || panel.scrollHeight <= panel.clientHeight) return;
+		const c = card.getBoundingClientRect();
+		const p = panel.getBoundingClientRect();
+		if (c.top < p.top + 12) panel.scrollTop -= p.top + 12 - c.top;
+		else if (c.bottom > p.bottom - 12) panel.scrollTop += c.bottom - (p.bottom - 12);
 	}
 	const cardHandlers = cards.map((card, k) => {
 		if (!card || !opts.doors[k].href) return null;
-		const on = () => setHot(k);
+		const on = () => {
+			cardHover = k;
+			showHot();
+		};
 		const off = () => {
-			if (hot === k) setHot(-1);
+			if (cardHover === k) cardHover = -1;
+			showHot();
 		};
 		card.addEventListener('pointerenter', on);
 		card.addEventListener('pointerleave', off);
@@ -331,13 +354,15 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 			if (dh !== doorHover) {
 				doorHover = dh;
 				document.body.style.cursor = dh >= 0 ? 'pointer' : '';
-				setHot(dh);
 			}
 		} else if (doorHover >= 0) {
 			doorHover = -1;
 			document.body.style.cursor = '';
-			setHot(-1);
 		}
+		// on the code tier the scroll steps from project to project, lighting each in turn
+		const stop = climb?.stop;
+		stopHot = stop && stop.tier === 1 && !director ? Math.round(stop.at) : -1;
+		showHot();
 		doors.update(dt, time);
 
 		if (climb) {
