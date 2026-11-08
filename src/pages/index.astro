@@ -81,6 +81,9 @@ const elsewhere = [
 	</button>
 	<TowerLoader label={c.loader} />
 	<TowerScene client:only="vue" tiers={[...tierIds]} doors={towerDoors} portrait={towerPortrait} game={c.game} />
+	<!-- touch screens: a cue over the tower's unfinished top at the summit (placed by the tower; a tap on
+	     the top starts the game, and the header's game button stays the way in for keys and readers) -->
+	<div class="summit-cue" data-summit-cue aria-hidden="true"><span class="summit-cue__pill">{c.game.cue}</span></div>
 	<AltitudeGauge client:idle label={c.gauge.label} unit={c.gauge.unit} tiers={gaugeTiers} />
 
 	<TierSection id="base" sheetLabel={c.sheet.toggle} title={c.base.title} level={1}>
@@ -238,6 +241,55 @@ const elsewhere = [
 	}
 	@media (hover: none) {
 		html.webgl .tower-hint-touch { display: revert; }
+	}
+
+	/* fingers at the summit: a cue over the tower's unfinished top. The scene moves this zero-size
+	 * anchor onto the top (from the viewport's inline-start corner) and turns it on with `is-on`;
+	 * the pill centres itself on it and bobs a little, with a thin line down to the top */
+	.summit-cue {
+		display: none;
+		position: fixed;
+		z-index: 5;
+		inset-block-start: 0;
+		inset-inline-start: 0;
+		inline-size: 0;
+		block-size: 0;
+		pointer-events: none;
+		opacity: 0;
+		transition: opacity var(--sd-dur) var(--sd-ease);
+	}
+	@media (hover: none) {
+		html.webgl .summit-cue { display: block; }
+	}
+	.summit-cue.is-on { opacity: 1; }
+	.summit-cue__pill {
+		position: absolute;
+		inset-block-end: 16px;
+		inset-inline: -20rem;
+		margin-inline: auto;
+		inline-size: max-content;
+		padding-block: 6px;
+		padding-inline: 12px;
+		font-size: 0.82rem;
+		font-weight: 600;
+		color: var(--sd-gold);
+		background: rgb(20 18 16 / 0.72);
+		border: 1px solid rgb(242 195 126 / 0.55);
+		border-radius: var(--sd-pill);
+		animation: cue-bob 2.4s ease-in-out infinite;
+	}
+	.summit-cue__pill::after {
+		content: "";
+		position: absolute;
+		inset-block-start: 100%;
+		inset-inline: 0;
+		margin-inline: auto;
+		inline-size: 1px;
+		block-size: 14px;
+		background: rgb(242 195 126 / 0.55);
+	}
+	@keyframes cue-bob {
+		50% { translate: 0 -5px; }
 	}
 
 	/* the summit's stars, sown with two offset dot fields */

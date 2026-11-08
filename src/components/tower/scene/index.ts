@@ -200,6 +200,33 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 	let nearest = 0;
 	let doorHover = -1;
 	let summitHover = false;
+
+	/**
+	 * Fingers have no hover to show that the summit's top can be tapped, so on touch screens a cue
+	 * (`[data-summit-cue]`, a zero-size anchor in the page) floats over it while the climb is parked
+	 * at the summit, outside the game, with the summit's sheet collapsed (an open one covers the top).
+	 */
+	const cue = document.querySelector<HTMLElement>('[data-summit-cue]');
+	const touch = window.matchMedia('(hover: none)');
+	const cuePoint = new THREE.Vector3(0, PLINTH_TOP + 5.2, 0);
+	const cueScreen = new THREE.Vector3();
+	let cueOn = false;
+	function placeCue() {
+		if (!cue) return;
+		const sheetOpen = narrow && !panelEls[LAST_TIER].classList.contains('is-sheet-collapsed');
+		const on = touch.matches && !!climb && !director && Math.abs(smooth - LAST_TIER) < 0.12 && !sheetOpen;
+		if (on !== cueOn) {
+			cueOn = on;
+			cue.classList.toggle('is-on', on);
+		}
+		if (!on) return;
+		cueScreen.copy(cuePoint).project(camera);
+		const x = ((cueScreen.x + 1) / 2) * window.innerWidth;
+		const y = ((1 - cueScreen.y) / 2) * window.innerHeight;
+		// the anchor sits at the viewport's inline-start corner: the right one in RTL
+		const dx = root.dir === 'rtl' ? x - window.innerWidth : x;
+		cue.style.transform = `translate3d(${dx.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
+	}
 	function onPointerMove(e: PointerEvent) {
 		pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
 		pointer.y = (e.clientY / window.innerHeight) * 2 - 1;
@@ -399,6 +426,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 			document.body.style.cursor = overTop ? 'pointer' : '';
 		}
 		summit.update(time, dt);
+		placeCue();
 		armillary.update(time);
 		glyphs.update(time, smooth);
 		strings.update(dt, time, smooth);
@@ -477,6 +505,8 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 			});
 			document.body.style.cursor = '';
 			stopNow?.replaceChildren();
+			cue?.classList.remove('is-on');
+			cue?.style.removeProperty('transform');
 			glyphs.dispose();
 			guitar.dispose();
 			disposeScene(scene);
