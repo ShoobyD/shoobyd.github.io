@@ -6,7 +6,8 @@
  *
  * - The base tier starts open, so the introduction is read on arrival; every other tier starts
  *   collapsed, and moving to another tier collapses them all again.
- * - Esc collapses an open sheet; tabbing into a collapsed one opens it, so focus is never hidden.
+ * - Esc, or a tap on the tower outside it, collapses an open sheet; tabbing into a collapsed one
+ *   opens it, so focus is never hidden.
  * - Game mode collapses them (it hides the panels anyway).
  * - While one is open the root carries `sd-sheet-open` (the altitude gauge dims under it).
  *
@@ -108,6 +109,25 @@ export function createSheet(panels: HTMLElement[], startTier: number) {
 	const onFocus = panels.map((_, i) => (e: FocusEvent) => {
 		if (isNarrow() && isCollapsed(i) && e.target !== handles[i]) set(i, true);
 	});
+	/**
+	 * A tap (or click) outside an open sheet, on the tower, collapses it, and only that: the tap
+	 * doesn't also open a doorway or start the game, so closing the sheet never sets anything off
+	 * by accident. The page's own controls (header, gauge, links, buttons, dialogs) keep working.
+	 * This listens on the window's capture phase, ahead of the scene's own click handling.
+	 */
+	function onOutside(e: MouseEvent) {
+		if (!isNarrow()) return;
+		const t = e.target as Element | null;
+		if (t?.closest?.('[data-tier-panel], .sd-header, [data-tower-chrome], a, button, input, dialog')) return;
+		const open = panels.filter((_, i) => !isCollapsed(i));
+		if (!open.length) return;
+		e.preventDefault();
+		e.stopImmediatePropagation();
+		panels.forEach((_, i) => {
+			if (!isCollapsed(i)) set(i, false);
+		});
+	}
+
 	function onKey(e: KeyboardEvent) {
 		if (e.key !== 'Escape' || e.defaultPrevented || !isNarrow()) return;
 		if ((e.target as Element | null)?.closest?.('dialog[open]')) return; // a dialog closes itself
@@ -222,6 +242,7 @@ export function createSheet(panels: HTMLElement[], startTier: number) {
 	window.addEventListener('touchend', onTouchEnd);
 	window.addEventListener('touchcancel', onTouchEnd);
 	window.addEventListener('keydown', onKey);
+	window.addEventListener('click', onOutside, true);
 	window.addEventListener('resize', measure);
 	window.addEventListener('scroll', dock, { passive: true });
 	measure();
@@ -252,6 +273,7 @@ export function createSheet(panels: HTMLElement[], startTier: number) {
 		dispose() {
 			watch.disconnect();
 			window.removeEventListener('keydown', onKey);
+			window.removeEventListener('click', onOutside, true);
 			window.removeEventListener('resize', measure);
 			window.removeEventListener('scroll', dock);
 			window.removeEventListener('touchmove', onTouchMove);
