@@ -160,13 +160,6 @@ const elsewhere = [
 				))}
 			</ul>
 		</div>
-		<button class="sd-control sd-control--gold game-control game-cta" type="button" data-tower-game="enter">
-			<svg viewBox="0 0 20 20" aria-hidden="true">
-				<rect class="brick-icon__low brick-icon__low--ink" x="2" y="12" width="16" height="5" rx="1" />
-				<rect class="brick-icon__high brick-icon__high--deep" x="5" y="4" width="11" height="5" rx="1" />
-			</svg>
-			<span>{c.game.cta}</span>
-		</button>
 	</TierSection>
 </Base>
 
@@ -441,16 +434,11 @@ const elsewhere = [
 	}
 	.brick-icon__low { fill: var(--sd-ochre); }
 	.brick-icon__high { fill: var(--sd-limestone); }
-	.brick-icon__low--ink { fill: var(--sd-ink); }
-	.brick-icon__high--deep { fill: var(--sd-ochre-deep); }
 	.brick-icon__drop {
 		fill: none;
 		stroke: var(--sd-limestone);
 		stroke-width: 1.6;
 		stroke-linecap: round;
-	}
-	.game-cta {
-		margin-block-start: var(--sd-space-5);
 	}
 
 	.wink {

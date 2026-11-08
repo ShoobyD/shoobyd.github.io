@@ -5,11 +5,11 @@
  * only while the 3D scene is live, so it gets the scene handle directly as a prop; the game
  * itself (scene/game/) plugs into the scene through that handle.
  *
- * The two ways in are server-rendered by the page, so they work as plain markup and are wired
- * here by data attribute: `[data-tower-game="toggle"]` (the header button, `aria-pressed`, with
- * a `[data-tower-game-label]` span) and `[data-tower-game="enter"]` (the summit's CTA). The page
- * CSS shows them only under `html.webgl`. A click or tap on the tower's unfinished top is a third way
- * in: the scene sends `tower:play`.
+ * Two ways in. The header button is server-rendered by the page, so it works as plain markup and
+ * is wired here by data attribute: `[data-tower-game="toggle"]` (`aria-pressed`, with a
+ * `[data-tower-game-label]` span; any `[data-tower-game="enter"]` control would only enter); the
+ * page CSS shows it only under `html.webgl`. And a click or tap on the tower's unfinished top: the
+ * scene sends `tower:play`.
  *
  * While playing, the root carries `html.tower-game`: the page stops scrolling, the panels, gauge
  * and footer are `inert` (and faded), and click / tap / Space / Enter drop a brick, Esc leaves.

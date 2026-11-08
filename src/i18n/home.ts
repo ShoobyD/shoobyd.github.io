@@ -61,14 +61,13 @@ interface HomeCopy {
 
 /**
  * Game mode (only while the 3D tower is on screen): `enter` / `exit` label the header toggle,
- * `cta` the summit's button, `cue` the label floating over the tower's top on touch screens (a tap
- * there starts the game). `{n}` is the brick count. `hint` is for a keyboard and pointer,
+ * `cue` the label floating over the tower's top on touch screens (a click or tap there starts
+ * the game). `{n}` is the brick count. `hint` is for a keyboard and pointer,
  * `hintTouch` for fingers. `announce*` are read out by the screen-reader live region only.
  */
 export interface GameCopy {
 	enter: string;
 	exit: string;
-	cta: string;
 	cue: string;
 	bricks: string;
 	best: string;
@@ -175,7 +174,6 @@ export const home: Record<Lang, HomeCopy> = {
 		game: {
 			enter: 'מצב משחק',
 			exit: 'חזרה לטיפוס',
-			cta: 'הוסיפו קומה למגדל',
 			cue: 'לחצו להוספת קומה',
 			bricks: 'לבנים',
 			best: 'שיא',
@@ -275,7 +273,6 @@ export const home: Record<Lang, HomeCopy> = {
 		game: {
 			enter: 'Game mode',
 			exit: 'Back to the climb',
-			cta: 'Add a tier to the tower',
 			cue: 'Tap to add a tier',
 			bricks: 'BRICKS',
 			best: 'Best',
