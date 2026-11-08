@@ -85,8 +85,10 @@ export function createDoors(
 				if (!d.mat || !d.light) return;
 				d.lit += ((hot === i ? 1 : 0) - d.lit) * damp(8, dt);
 				const pulse = Math.sin(time * 2 + i) * 0.08;
-				d.mat.color.setScalar(0.85 + d.lit * 2.6 + pulse);
-				d.light.intensity = 3 + d.lit * 26;
+				// lit, a door warms toward gold rather than blowing out to white under the bloom
+				const k = 0.85 + d.lit + pulse;
+				d.mat.color.setRGB(k, k * (1 - d.lit * 0.12), k * (1 - d.lit * 0.34));
+				d.light.intensity = 3 + d.lit * 14;
 			});
 		},
 	};
