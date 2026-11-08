@@ -217,7 +217,20 @@ onBeforeUnmount(() => {
 	}
 	.gauge__altitude { font-size: 0.75rem; }
 	.gauge__altitude b { font-size: 1.1rem; }
-	.gauge__label { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); }
+	/* only the current tier is named on screen; the others keep their names for screen readers */
+	.gauge__tiers a:not([aria-current]) .gauge__label { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); }
+	.gauge__tiers a[aria-current] .gauge__label {
+		font-size: 0.78rem;
+		padding-inline: 7px;
+		transition: opacity var(--sd-dur-fast), visibility 0s;
+	}
+	/* an open sheet runs under the (dimmed) gauge: its name steps out of the way altogether (the
+	 * root class needs no :global: scoping only marks the last part of a selector) */
+	html.sd-sheet-open .gauge__tiers a[aria-current] .gauge__label {
+		opacity: 0;
+		visibility: hidden;
+		transition: opacity var(--sd-dur-fast), visibility 0s linear var(--sd-dur-fast);
+	}
 }
 </style>
 
