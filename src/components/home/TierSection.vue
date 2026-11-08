@@ -181,7 +181,25 @@ html.webgl .tier__body {
 	/* soft edges where it scrolls: at the top once scrolled (the content slips under the title), at
 	 * the bottom while there is more below; the climb sets them (scene/climb.ts) */
 	mask-image: linear-gradient(to bottom, transparent, #000 var(--fade-top), #000 calc(100% - var(--fade-bottom)), transparent);
-	transition: --fade-top var(--sd-dur-fast), --fade-bottom var(--sd-dur-fast);
+	/* the scrollbar keeps quiet, pale, until it is used: while scrolling (and a moment after) or under
+	 * the pointer it takes its full colour */
+	--thumb: rgb(201 139 74 / 0.28);
+	scrollbar-color: var(--thumb) transparent;
+	transition:
+		--fade-top var(--sd-dur-fast),
+		--fade-bottom var(--sd-dur-fast),
+		--thumb var(--sd-dur);
+}
+
+html.webgl .tier__body:hover,
+html.webgl .tier__body.is-scrolling {
+	--thumb: var(--sd-ochre);
+}
+
+@property --thumb {
+	syntax: "<color>";
+	inherits: false;
+	initial-value: transparent;
 }
 
 @property --fade-top {

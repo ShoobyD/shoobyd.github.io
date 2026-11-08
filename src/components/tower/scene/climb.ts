@@ -85,6 +85,15 @@ export function createClimb(sections: HTMLElement[], panels: HTMLElement[]) {
 	// and at the bottom while there is more below (TierSection.vue)
 	const bodies = panels.map((p) => p.querySelector<HTMLElement>('.tier__body'));
 	const FADE = '28px';
+	// and its scrollbar, pale at rest, shows in full while it scrolls and for a moment after
+	const scrolling = bodies.map(() => 0);
+	const onScroll = bodies.map((b, i) => () => {
+		if (!b) return;
+		edges[i]();
+		b.classList.add('is-scrolling');
+		window.clearTimeout(scrolling[i]);
+		scrolling[i] = window.setTimeout(() => b.classList.remove('is-scrolling'), 900);
+	});
 	const edges = bodies.map((b) => () => {
 		if (!b) return;
 		const more = b.scrollHeight - b.clientHeight - b.scrollTop;
@@ -94,7 +103,7 @@ export function createClimb(sections: HTMLElement[], panels: HTMLElement[]) {
 	const watchEdges = new ResizeObserver(() => edges.forEach((e) => e()));
 	bodies.forEach((b, i) => {
 		if (!b) return;
-		b.addEventListener('scroll', edges[i], { passive: true });
+		b.addEventListener('scroll', onScroll[i], { passive: true });
 		watchEdges.observe(b);
 		edges[i]();
 	});
@@ -145,7 +154,9 @@ export function createClimb(sections: HTMLElement[], panels: HTMLElement[]) {
 			watchEdges.disconnect();
 			bodies.forEach((b, i) => {
 				if (!b) return;
-				b.removeEventListener('scroll', edges[i]);
+				b.removeEventListener('scroll', onScroll[i]);
+				window.clearTimeout(scrolling[i]);
+				b.classList.remove('is-scrolling');
 				b.style.removeProperty('--fade-top');
 				b.style.removeProperty('--fade-bottom');
 			});
