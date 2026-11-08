@@ -17,6 +17,7 @@ import LinkIcon from '../theme/components/LinkIcon.vue';
 import AltitudeGauge from '../components/home/AltitudeGauge.vue';
 import BabelTitle from '../components/home/BabelTitle.vue';
 import SelfPortrait from '../components/home/SelfPortrait.astro';
+import StaticTower from '../components/home/StaticTower.astro';
 import TowerScene from '../components/tower/TowerScene.vue';
 import TowerLoader from '../components/tower/TowerLoader.astro';
 import TowerLoaderBoot from '../components/tower/TowerLoaderBoot.astro';
@@ -84,6 +85,8 @@ const elsewhere = [
 	<!-- touch screens: a cue over the tower's unfinished top at the summit (placed by the tower; a tap on
 	     the top starts the game, and the header's game button stays the way in for keys and readers) -->
 	<div class="summit-cue" data-summit-cue aria-hidden="true"><span class="summit-cue__pill">{c.game.cue}</span></div>
+	<!-- the static page's tower (when there is no 3D one): before the tiers, so their panels sit over it -->
+	<StaticTower />
 	<AltitudeGauge client:idle label={c.gauge.label} unit={c.gauge.unit} tiers={gaugeTiers} />
 
 	<TierSection id="base" sheetLabel={c.sheet.toggle} title={c.base.title} level={1}>

@@ -1,0 +1,177 @@
+---
+/**
+ * The tower for the static page (no 3D: reduced motion, no WebGL2, Save-Data, or the scene gave
+ * up): one picture of the whole tower with every tier's point of interest turned to the front
+ * (rendered by scripts/render-tower-still.mjs). As the page scrolls the tower moves the other
+ * way, so each tier's focus comes level with that tier's panel: beside it on wide screens, just
+ * above it on phones. It is close at each tier and draws back a little on the way between two.
+ *
+ * Decorative (`aria-hidden`; the panels carry the content), and only there with JavaScript: the
+ * script picks the image size and does the placing, so without it nothing is fetched. Hidden
+ * while the 3D tower is up (`html.webgl`).
+ */
+import { getImage } from 'astro:assets';
+import tower from '../../assets/images/tower-front.webp';
+import still from '../../data/tower-front.json';
+
+/** Served widths; the script's `sizes` picks one for the zoomed-in size on screen. */
+const WIDTHS = [900, 1500, 2100];
+const sources = await Promise.all(WIDTHS.map((width) => getImage({ src: tower, width, format: 'webp', quality: 80 })));
+const srcset = sources.map((s, i) => `${s.src} ${WIDTHS[i]}w`).join(', ');
+---
+
+<!-- the picture itself is added by the script below (without JavaScript nothing is fetched) -->
+<div class="static-tower" data-static-tower data-srcset={srcset} data-foci={JSON.stringify(still.foci)} data-size={`${still.width}x${still.height}`} aria-hidden="true"></div>
+
+<script>
+	import { isTowerActive } from '../tower/mode';
+
+	const box = document.querySelector<HTMLElement>('[data-static-tower]');
+	const img = box ? document.createElement('img') : null;
+	const sections = ['base', 'code', 'math', 'languages', 'making', 'summit'].map((id) => document.getElementById(`tier-${id}`));
+
+	if (box && img && sections.every(Boolean)) {
+		const tiers = sections as HTMLElement[];
+		const panels = tiers.map((s) => s.querySelector<HTMLElement>('[data-tier-panel]')!);
+		const foci = JSON.parse(box.dataset.foci ?? '[]') as number[];
+		const phone = window.matchMedia('(max-width: 47.5rem)');
+		const [w, h] = (box.dataset.size ?? '').split('x').map(Number);
+		img.className = 'static-tower__img';
+		img.alt = '';
+		img.decoding = 'async';
+		img.width = w;
+		img.height = h;
+		box.append(img);
+
+		/** How close the tower is: at a tier, and the least it draws back to half-way between two. */
+		const zoom = () => (phone.matches ? { near: 2.3, far: 1.9 } : { near: 2.4, far: 1.95 });
+		/** 0 at a tier, 1 half-way to the next: flat around each tier, the change mostly in between. */
+		const away = (t: number) => {
+			const d = Math.min(t, 1 - t) * 2;
+			const x = Math.min(1, Math.max(0, (d - 0.15) / 0.85));
+			return x * x * (3 - 2 * x);
+		};
+
+		// the size to fetch: the picture is drawn this much wider than its base width
+		img.sizes = `calc(${phone.matches ? '100vw' : '46vw'} * ${zoom().near})`;
+		img.srcset = box.dataset.srcset ?? '';
+
+		/** Where the tower should be for the current scroll (translate x/y and scale). */
+		function aim() {
+			const w0 = img!.offsetWidth;
+			const h0 = img!.offsetHeight;
+			const boxW = box!.clientWidth;
+			// each tier's anchor in the page, and where its focus should sit on screen: level with the
+			// middle of its panel, or (phone) just above the panel's top
+			const centres = tiers.map((s) => s.offsetTop + s.offsetHeight / 2);
+			const mid = window.scrollY + window.innerHeight / 2;
+			let i = 0;
+			while (i < tiers.length - 2 && mid > centres[i + 1]) i++;
+			const t = Math.min(1, Math.max(0, (mid - centres[i]) / (centres[i + 1] - centres[i])));
+			const spot = (k: number) => {
+				const r = panels[k].getBoundingClientRect();
+				return phone.matches ? Math.max(72, r.top - 34) : r.top + r.height / 2;
+			};
+			const target = spot(i) + (spot(i + 1) - spot(i)) * t;
+			const focus = (foci[i] + (foci[i + 1] - foci[i]) * t) * h0;
+			const { near, far } = zoom();
+			const s = near - (near - far) * away(t);
+			// the image sits at the box's inline-start edge: in RTL that is its right edge
+			const rtl = getComputedStyle(box!).direction === 'rtl';
+			const left = boxW / 2 - (s * w0) / 2;
+			return { x: left - (rtl ? boxW - w0 : 0), y: target - s * focus, s };
+		}
+
+		// eased toward its aim every frame, so a wheel's steps come out smooth
+		const now = { x: 0, y: 0, s: 1 };
+		let first = true;
+		let frame = 0;
+		let last = 0;
+		function draw(time: number) {
+			frame = 0;
+			if (isTowerActive() || !img!.complete) return;
+			const to = aim();
+			const dt = last ? Math.min(0.1, (time - last) / 1000) : 0;
+			last = time;
+			const k = first ? 1 : 1 - Math.exp(-dt * 12);
+			first = false;
+			now.x += (to.x - now.x) * k;
+			now.y += (to.y - now.y) * k;
+			now.s += (to.s - now.s) * k;
+			img!.style.transform = `translate(${now.x.toFixed(1)}px, ${now.y.toFixed(1)}px) scale(${now.s.toFixed(4)})`;
+			if (Math.abs(to.y - now.y) > 0.3 || Math.abs(to.s - now.s) > 0.0005 || Math.abs(to.x - now.x) > 0.3) schedule();
+			else last = 0;
+		}
+		function schedule() {
+			if (!frame) frame = requestAnimationFrame(draw);
+		}
+
+		img.addEventListener('load', () => {
+			box.dataset.ready = '';
+			first = true;
+			schedule();
+		});
+		window.addEventListener('scroll', schedule, { passive: true });
+		window.addEventListener('resize', () => {
+			first = true;
+			schedule();
+		});
+		// the static layout comes back if the 3D tower stops (or is never there): place it again then
+		new ResizeObserver(() => {
+			first = true;
+			schedule();
+		}).observe(document.body);
+	}
+</script>
+
+<style>
+	.static-tower {
+		display: none;
+		position: fixed;
+		z-index: 0;
+		inset-block: 0;
+		inset-inline-end: 0;
+		inline-size: 60vw;
+		overflow: hidden;
+		pointer-events: none;
+	}
+	/* shown once its picture is in, only on the static page */
+	:global(html:not(.webgl)) .static-tower[data-ready] {
+		display: block;
+	}
+	/* towards the panels the picture fades out */
+	:global([dir="rtl"]) .static-tower {
+		mask-image: linear-gradient(to right, #000 72%, transparent);
+	}
+	:global([dir="ltr"]) .static-tower {
+		mask-image: linear-gradient(to left, #000 72%, transparent);
+	}
+
+	/* the picture is created by the script, so it is outside this file's scope */
+	.static-tower :global(.static-tower__img) {
+		position: absolute;
+		inset-block-start: 0;
+		inset-inline-start: 0;
+		inline-size: 46vw;
+		block-size: auto;
+		max-inline-size: none;
+		transform-origin: 0 0;
+		will-change: transform;
+	}
+
+	/* phones: the tower stands behind the panels, its focus just above each one */
+	@media (max-width: 47.5rem) {
+		.static-tower {
+			inset-inline: 0;
+			inline-size: auto;
+		}
+		:global([dir="rtl"]) .static-tower,
+		:global([dir="ltr"]) .static-tower {
+			mask-image: none;
+		}
+		.static-tower :global(.static-tower__img) {
+			inline-size: 100vw;
+		}
+	}
+</style>
+
