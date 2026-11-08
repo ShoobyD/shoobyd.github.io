@@ -8,8 +8,8 @@
  * carried over so the visitor stays on the tier they were reading.
  */
 import * as THREE from 'three';
-import { clamp, createRandom, damp, easeOut, isNarrow, lerp } from './util';
-import { LAST_TIER, PLINTH_TOP, doorAngles } from './dimensions';
+import { clamp, createRandom, damp, easeOut, isNarrow, lerp, sstep } from './util';
+import { DOOR_PAN, DOOR_STEP, LAST_TIER, PLINTH_TOP, doorAngles, doorPanMax } from './dimensions';
 import { createRenderer } from './renderer';
 import { createSky } from './sky';
 import { createLandscape } from './landscape';
@@ -92,7 +92,8 @@ function buildWorld(
 	const glyphs = createGlyphs(scene, random);
 	const strings = createStrings(scene, mats);
 	const portrait = createPortrait(scene, mats, portraitSpec, anisotropy);
-	const clouds = createClouds(scene, random);
+	// the camera's walk along the code tier's doors widens that stop's view, and its clouds keep clear of all of it
+	const clouds = createClouds(scene, random, doorPanMax(doorSpecs.length));
 	return { brick, sky, landscape, built, doors, figures, summit, armillary, glyphs, strings, portrait, clouds };
 }
 
@@ -305,6 +306,27 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 	let lastTier = -1;
 	let frames = 0;
 
+	/**
+	 * On the code tier the camera walks along the wall to the doorway of the project in focus:
+	 * it turns toward that door (DOOR_PAN of the way, so its neighbours stay in view), settling on
+	 * each door as the scroll passes it. Arriving from below it starts at the first door, and
+	 * leaving upward it sets off from the last; the turn fades out as the climb moves away.
+	 */
+	let doorAt = 0;
+	function doorPan(dt: number) {
+		const count = opts.doors.length;
+		if (count < 2) return 0;
+		const stop = climb?.stop;
+		let to: number;
+		if (stop && stop.tier === 1) {
+			const k = Math.floor(stop.at);
+			to = Math.min(count - 1, k + sstep(0.2, 0.8, stop.at - k));
+		} else to = smooth < 1 ? 0 : count - 1;
+		doorAt += (to - doorAt) * damp(4, dt);
+		const near = 1 - sstep(0, 0.45, Math.abs(smooth - 1));
+		return near * (doorAt - (count - 1) / 2) * DOOR_STEP * DOOR_PAN;
+	}
+
 	const loop = createLoop((dt, now) => {
 		time += dt;
 		const target = climb ? climb.progress : progressAt(sectionTops(sectionEls), window.scrollY);
@@ -316,7 +338,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 		pointer.sy += (pointer.y - pointer.sy) * damp(2, dt);
 		const landed = !intro.play ? 1 : climb ? easeOut(clamp((now - intro.from) / 3600, 0, 1)) : 0;
 		const side = root.dir === 'ltr' ? -1 : 1;
-		rig.update({ dt, time, progress: smooth, intro: landed, pointer: { x: pointer.sx, y: pointer.sy }, side, narrow });
+		rig.update({ dt, time, progress: smooth, intro: landed, pointer: { x: pointer.sx, y: pointer.sy }, side, narrow, pan: doorPan(dt) });
 
 		// a director (game mode) can take the camera over; the climb shot is blended toward its own
 		shot.pos.copy(rig.pos);

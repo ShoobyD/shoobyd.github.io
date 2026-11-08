@@ -4,14 +4,15 @@
  *
  * Clouds may veil the tower anywhere but at the heart of a stop: each tier's park has a focus
  * corridor (the cone from the parked camera to the middle of its tier, for the wide and the
- * narrow-screen distance alike), and no cloud is placed in one. So that none drifts into one
+ * narrow-screen distance alike, and on the code tier all along the camera's walk past its doors),
+ * and no cloud is placed in one. So that none drifts into one
  * either, a cloud doesn't circle the tower: it sways back and forth along a short arc of its
  * ring, and the whole arc is checked when it is placed.
  */
 import * as THREE from 'three';
 import { TAU, lerp, sstep, type Random } from './util';
 import { cloudTexture } from './textures';
-import { PARK } from './dimensions';
+import { PARK, type Park } from './dimensions';
 import type { Atmosphere } from './sky';
 
 /** Half the width and height (world units, at the tower's axis) of a stop's focus that stays clear. */
@@ -26,11 +27,25 @@ const ARC_STEP = 0.04;
 const wrap = (a: number) => a - TAU * Math.round(a / TAU);
 
 /**
- * Whether a cloud at angle `th`, ring radius `r` and height `y` (half-size `hw` × `hh`) would sit
- * in front of the focus of any stop.
+ * Every camera view a stop holds: each park as it is, and the code tier's park turned through
+ * its walk along the doors (±`codePan` radians, in small steps).
  */
-function blocksFocus(th: number, r: number, y: number, hw: number, hh: number) {
-	for (const park of PARK) {
+function stopViews(codePan: number): Park[] {
+	const views: Park[] = [];
+	PARK.forEach((park, i) => {
+		if (i !== 1 || codePan <= 0) return views.push(park);
+		const steps = Math.ceil(codePan / 0.08);
+		for (let k = -steps; k <= steps; k++) views.push({ ...park, th: park.th + (codePan * k) / steps });
+	});
+	return views;
+}
+
+/**
+ * Whether a cloud at angle `th`, ring radius `r` and height `y` (half-size `hw` × `hh`) would sit
+ * in front of the focus of any of the stops' `views`.
+ */
+function blocksFocus(views: Park[], th: number, r: number, y: number, hw: number, hh: number) {
+	for (const park of views) {
 		const d = wrap(th - park.th);
 		const depth = r * Math.cos(d); // along the camera's line, from the axis toward the camera
 		if (depth <= 0) continue; // behind the axis: the tower itself hides it
@@ -48,7 +63,9 @@ function blocksFocus(th: number, r: number, y: number, hw: number, hh: number) {
 	return false;
 }
 
-export function createClouds(scene: THREE.Scene, { rnd, range }: Random) {
+/** `codePan`: how far the camera turns either way on its walk along the code tier's doors (radians). */
+export function createClouds(scene: THREE.Scene, { rnd, range }: Random, codePan = 0) {
+	const views = stopViews(codePan);
 	const textures = [cloudTexture(3), cloudTexture(11), cloudTexture(27)];
 	const clouds: {
 		sprite: THREE.Sprite;
@@ -74,7 +91,7 @@ export function createClouds(scene: THREE.Scene, { rnd, range }: Random) {
 			const a0 = rnd() * TAU;
 			const amp = range(0.12, 0.3);
 			let clear = true;
-			for (let a = a0 - amp; a <= a0 + amp + 1e-6 && clear; a += ARC_STEP) clear = !blocksFocus(a, r, y, hw, hh);
+			for (let a = a0 - amp; a <= a0 + amp + 1e-6 && clear; a += ARC_STEP) clear = !blocksFocus(views, a, r, y, hw, hh);
 			if (!clear) continue;
 			const opacity = range(...oo);
 			const mat = new THREE.SpriteMaterial({ map: textures[(rnd() * 3) | 0], transparent: true, depthWrite: false, opacity, fog: true });

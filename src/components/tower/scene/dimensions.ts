@@ -50,6 +50,15 @@ export const RAMP_A0 = PARK[1].th - 0.8 * TAU;
 /** Angular spacing of the project doorways on the code tier. */
 export const DOOR_STEP = 0.27;
 
+/**
+ * How far the camera turns toward the doorway in focus on the code tier, as a share of the door's
+ * angle from the park (most of the way, so its neighbours stay in view).
+ */
+export const DOOR_PAN = 0.8;
+
+/** The widest turn of that walk either way, for `count` doorways. */
+export const doorPanMax = (count: number) => ((Math.max(1, count) - 1) / 2) * DOOR_STEP * DOOR_PAN;
+
 /** Angles of `count` doorways, centred on the code tier's park. */
 export const doorAngles = (count: number) =>
 	Array.from({ length: count }, (_, k) => PARK[1].th + (k - (count - 1) / 2) * DOOR_STEP);

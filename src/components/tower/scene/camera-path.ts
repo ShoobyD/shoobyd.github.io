@@ -37,6 +37,8 @@ export interface RigInput {
 	/** +1 when the panel sits on the right (RTL), -1 when on the left (LTR). */
 	side: number;
 	narrow: boolean;
+	/** An extra turn around the tower, in radians (the code tier's walk from door to door). */
+	pan?: number;
 }
 
 export function createCameraRig(camera: THREE.PerspectiveCamera) {
@@ -57,7 +59,7 @@ export function createCameraRig(camera: THREE.PerspectiveCamera) {
 			rigAt(s.progress, park);
 			const away = 1 - s.intro;
 			const sway = s.pointer.x * 0.04 + Math.sin(s.time * 0.15) * 0.012;
-			th = park.th + away * -0.7 + sway;
+			th = park.th + away * -0.7 + sway + (s.pan ?? 0);
 			const dist = park.dist * (s.narrow ? 1.38 : 1) + away * 48;
 			const y = park.y + away * 10 - s.pointer.y * 0.7;
 			pos.set(Math.cos(th) * dist, y, Math.sin(th) * dist);
