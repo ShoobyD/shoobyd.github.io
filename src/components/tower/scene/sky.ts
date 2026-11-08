@@ -9,12 +9,13 @@ import { lerp, sstep } from './util';
 const KA = [0, 0.38, 0.72, 1];
 const colors = (hex: string[]) => hex.map((h) => new THREE.Color(h));
 const ENV = {
-	top: colors(['#4f73a3', '#6f8fb3', '#3c5a86', '#0b1330']),
-	horizon: colors(['#f2a877', '#c9d6e2', '#e8a678', '#2a3a62']),
+	// the day is the Flemish blue, deep enough to own the field down to the horizon
+	top: colors(['#4f73a3', '#56789f', '#3c5a86', '#0b1330']),
+	horizon: colors(['#f2a877', '#86a3c8', '#e8a678', '#2a3a62']),
 	sun: colors(['#ffb877', '#fff1dc', '#ffa565', '#a9bcff']),
 	hemiSky: colors(['#a8c0dd', '#bcd0e6', '#f0b890', '#3a4c80']),
 	hemiGround: colors(['#8a6a44', '#8a7450', '#6e4f38', '#1e2030']),
-	cloud: colors(['#ffe2cc', '#ffffff', '#ffc9a6', '#4b5a85']),
+	cloud: colors(['#ffe2cc', '#e6edf6', '#ffc9a6', '#4b5a85']),
 	sunI: [2.6, 3.1, 2.5, 0.8],
 	hemiI: [1.05, 1.25, 0.95, 0.75],
 	elevation: [11, 46, 15, 32],
@@ -53,7 +54,7 @@ const fragmentShader = /* glsl */ `
 	void main() {
 		vec3 d = normalize(vDir);
 		float h = d.y;
-		vec3 col = mix(uHorizon, uTop, pow(smoothstep(-0.02, 0.62, h), 0.75));
+		vec3 col = mix(uHorizon, uTop, pow(smoothstep(-0.02, 0.4, h), 0.7));
 		col = mix(col, uGround, smoothstep(0.0, -0.12, h));
 		// the sun: a hot disc, a halo and a wide glow
 		vec3 sd = normalize(uSunDir);
