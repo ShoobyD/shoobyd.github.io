@@ -3,8 +3,8 @@
  * One tier of the tower: a full-height section holding one arch panel.
  * The section id is the anchor the altitude gauge links to.
  *
- * When the 3D tower is active (`html.webgl`), each section becomes a tall scroll span and its
- * panel is fixed over the canvas; the tower island fades each panel in around its own tier.
+ * When the page is the climb (`html.sd-climb`), each section becomes a tall scroll span and its
+ * panel is fixed over the tower; the tower island fades each panel in around its own tier.
  * The heading's content can be replaced through the `title` slot (e.g. the summit's Babel joke).
  */
 import ArchPanel from '../../theme/components/ArchPanel.vue';
@@ -128,25 +128,25 @@ h2.tier__title {
 	}
 }
 
-/* ---------- 3D mode: the climb ----------
+/* ---------- the climb (html.sd-climb) ----------
  * Each tier is a 1.5-viewport scroll span (the summit just one); the camera parks when a
  * section's top meets the viewport's. Panels are fixed at the inline-start, clear of the tower. */
-html.webgl .tier {
+html.sd-climb .tier {
 	block-size: 150vh;
 	min-block-size: 0;
 	padding: 0;
 }
 
-html.webgl .tier:last-of-type {
+html.sd-climb .tier:last-of-type {
 	block-size: 100vh;
 }
 
 /* a tier with stops holds the climb: half a viewport more per stop after the first */
-html.webgl .tier[data-stops] {
+html.sd-climb .tier[data-stops] {
 	block-size: calc(150vh + (var(--stops) - 1) * 50vh);
 }
 
-html.webgl .tier__panel {
+html.sd-climb .tier__panel {
 	position: fixed;
 	z-index: 6;
 	inset-inline-start: clamp(16px, 6vw, 112px);
@@ -166,7 +166,7 @@ html.webgl .tier__panel {
 /* a panel taller than the window scrolls its content under the title, not itself: the title stays
  * in view, and the scrollbar stays inside the panel, by its straight side, rather than running up
  * past the arch (the negative margin and matching padding put it near the edge, clear of the text) */
-html.webgl .tier__body {
+html.sd-climb .tier__body {
 	flex: 1 1 auto;
 	min-block-size: 0;
 	/* only up and down; a tilted picture's corner (the self-portrait hangs askew) mustn't make it
@@ -191,8 +191,8 @@ html.webgl .tier__body {
 		--thumb var(--sd-dur);
 }
 
-html.webgl .tier__body:hover,
-html.webgl .tier__body.is-scrolling {
+html.sd-climb .tier__body:hover,
+html.sd-climb .tier__body.is-scrolling {
 	--thumb: var(--sd-ochre);
 }
 
@@ -214,7 +214,7 @@ html.webgl .tier__body.is-scrolling {
 	initial-value: 0px;
 }
 
-html.webgl .tier__panel.is-on {
+html.sd-climb .tier__panel.is-on {
 	pointer-events: auto;
 }
 
@@ -230,7 +230,7 @@ html.webgl .tier__panel.is-on {
 
 @media (max-width: 47.5rem) {
 	/* the sheet scrolls itself (sheet.ts reads and resets its scroll), its content doesn't */
-	html.webgl .tier__panel {
+	html.sd-climb .tier__panel {
 		display: block;
 		overflow: auto;
 		overscroll-behavior: contain;
@@ -259,7 +259,7 @@ html.webgl .tier__panel.is-on {
 			--sheet-fade 420ms var(--sd-ease);
 	}
 
-	html.webgl .tier__body {
+	html.sd-climb .tier__body {
 		overflow: visible;
 		margin-inline-end: 0;
 		padding-inline-end: 0;
@@ -268,24 +268,24 @@ html.webgl .tier__panel.is-on {
 		mask-image: none;
 	}
 
-	html.webgl .tier__panel.is-sheet-collapsed {
+	html.sd-climb .tier__panel.is-sheet-collapsed {
 		--sheet-fade: 0px;
 		translate: 0 calc(100% - var(--sheet-peek, 150px));
 		overflow: hidden;
 	}
 
 	/* under a finger the sheet follows it exactly (an inline translate) and shows all it holds */
-	html.webgl .tier__panel.is-sheet-dragging {
+	html.sd-climb .tier__panel.is-sheet-dragging {
 		--sheet-fade: 100vh;
 		transition: none;
 	}
 
 	/* the handle takes the keystone's place */
-	html.webgl .tier__panel::before {
+	html.sd-climb .tier__panel::before {
 		display: none;
 	}
 
-	html.webgl .tier__sheet {
+	html.sd-climb .tier__sheet {
 		display: grid;
 	}
 }

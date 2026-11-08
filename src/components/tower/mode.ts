@@ -1,11 +1,16 @@
 /**
- * The 3D mode switch, shared by the tower island and the page components without pulling in
- * Three.js. While the scene is active the root element carries `html.webgl`; the page CSS uses it
- * to turn tiers into tall scroll spans with fixed, fading panels over the canvas.
+ * The mode switches, shared by the tower island and the page components without pulling in
+ * Three.js. Two classes on the root element:
+ * - `html.sd-climb`: the page is laid out as the climb. Tiers are tall scroll spans with fixed,
+ *   fading panels (bottom sheets on phones) over the tower, and the header stays put.
+ * - `html.webgl`: the live 3D tower is up, behind that layout (its canvas, game mode, the hints
+ *   that point at it).
  */
 export const TOWER_CLASS = 'webgl';
+export const CLIMB_CLASS = 'sd-climb';
 
 export const isTowerActive = () => document.documentElement.classList.contains(TOWER_CLASS);
+export const isClimbing = () => document.documentElement.classList.contains(CLIMB_CLASS);
 
 /**
  * Set on the root by TowerLoaderBoot (inline, before first paint) while the full-screen loader is
@@ -27,13 +32,13 @@ export function sectionTops(sections: HTMLElement[]) {
 }
 
 /**
- * In the 3D climb a tier marked `data-stops` holds the climb for a while: its section is taller
+ * In the climb a tier marked `data-stops` holds the climb for a while: its section is taller
  * than the usual 1.5 viewports (TierSection.vue), and over that extra length, from the section's
  * top, the progress stays on the tier while the scroll steps through its stops. This is each
- * section's hold in px (0 for the others, and for all of them on the static page).
+ * section's hold in px (0 for the others, and for all of them when the page isn't the climb).
  */
 export function sectionHolds(sections: HTMLElement[]) {
-	const climbing = isTowerActive();
+	const climbing = isClimbing();
 	return sections.map((el) =>
 		climbing && el.dataset.stops ? Math.max(0, el.getBoundingClientRect().height - 1.5 * window.innerHeight) : 0,
 	);

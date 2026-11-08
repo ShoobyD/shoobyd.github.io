@@ -4,8 +4,8 @@
  * static page has painted and the browser has passed the WebGL / reduced-motion checks.
  *
  * Activation is the last step: the scene renders its first frames behind the static page,
- * then the root gets `html.webgl`, the layout turns into the climb, and the scroll position is
- * carried over so the visitor stays on the tier they were reading.
+ * then the root gets `html.webgl` and `html.sd-climb`, the layout turns into the climb, and the
+ * scroll position is carried over so the visitor stays on the tier they were reading.
  */
 import * as THREE from 'three';
 import { clamp, createRandom, damp, easeOut, isNarrow, lerp, sstep } from './util';
@@ -30,7 +30,7 @@ import { createGlyphs } from './tiers/glyphs';
 import { STRING_COUNT, createStrings } from './tiers/strings';
 import { createGuitarSound } from './tiers/guitar-sound';
 import { createPortrait, type PortraitSpec } from './tiers/portrait';
-import { TOWER_CLASS, progressAt, scrollFor, sectionTops } from '../mode';
+import { CLIMB_CLASS, TOWER_CLASS, progressAt, scrollFor, sectionTops } from '../mode';
 
 export type { DoorSpec, PortraitSpec };
 // game mode rides in this chunk; it plugs in through the handle below and nothing else
@@ -323,7 +323,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 
 	function activate(now: number) {
 		const reading = readingNow();
-		root.classList.add(TOWER_CLASS);
+		root.classList.add(TOWER_CLASS, CLIMB_CLASS);
 		climb = createClimb(sectionEls, panelEls);
 		sheet = createSheet(panelEls, Math.round(reading));
 		if (reading > 0) climb.goTo(reading);
@@ -491,7 +491,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 				const progress = climb.progress;
 				climb.dispose();
 				sheet?.dispose();
-				root.classList.remove(TOWER_CLASS);
+				root.classList.remove(TOWER_CLASS, CLIMB_CLASS);
 				if (progress > 0) window.scrollTo({ top: scrollFor(sectionTops(sectionEls), progress), behavior: 'instant' });
 			}
 			window.removeEventListener('pointermove', onPointerMove);

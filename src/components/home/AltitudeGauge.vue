@@ -6,7 +6,7 @@
  * altitude in cubits from the scroll position, in either layout.
  */
 import { onBeforeUnmount, onMounted, ref } from 'vue';
-import { isTowerActive, progressAt, sectionHolds, sectionTops } from '../tower/mode';
+import { isClimbing, progressAt, sectionHolds, sectionTops } from '../tower/mode';
 
 export interface GaugeTier {
 	id: string;
@@ -45,7 +45,7 @@ function measureClimb() {
  */
 function measure() {
 	frame = 0;
-	if (isTowerActive()) {
+	if (isClimbing()) {
 		measureClimb();
 		return;
 	}

@@ -180,26 +180,39 @@ const elsewhere = [
 		background-attachment: scroll;
 	}
 
-	/* ---------- 3D mode (html.webgl, set by TowerScene) ----------
-	 * The camera does its own smoothing, so jumps (gauge links, keys) are instant; the header
-	 * stays put over the climb; the footer is lifted above the fixed canvas; and the painted
-	 * sky takes over from the CSS stars. */
-	html.webgl {
+	/* ---------- the climb (html.sd-climb, see ../components/tower/mode.ts) ----------
+	 * The climb does its own smoothing, so jumps (gauge links, keys) are instant; the header
+	 * stays put over the climb; and the footer is lifted above the fixed tower behind it. */
+	html.sd-climb {
 		scroll-behavior: auto;
 		scrollbar-width: none;
 	}
-	/* fingers: the browser takes vertical swipes (the climb) and pinch-zoom, and leaves sideways
-	 * swipes to the scene, where they strum the guitar strings on the making tier */
-	html.webgl body {
-		touch-action: pan-y pinch-zoom;
-	}
-	html.webgl::-webkit-scrollbar { display: none; }
-	html.webgl .sd-header {
+	html.sd-climb::-webkit-scrollbar { display: none; }
+	html.sd-climb .sd-header {
 		position: fixed;
 		inset-block-start: 0;
 		inset-inline: 0;
 	}
-	html.webgl .sd-footer { position: relative; }
+	html.sd-climb .sd-footer { position: relative; }
+	/* the climb's chrome (the altitude gauge) fades when it steps aside */
+	html.sd-climb [data-tower-chrome] {
+		transition: opacity var(--sd-dur) var(--sd-ease), visibility 0s;
+	}
+	/* an open bottom sheet (narrow screens) runs under the altitude gauge: the gauge dims and
+	 * steps aside for it until the sheet collapses */
+	html.sd-climb.sd-sheet-open [data-tower-chrome] {
+		opacity: 0.2;
+		pointer-events: none;
+	}
+
+	/* ---------- the live 3D tower (html.webgl, set by TowerScene) ----------
+	 * The painted sky takes over from the CSS stars. Fingers: the browser takes vertical swipes
+	 * (the climb) and pinch-zoom, and leaves sideways swipes to the scene, where they strum the
+	 * guitar strings on the making tier. */
+	html.webgl body {
+		touch-action: pan-y pinch-zoom;
+	}
+	html.webgl .tier--night { background-image: none; }
 
 	/* game mode's controls exist only with the live tower: not in the static page, with reduced
 	 * motion, without WebGL, or under the loader (display: none also keeps them out of the tab order) */
@@ -212,21 +225,11 @@ const elsewhere = [
 	 * is also `inert`, so focus cannot land there. */
 	html.webgl.tower-game { overflow: hidden; }
 	html.webgl.tower-game body { touch-action: none; }
-	html.webgl [data-tower-chrome] {
-		transition: opacity var(--sd-dur) var(--sd-ease), visibility 0s;
-	}
 	html.webgl.tower-game [data-tower-chrome] {
 		opacity: 0;
 		visibility: hidden;
 		transition: opacity var(--sd-dur) var(--sd-ease), visibility 0s linear var(--sd-dur);
 	}
-	/* an open bottom sheet (narrow screens) runs under the altitude gauge: the gauge dims and
-	 * steps aside for it until the sheet collapses */
-	html.webgl.sd-sheet-open [data-tower-chrome] {
-		opacity: 0.2;
-		pointer-events: none;
-	}
-	html.webgl .tier--night { background-image: none; }
 
 	/* hints that only make sense with the tower on screen: `.tower-hint` for a pointer that can
 	 * hover, `.tower-hint-touch` for fingers */
@@ -464,7 +467,7 @@ const elsewhere = [
 	 * the list itself is in view) */
 	.tier-now { display: none; }
 	@media (max-width: 47.5rem) {
-		:global(html.webgl [data-tier-panel].is-sheet-collapsed) .tier-now {
+		:global(html.sd-climb [data-tier-panel].is-sheet-collapsed) .tier-now {
 			display: block;
 			/* below, enough room that the real list starts past the end of the peek */
 			margin-block: var(--sd-space-4) var(--sd-space-6);
