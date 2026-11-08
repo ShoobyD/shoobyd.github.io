@@ -133,7 +133,9 @@ const elsewhere = [
 	</TierSection>
 
 	<TierSection id="summit" sheetLabel={c.sheet.toggle} title={c.summit.title} tone="night">
-		<BabelTitle slot="title" client:visible text={c.summit.title} sequence={c.summit.babel} />
+		<!-- the slot sits on a Fragment: on the island itself, `slot` would reach the client as a prop
+		     and fall through onto its root, which the server render never had (a hydration mismatch) -->
+		<Fragment slot="title"><BabelTitle client:visible text={c.summit.title} sequence={c.summit.babel} /></Fragment>
 		<p class="wink">{c.summit.wink}</p>
 		<ContactList items={contacts} />
 		<CvViewer
