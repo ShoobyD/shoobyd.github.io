@@ -396,6 +396,10 @@ const elsewhere = [
 		gap: var(--sd-space-2) var(--sd-space-3);
 		margin-block: var(--sd-space-3) var(--sd-space-4);
 	}
+	/* wide screens have the room: a little more air between the contacts and the profile pills */
+	@media (min-width: 47.5rem) {
+		.elsewhere { margin-block-start: var(--sd-space-5); }
+	}
 	.elsewhere__lead {
 		font-size: 0.85rem;
 		font-weight: 700;
