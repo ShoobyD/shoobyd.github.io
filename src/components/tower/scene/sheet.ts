@@ -27,6 +27,18 @@ const PEEK_BELOW_SLOT = 44;
 export function createSheet(panels: HTMLElement[], startTier: number) {
 	const root = document.documentElement;
 	const header = document.querySelector<HTMLElement>('.sd-header');
+	const footer = document.querySelector<HTMLElement>('.sd-footer');
+	let docked = -1;
+	/**
+	 * At the end of the page the site footer scrolls up from under the sheets: they rest on it,
+	 * raised by as much of it as is in view (`--sheet-bottom`), so its credit is never under one.
+	 */
+	function dock() {
+		const over = footer ? Math.max(0, Math.round(window.innerHeight - footer.getBoundingClientRect().top)) : 0;
+		if (over === docked) return;
+		docked = over;
+		root.style.setProperty('--sheet-bottom', `${over}px`);
+	}
 	const handles = panels.map((p) => p.querySelector<HTMLButtonElement>('[data-sheet-handle]'));
 	const titles = panels.map((p) => p.querySelector<HTMLElement>('.tier__title'));
 	const nows = panels.map((p) => p.querySelector<HTMLElement>('[data-stop-now]'));
@@ -75,6 +87,8 @@ export function createSheet(panels: HTMLElement[], startTier: number) {
 		});
 		headerBottom = header ? Math.round(header.getBoundingClientRect().bottom) : 0;
 		root.style.setProperty('--sheet-top', `${headerBottom + 6}px`);
+		docked = -1;
+		dock();
 		syncRoot();
 	}
 
@@ -209,6 +223,7 @@ export function createSheet(panels: HTMLElement[], startTier: number) {
 	window.addEventListener('touchcancel', onTouchEnd);
 	window.addEventListener('keydown', onKey);
 	window.addEventListener('resize', measure);
+	window.addEventListener('scroll', dock, { passive: true });
 	measure();
 
 	return {
@@ -238,6 +253,7 @@ export function createSheet(panels: HTMLElement[], startTier: number) {
 			watch.disconnect();
 			window.removeEventListener('keydown', onKey);
 			window.removeEventListener('resize', measure);
+			window.removeEventListener('scroll', dock);
 			window.removeEventListener('touchmove', onTouchMove);
 			window.removeEventListener('touchend', onTouchEnd);
 			window.removeEventListener('touchcancel', onTouchEnd);
@@ -255,6 +271,7 @@ export function createSheet(panels: HTMLElement[], startTier: number) {
 			});
 			root.classList.remove(OPEN_CLASS);
 			root.style.removeProperty('--sheet-top');
+			root.style.removeProperty('--sheet-bottom');
 		},
 	};
 }
