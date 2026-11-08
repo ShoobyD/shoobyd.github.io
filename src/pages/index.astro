@@ -104,6 +104,10 @@ const elsewhere = [
 
 	<TierSection id="code" sheetLabel={c.sheet.toggle} title={c.code.title} stops={projectItems.length}>
 		<p class="lead dim">{c.code.lead} <span class="tower-hint">{c.code.doorHint}</span></p>
+		<!-- the collapsed mobile sheet's peek at the project in focus, under the lead as the list is
+		     when open: a copy of its card, filled in by the tower as the scroll steps through the
+		     projects (the list below stays the real one) -->
+		<div class="tier-now" data-stop-now aria-hidden="true" inert></div>
 		<ProjectList items={projectItems} />
 	</TierSection>
 
@@ -407,6 +411,23 @@ const elsewhere = [
 		.handle { font-size: 1.1rem; }
 		.lead { font-size: 1.02rem; }
 		blockquote p { font-size: 1.12rem; }
+	}
+
+	/* the project in focus, under the code tier's lead: only in the collapsed mobile sheet (open,
+	 * the list itself is in view) */
+	.tier-now { display: none; }
+	@media (max-width: 47.5rem) {
+		:global(html.webgl [data-tier-panel].is-sheet-collapsed) .tier-now {
+			display: block;
+			/* below, enough room that the real list starts past the end of the peek */
+			margin-block: var(--sd-space-4) var(--sd-space-6);
+		}
+	}
+	.tier-now.is-new {
+		animation: now-in 0.35s var(--sd-ease);
+	}
+	@keyframes now-in {
+		from { opacity: 0; translate: 0 6px; }
 	}
 </style>
 

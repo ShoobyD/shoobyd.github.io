@@ -147,6 +147,26 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 		cards.forEach((c, k) => c?.classList.toggle('is-lit', k === i));
 		if (i >= 0 && i === stopHot) revealCard(i);
 	}
+	/**
+	 * The collapsed mobile sheet's peek at the project in focus (`[data-stop-now]` under the code
+	 * tier's lead): a copy of its card, inert and hidden from assistive tech, as the real list
+	 * below stays the one to read and use. It starts on the first project.
+	 */
+	const stopNow = document.querySelector<HTMLElement>('[data-stop-now]');
+	let nowShown = -1;
+	function showNow(i: number) {
+		const card = cards[i];
+		if (!stopNow || !card || i === nowShown) return;
+		nowShown = i;
+		const copy = card.cloneNode(true) as HTMLElement;
+		copy.removeAttribute('data-project');
+		copy.classList.add('is-lit');
+		stopNow.replaceChildren(copy);
+		stopNow.classList.remove('is-new');
+		void stopNow.offsetWidth; // restart the fade-in
+		stopNow.classList.add('is-new');
+	}
+	showNow(0);
 	/** Scrolls the code panel (not the page) just enough to show the lit card, when it overflows. */
 	function revealCard(i: number) {
 		const card = cards[i];
@@ -385,6 +405,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 		const stop = climb?.stop;
 		stopHot = stop && stop.tier === 1 && !director ? Math.round(stop.at) : -1;
 		showHot();
+		if (stopHot >= 0) showNow(stopHot);
 		doors.update(dt, time);
 
 		if (climb) {
@@ -442,6 +463,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 				h.card.classList.remove('is-lit');
 			});
 			document.body.style.cursor = '';
+			stopNow?.replaceChildren();
 			glyphs.dispose();
 			guitar.dispose();
 			disposeScene(scene);
