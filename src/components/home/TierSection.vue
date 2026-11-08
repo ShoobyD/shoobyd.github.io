@@ -118,7 +118,8 @@ h2.tier__title {
 @media (max-width: 47.5rem) {
 	.tier {
 		padding-block: 6rem var(--sd-space-7);
-		padding-inline: var(--sd-gutter) calc(var(--sd-gutter) + 2.5rem);
+		/* room on the inline-end for the altitude gauge's marks (only the current tier is named) */
+		padding-inline: var(--sd-gutter) calc(var(--sd-gutter) + 1.9rem);
 	}
 }
 

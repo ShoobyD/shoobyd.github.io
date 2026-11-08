@@ -47,9 +47,11 @@ defineProps<{ items: ContactItem[] }>();
 
 .contacts a {
 	display: flex;
+	/* a handle too long for the row drops, whole, onto a line of its own under the label */
+	flex-wrap: wrap;
 	align-items: center;
 	justify-content: space-between;
-	gap: 12px;
+	gap: 4px 12px;
 	padding-block: 11px;
 	padding-inline: 14px;
 	text-decoration: none;
@@ -78,7 +80,9 @@ defineProps<{ items: ContactItem[] }>();
 .contacts__value {
 	font-family: var(--sd-font-display);
 	font-size: 1.08rem;
-	overflow-wrap: anywhere;
+	/* broken only if it can't fit even on a line of its own */
+	overflow-wrap: break-word;
+	min-inline-size: 0;
 }
 
 /* narrow screens: a little tighter, so the open summit sheet holds them all on small phones
