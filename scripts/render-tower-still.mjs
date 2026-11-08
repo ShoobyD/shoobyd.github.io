@@ -1,16 +1,18 @@
 /**
  * Renders the pictures of the tower for the static page (see src/components/home/StaticTower.astro):
- * - the tower: the whole tower, every tier's point of interest turned to face the
- *   front, on a transparent background, plus where each tier's focus sits in it;
- * - its ground: a band of the plain round it (with its houses and trees), seen by the same camera,
- *   made to repeat seamlessly side by side, so the page can lay it across any width under the tower.
+ * - the tower: the whole tower, every tier's point of interest turned to face the front, on a
+ *   transparent background, plus where each tier's focus sits in it;
+ * - the houses and trees of the plain round it, seen by the same camera, in a band made to repeat
+ *   seamlessly side by side, so the page can lay them across any width under the tower;
+ * - the plain itself is left to the page (a CSS gradient below a sharp horizon): this records where
+ *   that horizon runs and the plain's colours, far and near.
  *
  * It drives the live 3D scene in Chrome against the dev server. To turn every point of interest to
  * the front, this browser alone gets a rewritten scene/dimensions.ts in which all the camera parks
  * share one angle (the doors, sphere, letters, strings, portrait and cranes are all placed by their
- * tier's park angle); the site's own code is untouched. Both are drawn on a green screen (no sky,
- * clouds or fog) and keyed out. Same camera, same pixels: the ground lines up with the tower by
- * the rows and columns they share in the frame.
+ * tier's park angle); the site's own code is untouched. Drawn on a green screen (no sky, clouds or
+ * fog) and keyed out. Same camera, same pixels: everything lines up by the rows and columns it
+ * shares in the frame.
  *
  * Usage: start the dev server (npm run dev), then
  *   node scripts/render-tower-still.mjs [--url http://localhost:4321/] [--chrome <path to Chrome>]
@@ -43,10 +45,15 @@ const FOCUS_Y = [3.2, 8.4, 15.6, 21.6, 27.6, 36.2];
 const W = 1200, H = 2160, DPR = 2;
 /** From far away and nearly orthographic, so the tiers keep their proportions. */
 const DIST = 150, FOV = 22.1, CAMERA_Y = 26.2, LOOK_Y = 15.3;
-/** The ground band: how far above the foot it starts (it fades in there) and below it ends, in frame heights. */
-const BAND_UP = 0.07, BAND_DOWN = 0.16;
 /**
- * Where the ground repeats: the tile's two ends are cross-faded over this much (in frame widths),
+ * The horizon: this far above the tower's foot (in frame heights), behind its base. Houses and
+ * trees standing beyond it are left out, so nothing floats above the plain's edge.
+ */
+const HORIZON = 0.075;
+/** The houses' band: from a little above the horizon (for the roofs there) to this far below the foot. */
+const ROOFS = 0.02, BAND_DOWN = 0.16;
+/**
+ * Where the houses repeat: the tile's two ends are cross-faded over this much (in frame widths),
  * and the tile is cut where both seams fall on bare plain (no house or tree half-faded in them).
  */
 const SEAM = 0.08;
@@ -87,28 +94,28 @@ try {
 	await page.evaluate(() => window.scrollTo({ top: document.getElementById('tier-math').offsetTop, behavior: 'instant' }));
 	await wait(2500);
 
-	// sort the scene: the tower (with what hangs round it), the ground, and the rest; the paving at the
-	// foot goes (wider than the frame, and the one thing on the plain that mustn't repeat)
+	// sort the scene: the tower (with what hangs round it), the plain, the houses and trees, and the
+	// rest; the paving at the foot goes (wider than the frame, and the one thing that mustn't repeat)
 	await page.evaluate((FRONT, DIST, FOV, CAMERA_Y, LOOK_Y) => {
 		const { camera, scene, tower } = window.__tower;
 		const v = camera.position.clone();
-		const sets = { tower: [tower], ground: [] };
+		const sets = { tower: [tower], plain: [], houses: [] };
 		scene.traverse((o) => {
 			if (!(o.isMesh || o.isSprite || o.isPoints || o.isLine)) return;
 			for (let up = o; up; up = up.parent) if (up === tower) return;
 			o.getWorldPosition(v);
 			const bound = o.geometry?.boundingSphere?.radius ?? 0;
 			const flat = v.y <= 0.05;
-			// the plains are huge flat planes; houses and trees are instanced (their position is the centre)
-			const ground = flat && (o.geometry?.type === 'PlaneGeometry' || o.isInstancedMesh) && bound < 2000;
 			const onTower = !flat && Math.hypot(v.x, v.z) <= 22 && bound <= 60 && !(o.isSprite && o.scale.x > 10);
-			if (ground) sets.ground.push(o);
+			// the plains are huge flat planes; houses and trees are instanced (their position is the centre)
+			if (flat && o.isInstancedMesh) sets.houses.push(o);
+			else if (flat && o.geometry?.type === 'PlaneGeometry' && bound < 2000) sets.plain.push(o);
 			else if (onTower) sets.tower.push(o);
-			else o.visible = false; // sky, clouds, the far plain, anything else
+			else o.visible = false; // sky, clouds, the far plain, the paving, anything else
 		});
+		window.__sets = sets;
 		window.__show = (name) => {
-			for (const o of sets.tower) o.visible = name === 'tower';
-			for (const o of sets.ground) o.visible = name === 'ground';
+			for (const [k, list] of Object.entries(sets)) for (const o of list) o.visible = k === name;
 		};
 		window.__show('tower');
 		let Color = null;
@@ -130,12 +137,37 @@ try {
 		const at = (r, y) => (1 - v.set(Math.cos(FRONT) * r, y, Math.sin(FRONT) * r).project(camera).y) / 2;
 		return { foci: FOCUS_Y.map((y) => at(12, y)), foot: at(15, 0) };
 	}, FRONT, FOCUS_Y);
+	const horizon = marks.foot - HORIZON;
 	const towerShot = await page.screenshot({ encoding: 'base64' });
-	await page.evaluate(() => window.__show('ground'));
-	await wait(1500);
-	const groundShot = await page.screenshot({ encoding: 'base64' });
 
-	const out = await page.evaluate(async (towerSrc, groundSrc, foot, BAND_UP, BAND_DOWN, SEAM) => {
+	// the plain alone, for its colours
+	await page.evaluate(() => window.__show('plain'));
+	await wait(1200);
+	const plainShot = await page.screenshot({ encoding: 'base64' });
+
+	// the houses and trees alone, those standing beyond the horizon put away
+	await page.evaluate((horizon) => {
+		const { camera } = window.__tower;
+		window.__show('houses');
+		for (const o of window.__sets.houses) {
+			const m = o.matrix.clone();
+			const p = camera.position.clone();
+			for (let i = 0; i < o.count; i++) {
+				o.getMatrixAt(i, m);
+				p.setFromMatrixPosition(m).applyMatrix4(o.matrixWorld);
+				const y = (1 - p.project(camera).y) / 2;
+				if (y < horizon) {
+					m.makeScale(0, 0, 0);
+					o.setMatrixAt(i, m);
+				}
+			}
+			o.instanceMatrix.needsUpdate = true;
+		}
+	}, horizon);
+	await wait(1500);
+	const housesShot = await page.screenshot({ encoding: 'base64' });
+
+	const out = await page.evaluate(async (towerSrc, plainSrc, housesSrc, foot, horizon, ROOFS, BAND_DOWN, SEAM) => {
 		const load = async (src) => {
 			const img = new Image();
 			await new Promise((ok) => { img.onload = ok; img.src = src; });
@@ -186,30 +218,31 @@ try {
 		tower.height = bottom - top + 1;
 		tower.getContext('2d').drawImage(t.c, -left, -top);
 
-		// ---------- the ground: a band round the foot, fading in at its top, made to repeat ----------
-		const g = await load(groundSrc);
+		// ---------- the plain: its colour just under the horizon, and down near the front ----------
+		const plain = await load(plainSrc);
+		const horizonY = Math.round(horizon * H);
+		const b1 = Math.min(H, Math.round((foot + BAND_DOWN) * H));
+		const average = (y0, y1) => {
+			let r = 0, g = 0, b = 0, n = 0;
+			for (let y = y0; y < y1; y++) for (let x = 0; x < W; x += 5) { const i = (y * W + x) * 4; r += plain.d.data[i]; g += plain.d.data[i + 1]; b += plain.d.data[i + 2]; n++; }
+			const hex = (v) => Math.round(v / n).toString(16).padStart(2, '0');
+			return `#${hex(r)}${hex(g)}${hex(b)}`;
+		};
+		const far = average(horizonY + 4, horizonY + 24);
+		const near = average(b1 - 24, b1);
+
+		// ---------- the houses and trees: a band from the roofs at the horizon down, made to repeat ----------
+		const g = await load(housesSrc);
 		key(g.d.data);
-		g.g.putImageData(g.d, 0, 0);
-		const footY = Math.round(foot * H);
-		const b0 = Math.max(0, footY - Math.round(BAND_UP * H));
-		const b1 = Math.min(H, footY + Math.round(BAND_DOWN * H));
-		const band = g.g.getImageData(0, b0, W, b1 - b0);
+		const b0 = Math.max(0, horizonY - Math.round(ROOFS * H));
+		const band = g.d;
 		const seam = Math.round(SEAM * W), bandH = b1 - b0;
 		const src = band.data;
-		// how busy each column is: how far its pixels stray from the plain's colour on their row
-		const rowColour = [];
-		for (let y = 0; y < bandH; y++) {
-			const vals = [[], [], []];
-			for (let x = 0; x < W; x += 4) for (let k = 0; k < 3; k++) vals[k].push(src[(y * W + x) * 4 + k]);
-			rowColour.push(vals.map((v) => v.sort((p, q) => p - q)[v.length >> 1]));
-		}
+		// how busy each column is: how much of it is house or tree
 		const busy = new Float64Array(W);
 		for (let x = 0; x < W; x++) {
 			let sum = 0;
-			for (let y = Math.round(bandH * 0.25); y < bandH; y++) {
-				const i = (y * W + x) * 4, c = rowColour[y];
-				sum += Math.abs(src[i] - c[0]) + Math.abs(src[i + 1] - c[1]) + Math.abs(src[i + 2] - c[2]);
-			}
+			for (let y = b0; y < b1; y++) sum += src[(y * W + x) * 4 + 3];
 			busy[x] = sum;
 		}
 		const prefix = new Float64Array(W + 1);
@@ -227,40 +260,33 @@ try {
 		const tile = new ImageData(tileW, bandH);
 		const dst = tile.data;
 		for (let y = 0; y < bandH; y++) {
-			// the top fades in, as if into the haze where the plain runs off behind the tower
-			const fade = Math.min(1, y / (bandH * (BAND_UP / (BAND_UP + BAND_DOWN)) * 0.9));
-			const fadeIn = fade * fade * (3 - 2 * fade);
 			for (let x = 0; x < tileW; x++) {
 				const o = (y * tileW + x) * 4;
 				// the first `seam` columns blend from the band's far end into its start, so the tile's
 				// last column runs on into its first
 				const w = x < seam ? x / seam : 1;
-				const a = (y * W + x0 + x) * 4, b = (y * W + x0 + x + tileW) * 4;
+				const a = ((b0 + y) * W + x0 + x) * 4, b = ((b0 + y) * W + x0 + x + tileW) * 4;
 				for (let k = 0; k < 4; k++) dst[o + k] = x < seam ? src[b + k] * (1 - w) + src[a + k] * w : src[a + k];
-				dst[o + 3] = Math.round(dst[o + 3] * fadeIn);
 			}
 		}
-		const groundCanvas = document.createElement('canvas');
-		groundCanvas.width = tileW;
-		groundCanvas.height = bandH;
-		groundCanvas.getContext('2d').putImageData(tile, 0, 0);
-		// the colour the ground carries on with below the band: its last rows, averaged
-		let r = 0, gr = 0, bl = 0, n = 0;
-		for (let y = bandH - 6; y < bandH; y++) for (let x = 0; x < tileW; x += 3) { const o = (y * tileW + x) * 4; r += dst[o]; gr += dst[o + 1]; bl += dst[o + 2]; n++; }
-		const hex = (v) => Math.round(v / n).toString(16).padStart(2, '0');
+		const houses = document.createElement('canvas');
+		houses.width = tileW;
+		houses.height = bandH;
+		houses.getContext('2d').putImageData(tile, 0, 0);
 
 		return {
 			tower: tower.toDataURL('image/webp', 0.92),
-			ground: groundCanvas.toDataURL('image/webp', 0.9),
+			houses: houses.toDataURL('image/webp', 0.9),
 			frame: { width: W, height: H },
 			trim: { top, left, width: tower.width, height: tower.height },
-			band: { top: b0, height: bandH, width: tileW, left: x0 },
-			below: `#${hex(r)}${hex(gr)}${hex(bl)}`,
+			band: { top: b0, height: bandH, width: tileW, left: x0, horizon: horizonY - b0 },
+			far,
+			near,
 		};
-	}, `data:image/png;base64,${towerShot}`, `data:image/png;base64,${groundShot}`, marks.foot, BAND_UP, BAND_DOWN, SEAM);
+	}, `data:image/png;base64,${towerShot}`, `data:image/png;base64,${plainShot}`, `data:image/png;base64,${housesShot}`, marks.foot, horizon, ROOFS, BAND_DOWN, SEAM);
 
 	fs.writeFileSync(TOWER_IMAGE, Buffer.from(out.tower.split(',')[1], 'base64'));
-	fs.writeFileSync(GROUND_IMAGE, Buffer.from(out.ground.split(',')[1], 'base64'));
+	fs.writeFileSync(GROUND_IMAGE, Buffer.from(out.houses.split(',')[1], 'base64'));
 	const { trim, band, frame } = out;
 	const r4 = (v) => Number(v.toFixed(4));
 	const data = {
@@ -272,12 +298,14 @@ try {
 			width: band.width,
 			height: band.height,
 			top: r4((band.top - trim.top) / trim.height),
+			horizon: r4(band.horizon / band.height),
 			axis: r4((frame.width / 2 - band.left) / band.width),
-			below: out.below,
+			far: out.far,
+			near: out.near,
 		},
 	};
 	fs.writeFileSync(DATA, `${JSON.stringify(data, null, '\t').replace(/\n/g, '\r\n')}\r\n\r\n`);
-	console.log(`tower ${trim.width}×${trim.height}, ground ${band.width}×${band.height}; foci ${data.foci.join(' ')}; ground top ${data.ground.top}`);
+	console.log(`tower ${trim.width}×${trim.height}, houses ${band.width}×${band.height}; foci ${data.foci.join(' ')}; ground ${JSON.stringify(data.ground)}`);
 } finally {
 	await browser.close();
 }

@@ -2,8 +2,9 @@
 /**
  * The tower for the static page (no 3D: reduced motion, no WebGL2, Save-Data, or the scene gave
  * up): one picture of the whole tower with every tier's point of interest turned to the front,
- * standing on its ground: a band of the plain laid side by side across the whole window (both
- * rendered by scripts/render-tower-still.mjs, from one camera, so they line up exactly). As the
+ * standing on its plain: a CSS gradient below a sharp horizon behind its foot, with the plain's
+ * houses and trees laid side by side across the whole window (the tower and the houses rendered by
+ * scripts/render-tower-still.mjs, from one camera, so everything lines up exactly). As the
  * page scrolls the tower moves the other way, so each tier's focus comes level with that tier's
  * panel: beside it on wide screens, just above it on phones. It is close at each tier and draws
  * back a little on the way between two; at the base, where the page opens, it shows the whole
@@ -39,7 +40,8 @@ const layout = { foci: still.foci, axis: still.axis, size: [still.width, still.h
 		foci: number[];
 		axis: number;
 		size: [number, number];
-		ground: { width: number; height: number; top: number; axis: number; below: string; src: string };
+		/** the houses' tile and where it sits; `horizon` is the plain's edge within it, `far`/`near` its colours */
+		ground: { width: number; height: number; top: number; horizon: number; axis: number; far: string; near: string; src: string };
 	}
 
 	const box = document.querySelector<HTMLElement>('[data-static-tower]');
@@ -144,15 +146,21 @@ const layout = { foci: still.foci, axis: still.axis, size: [still.width, still.h
 			return { s, focus: 0.5, y: top + room / 2 };
 		}
 
-		/** Sizes the ground strip to the tower as drawn at scale 1 (the tile at the tower's pixel scale). */
+		/**
+		 * Sizes the ground strip to the tower as drawn at scale 1 (the tile at the tower's pixel scale):
+		 * the houses and trees repeated along the top, over the plain, which starts at a sharp horizon
+		 * a little behind the tower's foot and deepens towards the front.
+		 */
 		function sizeGround() {
 			const k = img!.offsetWidth / layout.size[0];
 			const tileW = layout.ground.width * k, tileH = layout.ground.height * k;
+			const edge = layout.ground.horizon * tileH;
+			const { far, near } = layout.ground;
 			ground.style.inlineSize = `${(TILES * tileW).toFixed(1)}px`;
 			ground.style.blockSize = `${(tileH + img!.offsetHeight * 2).toFixed(1)}px`;
+			ground.style.backgroundImage = `url("${layout.ground.src}"), linear-gradient(transparent ${edge.toFixed(1)}px, ${far} ${edge.toFixed(1)}px, ${near} ${tileH.toFixed(1)}px, ${near})`;
 			ground.style.backgroundSize = `${tileW.toFixed(1)}px ${tileH.toFixed(1)}px, 100% 100%`;
-			ground.style.backgroundImage = `url("${layout.ground.src}"), linear-gradient(${layout.ground.below}, ${layout.ground.below})`;
-			ground.style.backgroundPosition = `0 0, 0 ${tileH.toFixed(1)}px`;
+			ground.style.backgroundPosition = '0 0, 0 0';
 			return { tileW, tileH };
 		}
 
