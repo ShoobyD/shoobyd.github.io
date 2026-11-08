@@ -1,6 +1,8 @@
 /**
  * The unfinished summit: a ragged ring of loose bricks, a floor strewn with more, the limestone
  * plinth (game mode builds on it in step 6c), timber scaffolding and two swinging treadwheel cranes.
+ * The whole top is also a way into the game: `pick` tells whether a pointer is over it, and
+ * `setHot` lights it softly while one hovers.
  */
 import * as THREE from 'three';
 import { TAU, clamp, type Random } from './util';
@@ -115,7 +117,25 @@ export function createSummit(tower: THREE.Group, { rnd, range }: Random, mats: M
 	});
 	const tipZ = 2.2 + Math.cos(0.34) * 2.6, tipY = 0.9 + Math.sin(0.34) * 2.6;
 
-	function update(time: number) {
+	// ---------- the top as a way into the game: what a pointer hits, and how it answers ----------
+	// an invisible drum round the whole unfinished top (floor, ring, scaffolding, cranes), so it is
+	// an easy target, and a warm lamp over it plus a faint glow on its own materials when hovered
+	const hitArea = new THREE.Mesh(new THREE.CylinderGeometry(rp + 0.4, rp + 0.4, 8.6, 24), new THREE.MeshBasicMaterial({ visible: false }));
+	hitArea.position.y = Y5 + 4.1;
+	tower.add(hitArea);
+	const ray = new THREE.Raycaster();
+	const lamp = new THREE.PointLight(0xffb066, 0, 22, 1.6);
+	lamp.position.y = Y5 + 5;
+	tower.add(lamp);
+	const glowing = [bricks.material as THREE.MeshStandardMaterial, floor.material as THREE.MeshStandardMaterial, loadMat];
+	glowing.forEach((m) => m.emissive.setRGB(1, 0.62, 0.3));
+	let hot = 0;
+	let glow = 0;
+
+	function update(time: number, dt = 0) {
+		glow += (hot - glow) * Math.min(1, dt * 7);
+		lamp.intensity = glow * 16;
+		for (const m of glowing) m.emissiveIntensity = glow * 0.09;
 		for (const c of cranes) {
 			c.arm.rotation.y = c.base + Math.sin(time * 0.18 + c.phase) * 1.1;
 			const len = 2.3 + Math.sin(time * 0.5 + c.phase) * 1.1;
@@ -128,6 +148,17 @@ export function createSummit(tower: THREE.Group, { rnd, range }: Random, mats: M
 	}
 
 	update(0);
-	return { update };
+	return {
+		update,
+		/** Whether a pointer at normalised device coordinates is over the top. */
+		pick(ndc: THREE.Vector2, camera: THREE.Camera) {
+			ray.setFromCamera(ndc, camera);
+			return ray.intersectObject(hitArea, false).length > 0;
+		},
+		/** Lights the top while it is pointed at (a soft lamp and glow, eased in `update`). */
+		setHot(on: boolean) {
+			hot = on ? 1 : 0;
+		},
+	};
 }
 

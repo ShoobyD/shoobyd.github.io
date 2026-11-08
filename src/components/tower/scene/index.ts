@@ -199,6 +199,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 	const guitar = createGuitarSound();
 	let nearest = 0;
 	let doorHover = -1;
+	let summitHover = false;
 	function onPointerMove(e: PointerEvent) {
 		pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
 		pointer.y = (e.clientY / window.innerHeight) * 2 - 1;
@@ -230,10 +231,15 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 		pointer.lastY = e.clientY;
 		strings.resetTracking();
 	}
-	// clicking a doorway opens its project; the pick happens at click time so taps work too
+	// clicking a doorway opens its project, and clicking the unfinished top starts the game (the
+	// game UI listens for `tower:play`); the pick happens at click time so taps work too
 	function onClick(e: MouseEvent) {
-		if (nearest !== 1 || pointerInUi(e.target) || director) return;
+		if ((nearest !== 1 && nearest !== LAST_TIER) || !climb || pointerInUi(e.target) || director) return;
 		const ndc = new THREE.Vector2((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
+		if (nearest === LAST_TIER) {
+			if (summit.pick(ndc, camera)) window.dispatchEvent(new CustomEvent('tower:play'));
+			return;
+		}
 		const i = doors.pick(ndc, camera);
 		const href = i >= 0 ? opts.doors[i].href : undefined;
 		if (href) window.location.href = href;
@@ -385,7 +391,14 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 		built.update(atmo);
 		clouds.update(dt, time, camera, atmo);
 		figures.update(dt, time);
-		summit.update(time);
+		// the unfinished top lights up under a hovering pointer (a finger has no hover: it just taps)
+		const overTop = nearest === LAST_TIER && !!climb && !director && pointer.moved && !pointer.inUi && summit.pick(pointer.ndc, camera);
+		if (overTop !== summitHover) {
+			summitHover = overTop;
+			summit.setHot(overTop);
+			document.body.style.cursor = overTop ? 'pointer' : '';
+		}
+		summit.update(time, dt);
 		armillary.update(time);
 		glyphs.update(time, smooth);
 		strings.update(dt, time, smooth);

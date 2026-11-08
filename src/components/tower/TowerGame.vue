@@ -8,7 +8,8 @@
  * The two ways in are server-rendered by the page, so they work as plain markup and are wired
  * here by data attribute: `[data-tower-game="toggle"]` (the header button, `aria-pressed`, with
  * a `[data-tower-game-label]` span) and `[data-tower-game="enter"]` (the summit's CTA). The page
- * CSS shows them only under `html.webgl`.
+ * CSS shows them only under `html.webgl`. A click or tap on the tower's unfinished top is a third way
+ * in: the scene sends `tower:play`.
  *
  * While playing, the root carries `html.tower-game`: the page stops scrolling, the panels, gauge
  * and footer are `inert` (and faded), and click / tap / Space / Enter drop a brick, Esc leaves.
@@ -112,6 +113,11 @@ function again() {
 	game?.again();
 }
 
+/** A click or tap on the tower's unfinished top (the scene sends `tower:play`); focus comes back to the header toggle. */
+function onPlay() {
+	enter(controls.find((c) => c.dataset.towerGame === 'toggle') ?? null);
+}
+
 function onControl(e: Event) {
 	const c = e.currentTarget as HTMLButtonElement;
 	if (c.dataset.towerGame === 'toggle' && active.value) exit();
@@ -160,6 +166,7 @@ onMounted(async () => {
 	window.addEventListener('keydown', onKeyDown, { capture: true });
 	window.addEventListener('keyup', onKeyUp, { capture: true });
 	window.addEventListener('pointerdown', onPointerDown);
+	window.addEventListener('tower:play', onPlay);
 
 	// the scene chunk is already loaded by now; this only picks the game out of it
 	const { createGame } = await import('./scene');
@@ -220,6 +227,7 @@ onBeforeUnmount(() => {
 	window.removeEventListener('keydown', onKeyDown, { capture: true });
 	window.removeEventListener('keyup', onKeyUp, { capture: true });
 	window.removeEventListener('pointerdown', onPointerDown);
+	window.removeEventListener('tower:play', onPlay);
 	Object.values(timers).forEach((t) => window.clearTimeout(t));
 });
 </script>
