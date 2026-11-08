@@ -17,3 +17,6 @@ dist/
 # Review previews (screenshots, comparison pages, demo videos): local only
 .impeccable/mocks/previews/
 
+# Scratch: screenshots and other material brought in for a task; local only
+scratch/
+
