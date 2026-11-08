@@ -46,7 +46,12 @@ defineProps<{
 			<component :is="level === 1 ? 'h1' : 'h2'" :id="`tier-${id}-title`" class="tier__title">
 				<slot name="title">{{ title }}</slot>
 			</component>
-			<slot />
+			<!-- the panel's content under its title: on wide screens in 3D this is what scrolls when it
+			     runs long, so the title stays in view and the scrollbar runs down the panel's straight
+			     side, below the arch and the title -->
+			<div class="tier__body">
+				<slot />
+			</div>
 		</ArchPanel>
 	</section>
 </template>
@@ -150,12 +155,25 @@ html.webgl .tier__panel {
 	block-size: fit-content;
 	max-block-size: calc(100vh - 150px);
 	inline-size: min(31rem, 40vw);
-	overflow: auto;
-	overscroll-behavior: contain;
-	scrollbar-width: thin;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
 	opacity: 0;
 	pointer-events: none;
 	will-change: opacity, transform;
+}
+
+/* a panel taller than the window scrolls its content under the title, not itself: the title stays
+ * in view, and the scrollbar stays inside the panel, by its straight side, rather than running up
+ * past the arch (the negative margin and matching padding put it near the edge, clear of the text) */
+html.webgl .tier__body {
+	flex: 1 1 auto;
+	min-block-size: 0;
+	overflow: auto;
+	overscroll-behavior: contain;
+	scrollbar-width: thin;
+	margin-inline-end: -1.3rem;
+	padding-inline-end: 1.3rem;
 }
 
 html.webgl .tier__panel.is-on {
@@ -173,7 +191,12 @@ html.webgl .tier__panel.is-on {
 }
 
 @media (max-width: 47.5rem) {
+	/* the sheet scrolls itself (sheet.ts reads and resets its scroll), its content doesn't */
 	html.webgl .tier__panel {
+		display: block;
+		overflow: auto;
+		overscroll-behavior: contain;
+		scrollbar-width: thin;
 		--sheet-fade: 100vh;
 		inset-inline: 8px;
 		/* resting on the site footer when it scrolls into view (sheet.ts) */
@@ -196,6 +219,12 @@ html.webgl .tier__panel.is-on {
 		transition:
 			translate 420ms var(--sd-ease),
 			--sheet-fade 420ms var(--sd-ease);
+	}
+
+	html.webgl .tier__body {
+		overflow: visible;
+		margin-inline-end: 0;
+		padding-inline-end: 0;
 	}
 
 	html.webgl .tier__panel.is-sheet-collapsed {

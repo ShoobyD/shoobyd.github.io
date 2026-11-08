@@ -174,11 +174,14 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 	function revealCard(i: number) {
 		const card = cards[i];
 		const panel = card?.closest<HTMLElement>('[data-tier-panel]');
-		if (!card || !panel || panel.classList.contains('is-sheet-collapsed') || panel.scrollHeight <= panel.clientHeight) return;
+		if (!card || !panel || panel.classList.contains('is-sheet-collapsed')) return;
+		// what scrolls: the panel's content on wide screens, the sheet itself on phones
+		const box = [card.closest<HTMLElement>('.tier__body'), panel].find((el) => el && el.scrollHeight > el.clientHeight + 1);
+		if (!box) return;
 		const c = card.getBoundingClientRect();
-		const p = panel.getBoundingClientRect();
-		if (c.top < p.top + 12) panel.scrollTop -= p.top + 12 - c.top;
-		else if (c.bottom > p.bottom - 12) panel.scrollTop += c.bottom - (p.bottom - 12);
+		const p = box.getBoundingClientRect();
+		if (c.top < p.top + 12) box.scrollTop -= p.top + 12 - c.top;
+		else if (c.bottom > p.bottom - 12) box.scrollTop += c.bottom - (p.bottom - 12);
 	}
 	const cardHandlers = cards.map((card, k) => {
 		if (!card || !opts.doors[k].href) return null;
