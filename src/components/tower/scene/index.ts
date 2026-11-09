@@ -22,6 +22,7 @@ import { createClouds } from './clouds';
 import { createCameraRig } from './camera-path';
 import { createClimb, type Climb } from './climb';
 import { createSheet, type Sheet } from './sheet';
+import { createProjects } from './projects';
 import { createLoop } from './loop';
 import { disposeScene } from './dispose';
 import { createDoors, type DoorSpec } from './tiers/doors';
@@ -131,74 +132,8 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 	const rig = createCameraRig(camera);
 
 	// ---------- page wiring ----------
-	const cards = opts.doors.map((d) => document.querySelector<HTMLElement>(`[data-project="${CSS.escape(d.id)}"]`));
-	/**
-	 * The lit project (door and card together): one pointed at (a doorway under the pointer, or a
-	 * card hovered or focused) wins; otherwise the code tier's stop the scroll is at (see climb.ts).
-	 */
-	let cardHover = -1;
-	let stopHot = -1;
-	let hot = -1;
-	function showHot() {
-		const i = doorHover >= 0 ? doorHover : cardHover >= 0 ? cardHover : stopHot;
-		if (i === hot) return;
-		hot = i;
-		doors.setHot(i);
-		cards.forEach((c, k) => c?.classList.toggle('is-lit', k === i));
-		if (i >= 0 && i === stopHot) revealCard(i);
-	}
-	/**
-	 * The collapsed mobile sheet's peek at the project in focus (`[data-stop-now]` under the code
-	 * tier's lead): a copy of its card, inert and hidden from assistive tech, as the real list
-	 * below stays the one to read and use. It starts on the first project.
-	 */
-	const stopNow = document.querySelector<HTMLElement>('[data-stop-now]');
-	let nowShown = -1;
-	function showNow(i: number) {
-		const card = cards[i];
-		if (!stopNow || !card || i === nowShown) return;
-		nowShown = i;
-		const copy = card.cloneNode(true) as HTMLElement;
-		copy.removeAttribute('data-project');
-		copy.classList.add('is-lit');
-		stopNow.replaceChildren(copy);
-		stopNow.classList.remove('is-new');
-		void stopNow.offsetWidth; // restart the fade-in
-		stopNow.classList.add('is-new');
-	}
-	showNow(0);
-	/**
-	 * Scrolls the code panel (not the page) just enough to show the lit card, when it overflows.
-	 * Not while it is a collapsed mobile sheet: that one only shows its peek, from its top.
-	 */
-	function revealCard(i: number) {
-		const card = cards[i];
-		const panel = card?.closest<HTMLElement>('[data-tier-panel]');
-		if (!card || !panel || panel.classList.contains('is-sheet-collapsed')) return;
-		// what scrolls: the panel's content on wide screens, the sheet itself on phones
-		const box = [card.closest<HTMLElement>('.tier__body'), panel].find((el) => el && el.scrollHeight > el.clientHeight + 1);
-		if (!box) return;
-		const c = card.getBoundingClientRect();
-		const p = box.getBoundingClientRect();
-		if (c.top < p.top + 12) box.scrollTop -= p.top + 12 - c.top;
-		else if (c.bottom > p.bottom - 12) box.scrollTop += c.bottom - (p.bottom - 12);
-	}
-	const cardHandlers = cards.map((card, k) => {
-		if (!card || !opts.doors[k].href) return null;
-		const on = () => {
-			cardHover = k;
-			showHot();
-		};
-		const off = () => {
-			if (cardHover === k) cardHover = -1;
-			showHot();
-		};
-		card.addEventListener('pointerenter', on);
-		card.addEventListener('pointerleave', off);
-		card.addEventListener('focus', on);
-		card.addEventListener('blur', off);
-		return { card, on, off };
-	});
+	// the code tier's projects: the lit one's card on the page, and its doorway here
+	const projects = createProjects(opts.doors, (i) => doors.setHot(i));
 
 	const pointer = { x: 0, y: 0, sx: 0, sy: 0, ndc: new THREE.Vector2(), lastX: 0, lastY: 0, moved: false, inUi: false };
 	/** The strings' notes; silent until the visitor's first click, tap or key press. */
@@ -450,9 +385,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 		}
 		// on the code tier the scroll steps from project to project, lighting each in turn
 		const stop = climb?.stop;
-		stopHot = stop && stop.tier === 1 && !director ? Math.round(stop.at) : -1;
-		showHot();
-		if (stopHot >= 0) showNow(stopHot);
+		projects.update(doorHover, stop && stop.tier === 1 && !director ? Math.round(stop.at) : -1);
 		doors.update(dt, time);
 
 		if (climb) {
@@ -501,16 +434,8 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 			layoutWatch.disconnect();
 			unpin();
 			opts.canvas.removeEventListener('webglcontextlost', onContextLost);
-			cardHandlers.forEach((h) => {
-				if (!h) return;
-				h.card.removeEventListener('pointerenter', h.on);
-				h.card.removeEventListener('pointerleave', h.off);
-				h.card.removeEventListener('focus', h.on);
-				h.card.removeEventListener('blur', h.off);
-				h.card.classList.remove('is-lit');
-			});
+			projects.dispose();
 			document.body.style.cursor = '';
-			stopNow?.replaceChildren();
 			cue?.classList.remove('is-on');
 			cue?.style.removeProperty('transform');
 			glyphs.dispose();
