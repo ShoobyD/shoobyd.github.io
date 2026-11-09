@@ -40,8 +40,9 @@ function measureClimb() {
 }
 
 /**
- * On the static page a tier reads its exact altitude when its centre crosses the middle of the
- * viewport; between two centres the altitude is interpolated. The current tier is the nearest centre.
+ * On the plain page (not laid out as the climb: under the 3D loader, or if the tower island never
+ * loads) a tier reads its exact altitude when its centre crosses the middle of the viewport;
+ * between two centres the altitude is interpolated. The current tier is the nearest centre.
  */
 function measure() {
 	frame = 0;

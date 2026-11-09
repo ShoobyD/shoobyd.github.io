@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * The 3D Tower of Babel: one progressive-enhancement island over the static home page.
+ * The 3D Tower of Babel: one progressive-enhancement island over the home page.
  * Mounted with `client:only`, so without JavaScript nothing of it exists. Once the page has
  * painted it checks the visitor can take it (WebGL 2, no reduced-motion preference, no
  * Save-Data), and only then downloads the scene and Three.js as a separate chunk. Without it, or
@@ -9,7 +9,7 @@
  *
  * While the scene is live it also mounts game mode's UI (TowerGame), handing it the scene handle.
  *
- * Debug: `?no3d` keeps the static page, `?noshadow` renders without shadows.
+ * Debug: `?no3d` keeps the still climb, `?noshadow` renders without shadows.
  */
 import { markRaw, nextTick, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue';
 import { endLoading } from './mode';
@@ -32,7 +32,7 @@ const props = defineProps<{
 const canvas = ref<HTMLCanvasElement | null>(null);
 /** Bumped after a teardown so a restart gets a fresh canvas (and a fresh GL context). */
 const generation = ref(0);
-/** The live scene, for game mode's UI; null while there is none (static page, teardown). */
+/** The live scene, for game mode's UI; null while there is none (the still climb, teardown). */
 const live = shallowRef<TowerHandle | null>(null);
 const gameUi = ref<InstanceType<typeof TowerGame> | null>(null);
 
@@ -60,7 +60,7 @@ function wanted() {
 	return true;
 }
 
-/** Resolves once the static page has painted and the main thread has a quiet moment. */
+/** Resolves once the page has painted and the main thread has a quiet moment. */
 function afterFirstPaint() {
 	return new Promise<void>((resolve) => {
 		requestAnimationFrame(() =>
@@ -142,7 +142,7 @@ function stop() {
 	goStill();
 }
 
-// turning reduced motion on mid-visit drops back to the static page; turning it off climbs again
+// turning reduced motion on mid-visit drops back to the still climb; turning it off brings the live tower back
 async function onMotionChange() {
 	if (motion?.matches) stop();
 	else {

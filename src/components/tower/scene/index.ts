@@ -1,10 +1,11 @@
 /**
  * The Tower of Babel scene: builds the world, wires it to the page, and runs the climb.
  * This module (and Three.js with it) is loaded on demand by TowerScene.vue, only once the
- * static page has painted and the browser has passed the WebGL / reduced-motion checks.
+ * page has painted and the browser has passed the WebGL / reduced-motion checks.
  *
- * Activation is the last step: the scene renders its first frames behind the static page,
- * then the root gets `html.webgl` and `html.sd-climb`, the layout turns into the climb, and the
+ * Activation is the last step: the scene renders its first frames behind the page (the plain
+ * page under the loader, or the still climb if it starts mid-visit), whatever ran the page hands
+ * it back (`onActivate`), then the root gets `html.webgl` and `html.sd-climb`, the layout turns into the climb, and the
  * scroll position is carried over so the visitor stays on the tier they were reading.
  */
 import * as THREE from 'three';
@@ -45,7 +46,7 @@ export interface TowerOptions {
 	doors: DoorSpec[];
 	/** The self-portrait hung beside the strings on the making tier. */
 	portrait: PortraitSpec;
-	/** Called if the GPU drops the context; the caller tears the scene down to the static page. */
+	/** Called if the GPU drops the context; the caller tears the scene down (the still climb takes over). */
 	onLost?: () => void;
 	/**
 	 * Called as the scene takes the page over, just before it switches the layout into the climb:
@@ -128,7 +129,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 	try {
 		world = buildWorld(scene, tower, stage.maxAnisotropy, opts.doors, opts.portrait, narrow);
 	} catch (err) {
-		// nothing is on the page yet; free what was built and let the caller keep the static page
+		// nothing is on the page yet; free what was built and let the caller fall back to the still climb
 		disposeScene(scene);
 		stage.dispose();
 		throw err;
@@ -219,9 +220,10 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 	window.addEventListener('click', onClick);
 
 	// ---------- activation: carry the reading position over into the climb layout ----------
-	// Until the first frames are on screen the static page stays as it is, and the camera reads
-	// the static layout's progress; then the root class flips the layout and the scroll position
-	// is mapped onto the tall climb spans so the visitor stays on the tier they were reading.
+	// Until the first frames are on screen the page stays as it is, and the camera reads its
+	// progress; then whatever ran the page hands it back as the plain page, the root class flips
+	// the layout and the scroll position is mapped onto the tall climb spans so the visitor stays
+	// on the tier they were reading.
 	// the page's side of the climb (./page-climb.ts): its progress and keys, and on narrow screens
 	// the bottom sheets (./sheet.ts), here for short
 	let page: PageClimb | null = null;
@@ -229,7 +231,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 	let sheet: Sheet | null = null;
 	let lift: number | null = null;
 	// A link straight to a tier (`/#tier-summit`, where /contact/ redirects) parks the climb on it
-	// exactly: the static page can't always scroll the last tier's top up to the viewport, so its
+	// exactly: the plain page can't always scroll the last tier's top up to the viewport, so its
 	// scroll position alone would land just below it. It holds while the page is still within a
 	// tier of the link (layout settling and scroll anchoring move it a little); a visitor who has
 	// scrolled further away keeps their own place.
@@ -426,7 +428,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 			disposed = true;
 			loop.dispose();
 			if (page && climb) {
-				// hand the reading position back to the static layout
+				// hand the reading position back to the plain layout (the still climb takes it from there)
 				const progress = climb.progress;
 				page.dispose();
 				root.classList.remove(TOWER_CLASS, CLIMB_CLASS);

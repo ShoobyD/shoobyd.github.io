@@ -2,8 +2,9 @@
 /**
  * Home: the spiral Tower of Babel (direction contract: .impeccable/surfaces/src-pages-index-astro.md).
  * The readable content layer — every tier as real HTML on the climbing sky — is the whole page
- * without JavaScript, without WebGL, or with reduced motion. TowerScene layers the 3D climb over
- * it once the page has painted (see src/components/tower/), reusing these same panels.
+ * without JavaScript. With it the page is the climb (fixed panels, bottom sheets on phones) over
+ * the tower: the live 3D one (TowerScene, see src/components/tower/), or, without WebGL, with
+ * reduced motion or Save-Data, the still picture (StaticTower), reusing these same panels.
  * Game mode's two ways in (the header toggle and the summit's CTA) are rendered here and wired
  * by the island (TowerGame.vue); they show only while the 3D tower is live.
  */
@@ -85,7 +86,7 @@ const elsewhere = [
 	<!-- touch screens: a cue over the tower's unfinished top at the summit (placed by the tower; a tap on
 	     the top starts the game, and the header's game button stays the way in for keys and readers) -->
 	<div class="summit-cue" data-summit-cue aria-hidden="true"><span class="summit-cue__pill">{c.game.cue}</span></div>
-	<!-- the static page's tower (when there is no 3D one): before the tiers, so their panels sit over it -->
+	<!-- the still tower (when there is no live 3D one): before the tiers, so their panels sit over it -->
 	<StaticTower />
 	<AltitudeGauge client:idle label={c.gauge.label} unit={c.gauge.unit} tiers={gaugeTiers} />
 
@@ -214,8 +215,9 @@ const elsewhere = [
 	}
 	html.webgl .tier--night { background-image: none; }
 
-	/* game mode's controls exist only with the live tower: not in the static page, with reduced
-	 * motion, without WebGL, or under the loader (display: none also keeps them out of the tab order) */
+	/* game mode's controls exist only with the live tower: not over the still picture (reduced
+	 * motion, no WebGL, Save-Data), not without JavaScript, and not under the loader (display: none
+	 * also keeps them out of the tab order) */
 	html:not(.webgl) [data-tower-game],
 	html.sd-tower-loading [data-tower-game] { display: none; }
 

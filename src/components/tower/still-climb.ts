@@ -78,7 +78,7 @@ export function createStillClimb(o: StillClimbOptions) {
 
 	return {
 		/**
-		 * Stops it. `handBack` returns the page to the static layout with the reading position
+		 * Stops it. `handBack` returns the page to the plain layout with the reading position
 		 * carried over, for the live tower taking over (its activation switches it back to the
 		 * climb the same way).
 		 */

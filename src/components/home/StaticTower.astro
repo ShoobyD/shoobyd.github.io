@@ -1,7 +1,7 @@
 ---
 /**
- * The tower for the static page (no 3D: reduced motion, no WebGL2, Save-Data, or the scene gave
- * up): one picture of the whole tower with every tier's point of interest turned to the front,
+ * The still tower, behind the climb when there is no live 3D one (reduced motion, no WebGL2,
+ * Save-Data, `?no3d`, or the scene gave up): one picture of the whole tower with every tier's point of interest turned to the front,
  * standing on its plain: a CSS gradient below a sharp horizon behind its foot, with the plain's
  * houses and trees laid side by side across the whole window (the tower and the houses rendered by
  * scripts/render-tower-still.mjs, from one camera, so everything lines up exactly). It stands
@@ -275,7 +275,7 @@ const layout = { foci: still.foci, axis: still.axis, size: [still.width, still.h
 		};
 		window.addEventListener('resize', replace);
 		still.addEventListener('change', replace);
-		// the static layout comes back if the 3D tower stops (or is never there): place it again then
+		// the layout changes as the climb starts, and when the live tower comes or goes: place it again then
 		new ResizeObserver(replace).observe(document.body);
 	}
 </script>
@@ -304,7 +304,7 @@ const layout = { foci: still.foci, axis: still.axis, size: [still.width, still.h
 	.static-tower-ground.is-fading {
 		opacity: 0;
 	}
-	/* shown once its picture is in, only on the static page */
+	/* shown once its picture is in, only without the live tower */
 	:global(html:not(.webgl)) .static-tower[data-ready],
 	:global(html:not(.webgl)) .static-tower-ground[data-ready] {
 		display: block;
