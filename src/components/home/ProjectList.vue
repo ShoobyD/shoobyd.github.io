@@ -110,8 +110,8 @@ defineProps<{ items: ProjectItem[] }>();
 	border-color: rgb(233 227 211 / 0.25);
 }
 
-/* `is-lit` is set by the 3D tower while the visitor hovers this project's doorway in the wall,
- * or while the scroll is at its stop on the code tier */
+/* `is-lit` is set by the climb (../tower/scene/projects.ts) while the visitor hovers this
+ * project's doorway in the wall, or while the scroll is at its stop on the code tier */
 a.project:hover,
 a.project:focus-visible,
 a.project.is-lit {
@@ -125,6 +125,13 @@ a.project:focus-visible .project__door,
 a.project.is-lit .project__door {
 	background: radial-gradient(circle at 50% 70%, #fff1c9, #ffb35c 55%, #c46a22);
 	border-color: var(--sd-limestone);
+}
+
+/* on the lit card's warmer glass the dim description would fade: it takes the full text colour */
+a.project:hover .project__desc,
+a.project:focus-visible .project__desc,
+a.project.is-lit .project__desc {
+	color: var(--sd-text);
 }
 
 /* a closed project has no light behind its bricked doorway: its stop only marks the card */
