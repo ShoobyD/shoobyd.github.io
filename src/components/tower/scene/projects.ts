@@ -12,7 +12,7 @@ export interface ProjectSpec {
 	href?: string;
 }
 
-export function createProjects(specs: ProjectSpec[], onLight: (i: number) => void = () => {}) {
+export function createProjects(specs: readonly ProjectSpec[], onLight: (i: number) => void = () => {}) {
 	const cards = specs.map((d) => document.querySelector<HTMLElement>(`[data-project="${CSS.escape(d.id)}"]`));
 	let doorHover = -1;
 	let cardHover = -1;

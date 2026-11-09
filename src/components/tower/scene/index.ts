@@ -20,9 +20,9 @@ import { createFigures } from './figures';
 import { createSummit } from './summit';
 import { createClouds } from './clouds';
 import { createCameraRig } from './camera-path';
-import { createClimb, type Climb } from './climb';
-import { createSheet, type Sheet } from './sheet';
-import { createProjects } from './projects';
+import type { Climb } from './climb';
+import type { Sheet } from './sheet';
+import { createPageClimb, type PageClimb } from './page-climb';
 import { createLoop } from './loop';
 import { disposeScene } from './dispose';
 import { createDoors, type DoorSpec } from './tiers/doors';
@@ -132,9 +132,6 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 	const rig = createCameraRig(camera);
 
 	// ---------- page wiring ----------
-	// the code tier's projects: the lit one's card on the page, and its doorway here
-	const projects = createProjects(opts.doors, (i) => doors.setHot(i));
-
 	const pointer = { x: 0, y: 0, sx: 0, sy: 0, ndc: new THREE.Vector2(), lastX: 0, lastY: 0, moved: false, inUi: false };
 	/** The strings' notes; silent until the visitor's first click, tap or key press. */
 	const guitar = createGuitarSound();
@@ -220,8 +217,10 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 	// Until the first frames are on screen the static page stays as it is, and the camera reads
 	// the static layout's progress; then the root class flips the layout and the scroll position
 	// is mapped onto the tall climb spans so the visitor stays on the tier they were reading.
+	// the page's side of the climb (./page-climb.ts): its progress and keys, and on narrow screens
+	// the bottom sheets (./sheet.ts), here for short
+	let page: PageClimb | null = null;
 	let climb: Climb | null = null;
-	// narrow screens: the panels are bottom sheets (see ./sheet.ts)
 	let sheet: Sheet | null = null;
 	let lift: number | null = null;
 	// A link straight to a tier (`/#tier-summit`, where /contact/ redirects) parks the climb on it
@@ -259,8 +258,16 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 	function activate(now: number) {
 		const reading = readingNow();
 		root.classList.add(TOWER_CLASS, CLIMB_CLASS);
-		climb = createClimb(sectionEls, panelEls);
-		sheet = createSheet(panelEls, Math.round(reading));
+		page = createPageClimb({
+			sections: sectionEls,
+			panels: panelEls,
+			tiers: opts.tiers,
+			projects: opts.doors,
+			startTier: Math.round(reading),
+			// the lit project's doorway, here in the tower
+			onLight: (i) => doors.setHot(i),
+		});
+		({ climb, sheet } = page);
 		if (reading > 0) climb.goTo(reading);
 		if (linkedTier !== null && reading === linkedTier) {
 			pinned = linkedTier;
@@ -297,7 +304,6 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 	let director: Director | null = null;
 	const shot = { pos: new THREE.Vector3(), look: new THREE.Vector3() };
 	let time = 0;
-	let lastTier = -1;
 	let frames = 0;
 
 	/**
@@ -383,20 +389,14 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 			doorHover = -1;
 			document.body.style.cursor = '';
 		}
-		// on the code tier the scroll steps from project to project, lighting each in turn
-		const stop = climb?.stop;
-		projects.update(doorHover, stop && stop.tier === 1 && !director ? Math.round(stop.at) : -1);
+		// the lit project: the doorway under the pointer, or the code tier's stop
+		page?.light(doorHover, !!director);
 		doors.update(dt, time);
 
-		if (climb) {
+		if (page) {
 			enter = Math.min(1, enter + dt / 0.7);
 			// a director's shot fades the panels out with it (game mode hides them)
-			climb.updatePanels(smooth, easeOut(enter) * (1 - blend));
-			sheet?.update(nearest, Math.round(climb.progress));
-			if (nearest !== lastTier) {
-				lastTier = nearest;
-				window.dispatchEvent(new CustomEvent('tower:tier', { detail: opts.tiers[nearest] }));
-			}
+			page.update(smooth, easeOut(enter) * (1 - blend));
 		}
 
 		stage.render(dt);
@@ -419,11 +419,10 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 			if (disposed) return;
 			disposed = true;
 			loop.dispose();
-			if (climb) {
+			if (page && climb) {
 				// hand the reading position back to the static layout
 				const progress = climb.progress;
-				climb.dispose();
-				sheet?.dispose();
+				page.dispose();
 				root.classList.remove(TOWER_CLASS, CLIMB_CLASS);
 				if (progress > 0) window.scrollTo({ top: scrollFor(sectionTops(sectionEls), progress), behavior: 'instant' });
 			}
@@ -434,7 +433,6 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 			layoutWatch.disconnect();
 			unpin();
 			opts.canvas.removeEventListener('webglcontextlost', onContextLost);
-			projects.dispose();
 			document.body.style.cursor = '';
 			cue?.classList.remove('is-on');
 			cue?.style.removeProperty('transform');
