@@ -47,6 +47,11 @@ export interface TowerOptions {
 	portrait: PortraitSpec;
 	/** Called if the GPU drops the context; the caller tears the scene down to the static page. */
 	onLost?: () => void;
+	/**
+	 * Called as the scene takes the page over, just before it switches the layout into the climb:
+	 * whatever ran the page until then (the still climb) hands it back first.
+	 */
+	onActivate?: () => void;
 }
 
 /**
@@ -256,6 +261,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 	let enter = 0;
 
 	function activate(now: number) {
+		opts.onActivate?.();
 		const reading = readingNow();
 		root.classList.add(TOWER_CLASS, CLIMB_CLASS);
 		page = createPageClimb({

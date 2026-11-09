@@ -132,13 +132,14 @@ export function createClimb(sections: HTMLElement[], panels: HTMLElement[]) {
 		},
 		/**
 		 * Each panel is fully shown within ±0.14 tier of its park and gone by ±0.46, drifting
-		 * upward as it leaves. `enter` (0..1) fades the whole set in when the 3D mode starts.
+		 * upward as it leaves. `enter` (0..1) fades the whole set in when the climb starts; `drift`
+		 * scales the movement (0 with reduced motion: they only fade).
 		 */
-		updatePanels(progress: number, enter: number) {
+		updatePanels(progress: number, enter: number, drift = 1) {
 			panels.forEach((el, i) => {
 				const d = progress - i;
 				const o = (1 - sstep(0.14, 0.46, Math.abs(d))) * enter;
-				const ty = -d * 70 + (1 - enter) * 18;
+				const ty = (-d * 70 + (1 - enter) * 18) * drift;
 				const s = shown[i];
 				if (Math.abs(o - s.o) < 0.002 && Math.abs(ty - s.ty) < 0.2) return;
 				el.style.opacity = o.toFixed(3);

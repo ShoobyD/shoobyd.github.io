@@ -30,6 +30,9 @@ export function createPageClimb(o: PageClimbOptions) {
 	const sheet = createSheet(o.panels, o.startTier);
 	const projects = createProjects(o.projects, o.onLight);
 	let lastTier = -1;
+	// a climb is running the panels (TowerLoaderBoot's fallback looks for it)
+	const root = document.documentElement;
+	root.dataset.climb = 'live';
 
 	return {
 		climb,
@@ -43,10 +46,13 @@ export function createPageClimb(o: PageClimbOptions) {
 			const stop = climb.stop;
 			projects.update(door, stop && stop.tier === CODE_TIER && !paused ? Math.round(stop.at) : -1);
 		},
-		/** Each frame: the panels and sheets at `progress` (fractional tier), faded in by `enter` (0..1). */
-		update(progress: number, enter: number) {
+		/**
+		 * Each frame: the panels and sheets at `progress` (fractional tier), faded in by `enter`
+		 * (0..1), drifting by `drift` (0 with reduced motion: they only fade).
+		 */
+		update(progress: number, enter: number, drift = 1) {
 			const nearest = Math.round(progress);
-			climb.updatePanels(progress, enter);
+			climb.updatePanels(progress, enter, drift);
 			sheet.update(nearest, Math.round(climb.progress));
 			if (nearest !== lastTier) {
 				lastTier = nearest;
@@ -57,6 +63,7 @@ export function createPageClimb(o: PageClimbOptions) {
 			climb.dispose();
 			sheet.dispose();
 			projects.dispose();
+			delete root.dataset.climb;
 		},
 	};
 }

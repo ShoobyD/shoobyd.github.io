@@ -4,11 +4,13 @@
  * up): one picture of the whole tower with every tier's point of interest turned to the front,
  * standing on its plain: a CSS gradient below a sharp horizon behind its foot, with the plain's
  * houses and trees laid side by side across the whole window (the tower and the houses rendered by
- * scripts/render-tower-still.mjs, from one camera, so everything lines up exactly). As the
- * page scrolls the tower moves the other way, so each tier's focus comes level with that tier's
- * panel: beside it on wide screens, just above it on phones. It is close at each tier and draws
- * back a little on the way between two; at the base, where the page opens, it shows the whole
- * tower, and closes in on the way up. The ground moves and scales with it.
+ * scripts/render-tower-still.mjs, from one camera, so everything lines up exactly). It stands
+ * behind the climb the live tower would (../tower/still-climb.ts runs the panels) and follows the
+ * same progress: each tier's focus comes level with that tier's fixed panel on wide screens, and
+ * sits in the room above its bottom sheet on phones (following the sheet as it opens or
+ * collapses). It is close at each tier and draws back a little on the way between two; at the
+ * base, where the page opens, it shows the whole tower, and closes in on the way up. The ground
+ * moves and scales with it.
  * With reduced motion it doesn't travel: it holds each tier's view and fades to the next one's.
  * With Save-Data none of it is fetched.
  *
@@ -34,7 +36,7 @@ const layout = { foci: still.foci, axis: still.axis, size: [still.width, still.h
 <div class="static-tower" data-static-tower data-srcset={srcset} data-layout={JSON.stringify(layout)} aria-hidden="true"></div>
 
 <script>
-	import { isTowerActive } from '../tower/mode';
+	import { isTowerActive, progressAt, sectionHolds, sectionTops } from '../tower/mode';
 
 	interface Layout {
 		foci: number[];
@@ -86,25 +88,22 @@ const layout = { foci: still.foci, axis: still.axis, size: [still.width, still.h
 			img.srcset = box.dataset.srcset ?? '';
 		}
 
-		/** Where tier `k`'s focus should sit on screen: level with the middle of its panel, or (phone) just above the panel's top. */
-		function spot(k: number, centred = false) {
+		/** Below the fixed header. */
+		const TOP = 72;
+		/**
+		 * Where tier `k`'s focus should sit on screen: level with the middle of its panel, or (phone)
+		 * in the middle of the room between the header and its bottom sheet, open or collapsed.
+		 */
+		function spot(k: number) {
 			const r = panels[k].getBoundingClientRect();
-			// as it would be with its tier centred in the window (for the view that holds still)
-			let shift = 0;
-			if (centred) {
-				const sr = tiers[k].getBoundingClientRect();
-				shift = sr.top + sr.height / 2 - window.innerHeight / 2;
-			}
-			return phone.matches ? Math.max(72, r.top - shift - 34) : r.top - shift + r.height / 2;
+			return phone.matches ? (TOP + r.top) / 2 : r.top + r.height / 2;
 		}
 
-		/** Where the scroll is among the tiers: between tier `i` and the next, `t` of the way. */
+		/** Where the climb is: between tier `i` and the next, `t` of the way (the same progress as the panels'). */
 		function where() {
-			const centres = tiers.map((s) => s.offsetTop + s.offsetHeight / 2);
-			const mid = window.scrollY + window.innerHeight / 2;
-			let i = 0;
-			while (i < tiers.length - 2 && mid > centres[i + 1]) i++;
-			return { i, t: Math.min(1, Math.max(0, (mid - centres[i]) / (centres[i + 1] - centres[i]))) };
+			const p = progressAt(sectionTops(tiers), window.scrollY, sectionHolds(tiers));
+			const i = Math.min(tiers.length - 2, Math.floor(p));
+			return { i, t: Math.min(1, Math.max(0, p - i)) };
 		}
 
 		/** The transform that puts `focus` (a fraction of the picture's height) at `y` on screen, at scale `s`. */
@@ -139,7 +138,7 @@ const layout = { foci: still.foci, axis: still.axis, size: [still.width, still.h
 		 * panel's top, so its foot tucks under).
 		 */
 		function overview() {
-			const top = 72;
+			const top = TOP;
 			const bottom = phone.matches ? panels[0].getBoundingClientRect().top + 36 : window.innerHeight - Math.max(110, window.innerHeight * 0.17);
 			const room = Math.max(160, bottom - top);
 			const s = Math.min((room * 0.94) / img!.offsetHeight, (box!.clientWidth * 0.96) / img!.offsetWidth);
@@ -188,7 +187,7 @@ const layout = { foci: still.foci, axis: still.axis, size: [still.width, still.h
 		}
 		let groundSize = { tileW: 0, tileH: 0 };
 
-		/** Reduced motion: the view of the tier nearest the middle of the window, held still. */
+		/** Reduced motion: the view of the nearest tier, held still. */
 		let shownTier = -1;
 		let fading = 0;
 		function hold(force: boolean) {
@@ -198,7 +197,7 @@ const layout = { foci: still.foci, axis: still.axis, size: [still.width, still.h
 			const apply = () => {
 				shownTier = k;
 				const whole = overview();
-				place(k === 0 ? framing(whole.focus, whole.y, whole.s) : framing(foci[k], spot(k, true), zoom().near));
+				place(k === 0 ? framing(whole.focus, whole.y, whole.s) : framing(foci[k], spot(k), zoom().near));
 				box!.classList.remove('is-fading');
 				groundLayer!.classList.remove('is-fading');
 			};
@@ -229,16 +228,39 @@ const layout = { foci: still.foci, axis: still.axis, size: [still.width, still.h
 			last = time;
 			const k = first ? 1 : 1 - Math.exp(-dt * 12);
 			first = false;
+			// a view measured while nothing could be measured (hidden, mid-switch) starts over from its aim
+			if (!Number.isFinite(now.x + now.y + now.s)) Object.assign(now, to);
 			now.x += (to.x - now.x) * k;
 			now.y += (to.y - now.y) * k;
 			now.s += (to.s - now.s) * k;
 			place(now);
-			if (Math.abs(to.y - now.y) > 0.3 || Math.abs(to.s - now.s) > 0.0005 || Math.abs(to.x - now.x) > 0.3) schedule();
+			const moving = Math.abs(to.y - now.y) > 0.3 || Math.abs(to.s - now.s) > 0.0005 || Math.abs(to.x - now.x) > 0.3;
+			if (moving || time < followUntil) schedule();
 			else last = 0;
 		}
 		function schedule() {
 			if (!frame) frame = requestAnimationFrame(draw);
 		}
+
+		/**
+		 * A bottom sheet opening or collapsing (phones) moves the room above it: the view follows it
+		 * while it slides (as the 3D camera lifts with it), or with reduced motion settles once it has.
+		 */
+		let followUntil = 0;
+		let settle = 0;
+		const SHEET_SLIDE = 460;
+		const sheets = new MutationObserver((changes) => {
+			const slid = changes.some((c) => (c.oldValue ?? '').includes('is-sheet-collapsed') !== (c.target as HTMLElement).classList.contains('is-sheet-collapsed'));
+			if (!slid || !phone.matches) return;
+			if (still.matches) {
+				window.clearTimeout(settle);
+				settle = window.setTimeout(() => hold(true), SHEET_SLIDE);
+				return;
+			}
+			followUntil = performance.now() + SHEET_SLIDE;
+			schedule();
+		});
+		panels.forEach((p) => sheets.observe(p, { attributeFilter: ['class'], attributeOldValue: true }));
 
 		img.addEventListener('load', () => {
 			box.dataset.ready = '';
