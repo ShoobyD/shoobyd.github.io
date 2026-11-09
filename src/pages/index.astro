@@ -392,36 +392,55 @@ const elsewhere = [
 		font-weight: 600;
 	}
 
-	/* the summit's other profiles: the same pills, as links that warm to gold like the contacts */
+	/* the summit's other profiles: the same pills, as links that warm to gold like the contacts.
+	 * The lead and the pills keep to one line: the whole row is sized from one font size (`--f`,
+	 * everything in it in em of it), which shrinks with the row's width where it would not fit
+	 * (phones; 4cqi fills the Hebrew row with a little to spare), and is the pills' usual size
+	 * wherever it does. It shrinks no further than 12px: a row narrower still (a narrow panel on a
+	 * small window, the smallest phones) wraps instead. */
 	.elsewhere {
+		container-type: inline-size;
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
-		gap: var(--sd-space-2) var(--sd-space-3);
+		row-gap: var(--sd-space-2);
 		margin-block: var(--sd-space-3) var(--sd-space-4);
+	}
+	.elsewhere > * {
+		--f: clamp(0.75rem, 4cqi, 0.95rem);
 	}
 	/* wide screens have the room: a little more air between the contacts and the profile pills */
 	@media (min-width: 47.5rem) {
 		.elsewhere { margin-block-start: var(--sd-space-5); }
 	}
 	.elsewhere__lead {
-		font-size: 0.85rem;
+		font-size: calc(var(--f) * 0.895);
 		font-weight: 700;
 		letter-spacing: 0.04em;
 		color: var(--sd-gold);
+		margin-inline-end: 0.882em;
+		white-space: nowrap;
 	}
 	.chips--links {
+		gap: 0.526em;
 		margin: 0;
+		font-size: var(--f);
 	}
 	.chips--links li {
 		padding: 0;
+		font-size: inherit;
+	}
+	.chips--links .sd-link-icon {
+		inline-size: 1.053em;
+		block-size: 1.053em;
 	}
 	.chips--links a {
 		display: flex;
 		align-items: center;
-		gap: 7px;
-		padding-block: 5px;
-		padding-inline: 13px;
+		gap: 0.46em;
+		padding-block: 0.329em;
+		padding-inline: 0.855em;
+		white-space: nowrap;
 		border-radius: inherit;
 		text-decoration: none;
 		transition: background var(--sd-dur-fast), color var(--sd-dur-fast);
