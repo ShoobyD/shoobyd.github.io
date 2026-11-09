@@ -22,6 +22,7 @@ import StaticTower from '../components/home/StaticTower.astro';
 import TowerScene from '../components/tower/TowerScene.vue';
 import TowerLoader from '../components/tower/TowerLoader.astro';
 import TowerLoaderBoot from '../components/tower/TowerLoaderBoot.astro';
+import NoJsMessage from '../components/home/NoJsMessage.astro';
 import selfPortrait from '../assets/images/self-portrait-bsod.jpg';
 import { projects, projectName } from '../data/projects';
 import { home, links, tierAltitude, tierIds } from '../i18n/home';
@@ -82,6 +83,8 @@ const elsewhere = [
 		<span data-tower-game-label>{c.game.enter}</span>
 	</button>
 	<TowerLoader label={c.loader} />
+	<!-- instead of the page without JavaScript, or when it failed to load -->
+	<NoJsMessage title={c.noJs.title} text={c.noJs.text} />
 	<TowerScene client:only="vue" tiers={[...tierIds]} doors={towerDoors} portrait={towerPortrait} game={c.game} />
 	<!-- touch screens: a cue over the tower's unfinished top at the summit (placed by the tower; a tap on
 	     the top starts the game, and the header's game button stays the way in for keys and readers) -->

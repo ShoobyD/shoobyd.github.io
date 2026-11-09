@@ -1,0 +1,150 @@
+---
+/**
+ * What shows instead of the page when it can't run: without JavaScript (the `<noscript>` style
+ * below), or when it failed to load (`html.sd-js-failed`, set by TowerLoaderBoot when nothing came
+ * to run the page). The whole tower on its plain, as the page opens, with a panel saying what is
+ * missing; the site header stays over it.
+ *
+ * The same picture and plain as the still climb (StaticTower.astro), laid out by CSS alone from one
+ * height (`--h`): the houses' tile along the horizon behind the tower's foot, over the plain's
+ * gradient. Hidden by default, and its pictures are CSS backgrounds (a browser doesn't fetch those
+ * for an element that isn't rendered, where it would an `<img>`, even a lazy one), so a page that
+ * never shows it never fetches them.
+ */
+import { getImage } from 'astro:assets';
+import ArchPanel from '../../theme/components/ArchPanel.vue';
+import tower from '../../assets/images/tower-front.webp';
+import groundTile from '../../assets/images/tower-ground.webp';
+import still from '../../data/tower-front.json';
+
+interface Props {
+	title: string;
+	text: string;
+}
+const { title, text } = Astro.props;
+
+// the tower is drawn about 500 css px wide: one size per pixel density
+const [t1, t2] = await Promise.all([600, 1100].map((width) => getImage({ src: tower, width, format: 'webp', quality: 80 })));
+const ground = await getImage({ src: groundTile, format: 'webp', quality: 80 });
+const g = still.ground;
+// the picture's proportions (as fractions of its height), for the CSS below
+const layout = {
+	'--ratio': still.width / still.height,
+	'--axis': still.axis,
+	'--g-top': g.top,
+	'--g-w': g.width / still.height,
+	'--g-h': g.height / still.height,
+	'--g-horizon': g.horizon,
+	'--g-axis': g.axis,
+	'--g-far': g.far,
+	'--g-near': g.near,
+	'--g-src': `url("${ground.src}")`,
+	'--t-src': `image-set(url("${t1.src}") 1x, url("${t2.src}") 2x)`,
+};
+---
+
+<div class="js-needed" style={layout}>
+	<div class="js-needed__ground" aria-hidden="true"></div>
+	<div class="js-needed__tower" aria-hidden="true"></div>
+	<ArchPanel as="section" class="js-needed__panel" aria-labelledby="js-needed-title">
+		<h2 id="js-needed-title">{title}</h2>
+		<p>{text}</p>
+	</ArchPanel>
+</div>
+<!-- `!important` over the scoped rule (which carries an attribute, so it would win) -->
+<noscript><style is:inline>.js-needed { display: block !important; } html { overflow: hidden; }</style></noscript>
+
+<style>
+	/* over the whole page (the site header stays above it), on the dawn sky */
+	.js-needed {
+		display: none;
+		position: fixed;
+		z-index: 18;
+		inset: 0;
+		overflow: hidden;
+		background: var(--sd-sky-gradient);
+		/* the whole tower fits the room below the header, its foot a little above the bottom (wide
+		 * screens leave that to the plain), beside the panel: on the inline-end half */
+		--top: 72px;
+		--room: calc(100svh - var(--top) - max(110px, 17svh));
+		--h: calc(var(--room) * 0.94);
+		--w: calc(var(--h) * var(--ratio));
+		--y: calc(var(--top) + var(--room) * 0.03);
+		--x: 30vw;
+		--tile-w: calc(var(--h) * var(--g-w));
+		--tile-h: calc(var(--h) * var(--g-h));
+	}
+	:global([dir="ltr"]) .js-needed {
+		--x: 70vw;
+	}
+	:global(html.sd-js-failed) {
+		overflow: hidden;
+	}
+	:global(html.sd-js-failed) .js-needed {
+		display: block;
+	}
+
+	/* centred on `--x` (from the window's left edge, in either direction) */
+	.js-needed__tower {
+		position: absolute;
+		inset-block-start: var(--y);
+		inset-inline: 0;
+		margin-inline: auto;
+		inline-size: var(--w);
+		block-size: var(--h);
+		background: var(--t-src) center / contain no-repeat;
+		translate: calc(var(--x) - 50vw) 0;
+	}
+
+	/* the plain from the tower's band down: the houses repeated along it, their axis column under the
+	 * tower's, over the plain's colours from the horizon */
+	.js-needed__ground {
+		position: absolute;
+		inset-inline: 0;
+		inset-block: calc(var(--y) + var(--h) * var(--g-top)) 0;
+		background-image:
+			var(--g-src),
+			linear-gradient(
+				transparent calc(var(--tile-h) * var(--g-horizon)),
+				var(--g-far) calc(var(--tile-h) * var(--g-horizon)),
+				var(--g-near) var(--tile-h),
+				var(--g-near)
+			);
+		background-size: var(--tile-w) var(--tile-h), 100% 100%;
+		background-repeat: repeat-x, no-repeat;
+		background-position: calc(var(--x) + (var(--axis) - 0.5) * var(--w) - var(--g-axis) * var(--tile-w)) 0, 0 0;
+	}
+
+	.js-needed__panel {
+		position: absolute;
+		inset-inline-start: clamp(16px, 6vw, 112px);
+		inset-block: 0;
+		margin-block: auto;
+		block-size: fit-content;
+		inline-size: min(31rem, 40vw);
+	}
+	.js-needed__panel h2 {
+		margin-block: 0 var(--sd-space-3);
+	}
+	.js-needed__panel p {
+		margin: 0;
+		font-size: 1.05rem;
+		line-height: 1.6;
+	}
+
+	/* phones: the tower above, the panel below it, its foot tucked under the panel */
+	@media (max-width: 47.5rem) {
+		:global([dir]) .js-needed {
+			--room: calc(100svh - var(--top) - 250px);
+			--x: 50vw;
+		}
+		.js-needed__panel {
+			inset-inline: 16px;
+			inset-block: auto 24px;
+			margin-block: 0;
+			inline-size: auto;
+			padding-block-start: 3.4rem;
+		}
+	}
+</style>
+

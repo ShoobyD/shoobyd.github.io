@@ -25,6 +25,8 @@ interface HomeCopy {
 	gauge: { label: string; unit: string; tiers: Record<TierId, string> };
 	/** The handle that opens and closes a tier panel on narrow screens (its state is aria-expanded). */
 	sheet: { toggle: string };
+	/** What shows instead of the page without JavaScript, or when it failed to load. */
+	noJs: { title: string; text: string };
 	/**
 	 * The self-portrait in the base panel: `portraitAlt` describes the drawing, `portraitOpen`
 	 * labels the link that enlarges it, `portraitCaption` / `portraitClose` belong to the dialog.
@@ -142,6 +144,10 @@ export const home: Record<Lang, HomeCopy> = {
 			tiers: { base: 'יסוד', code: 'קוד', math: 'מתמטיקה', languages: 'שפות', making: 'יצירה', summit: 'פסגה' },
 		},
 		sheet: { toggle: 'תוכן הקומה' },
+		noJs: {
+			title: 'האתר צריך JavaScript',
+			text: 'המגדל נבנה כאן בדפדפן, קומה אחר קומה, ובשביל זה הוא צריך JavaScript. הפעילו אותו ורעננו את הדף.',
+		},
 		base: {
 			title: 'ברוך מוסטקיס',
 			lead: 'מפתח־ווב, מתמטיקאי בהכשרתו. טפסו למעלה.',
@@ -244,6 +250,10 @@ export const home: Record<Lang, HomeCopy> = {
 			tiers: { base: 'Base', code: 'Code', math: 'Math', languages: 'Languages', making: 'Making', summit: 'Summit' },
 		},
 		sheet: { toggle: 'Tier content' },
+		noJs: {
+			title: 'This site needs JavaScript',
+			text: 'The tower is built right here in your browser, floor by floor, and for that it needs JavaScript. Turn it on and reload the page.',
+		},
 		base: {
 			title: 'Baruch Mustakis',
 			lead: 'Web developer, mathematician by training. Climb up.',
