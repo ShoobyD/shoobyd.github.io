@@ -165,7 +165,8 @@ export const home: Record<Lang, HomeCopy> = {
 		},
 		math: {
 			title: 'מתמטיקה ופיזיקה',
-			lead: 'תואר B.Sc. במתמטיקה עיונית, בהצטיינות, לצד לימודי השלמה במדעי המחשב.',
+			// the LRM after "B.Sc." keeps its final period with it in the Hebrew line (not before the B)
+			lead: 'תואר B.Sc.‎ במתמטיקה עיונית, בהצטיינות, לצד לימודי השלמה במדעי המחשב.',
 			aside: 'הקומה הזאת עומדת על הוכחות, לא על טיח.',
 		},
 		languages: {
