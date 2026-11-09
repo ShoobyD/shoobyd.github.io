@@ -94,7 +94,8 @@ const elsewhere = [
 	<AltitudeGauge client:idle label={c.gauge.label} unit={c.gauge.unit} tiers={gaugeTiers} />
 
 	<TierSection id="base" sheetLabel={c.sheet.toggle} title={c.base.title} level={1}>
-		<p class="handle" lang="en" dir="ltr">ShoobyD</p>
+		<!-- in the page's direction, under the title; only the name itself is isolated as English -->
+		<p class="handle"><bdi lang="en" dir="ltr">ShoobyD</bdi></p>
 		<p class="lead">{c.base.lead}</p>
 		<SelfPortrait
 			image={selfPortrait}
@@ -194,6 +195,15 @@ const elsewhere = [
 	/* the climb's chrome (the altitude gauge) fades when it steps aside */
 	:root [data-tower-chrome] {
 		transition: opacity var(--sd-dur) var(--sd-ease), visibility 0s;
+	}
+	/* the name at the base keeps to one line: its size follows the panel's width (17cqi fits it
+	 * with a little to spare), up to the usual h1 size where there is room */
+	#tier-base [data-tier-panel] {
+		container-type: inline-size;
+	}
+	#tier-base h1.tier__title {
+		font-size: min(var(--sd-text-h1), 17cqi);
+		white-space: nowrap;
 	}
 	/* an open bottom sheet (narrow screens) runs under the altitude gauge: the gauge dims and
 	 * steps aside for it until the sheet collapses */
