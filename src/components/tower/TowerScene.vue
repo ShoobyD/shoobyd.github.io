@@ -82,8 +82,8 @@ function goStill() {
 	if (!alive || handle || still) return;
 	still = createStillClimb({ tiers: props.tiers, projects: props.doors });
 }
-function stopStill(handBack: boolean) {
-	still?.dispose(handBack);
+function stopStill() {
+	still?.dispose();
 	still = null;
 }
 
@@ -116,7 +116,7 @@ async function start() {
 				stop();
 			},
 			// the still climb lets go of the page (the same climb) as the scene takes it over
-			onActivate: () => stopStill(false),
+			onActivate: () => stopStill(),
 		});
 		if (!alive || !wanted()) stop();
 		else live.value = markRaw(handle);
@@ -161,7 +161,7 @@ onBeforeUnmount(() => {
 	alive = false;
 	motion?.removeEventListener('change', onMotionChange);
 	stop();
-	stopStill(false);
+	stopStill();
 });
 </script>
 

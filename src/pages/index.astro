@@ -171,40 +171,33 @@ const elsewhere = [
 </Base>
 
 <style is:global>
-	html {
-		scroll-behavior: smooth;
-	}
-	@media (prefers-reduced-motion: reduce) {
-		html { scroll-behavior: auto; }
-	}
-
-	/* the page is the climb: the sky darkens from dawn at the base to night at the summit */
+	/* ---------- the climb (see ../components/tower/mode.ts) ----------
+	 * The page is the climb: the sky darkens from dawn at the base to night at the summit. The
+	 * climb does its own smoothing, so jumps (gauge links, keys) are instant; the header stays put
+	 * over it; and the footer is lifted above the fixed tower behind it. (`:root` keeps these level
+	 * with the components' own scoped rules, which they override.) */
 	body {
 		background: var(--sd-sky-climb);
 		background-attachment: scroll;
 	}
-
-	/* ---------- the climb (html.sd-climb, see ../components/tower/mode.ts) ----------
-	 * The climb does its own smoothing, so jumps (gauge links, keys) are instant; the header
-	 * stays put over the climb; and the footer is lifted above the fixed tower behind it. */
-	html.sd-climb {
+	:root {
 		scroll-behavior: auto;
 		scrollbar-width: none;
 	}
-	html.sd-climb::-webkit-scrollbar { display: none; }
-	html.sd-climb .sd-header {
+	:root::-webkit-scrollbar { display: none; }
+	:root .sd-header {
 		position: fixed;
 		inset-block-start: 0;
 		inset-inline: 0;
 	}
-	html.sd-climb .sd-footer { position: relative; }
+	:root .sd-footer { position: relative; }
 	/* the climb's chrome (the altitude gauge) fades when it steps aside */
-	html.sd-climb [data-tower-chrome] {
+	:root [data-tower-chrome] {
 		transition: opacity var(--sd-dur) var(--sd-ease), visibility 0s;
 	}
 	/* an open bottom sheet (narrow screens) runs under the altitude gauge: the gauge dims and
 	 * steps aside for it until the sheet collapses */
-	html.sd-climb.sd-sheet-open [data-tower-chrome] {
+	html.sd-sheet-open [data-tower-chrome] {
 		opacity: 0.2;
 		pointer-events: none;
 	}
@@ -472,7 +465,7 @@ const elsewhere = [
 	 * the list itself is in view) */
 	.tier-now { display: none; }
 	@media (max-width: 47.5rem) {
-		:global(html.sd-climb [data-tier-panel].is-sheet-collapsed) .tier-now {
+		:global([data-tier-panel].is-sheet-collapsed) .tier-now {
 			display: block;
 			/* below, enough room that the real list starts past the end of the peek */
 			margin-block: var(--sd-space-4) var(--sd-space-6);

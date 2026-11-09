@@ -3,14 +3,11 @@
  * gave up): the same page as the 3D climb, with fixed panels (bottom sheets on phones), keys and
  * stops (./scene/page-climb.ts), over the still picture of the tower (home/StaticTower.astro,
  * which follows the same scroll progress). This only runs its frames: the panels follow the
- * scroll, eased, and with reduced motion they only fade, without drifting.
- *
- * The layout may already be the climb when it starts (TowerLoaderBoot sets `html.sd-climb` before
- * the first paint for visitors who won't get the 3D); otherwise, as when the scene drops out, it
- * switches the layout itself and carries the reading position over, and `dispose(true)` hands it
- * back the same way (to the scene taking over, which then switches it again).
+ * scroll, eased, and with reduced motion they only fade, without drifting. It takes the panels
+ * over where the visitor is (the page is the same climb either way), and lets go of them for the
+ * scene the same way.
  */
-import { CLIMB_CLASS, isClimbing, progressAt, scrollFor, sectionHolds, sectionTops } from './mode';
+import { progressAt, sectionHolds, sectionTops } from './mode';
 import { createPageClimb, type PageClimb } from './scene/page-climb';
 import type { ProjectSpec } from './scene/projects';
 import { damp, easeOut } from './scene/util';
@@ -23,17 +20,14 @@ export interface StillClimbOptions {
 }
 
 export function createStillClimb(o: StillClimbOptions) {
-	const root = document.documentElement;
 	const sections = o.tiers.map((id) => document.getElementById(`tier-${id}`));
 	if (sections.some((s) => !s)) return null;
 	const sectionEls = sections as HTMLElement[];
 	const panels = sectionEls.map((s) => s.querySelector<HTMLElement>('[data-tier-panel]'));
 	if (panels.some((p) => !p)) return null;
 
-	// where the visitor is reading, in whichever layout the page has now
+	// where the visitor is reading
 	const reading = progressAt(sectionTops(sectionEls), window.scrollY, sectionHolds(sectionEls));
-	const switching = !isClimbing();
-	root.classList.add(CLIMB_CLASS);
 	const page: PageClimb = createPageClimb({
 		sections: sectionEls,
 		panels: panels as HTMLElement[],
@@ -41,7 +35,6 @@ export function createStillClimb(o: StillClimbOptions) {
 		projects: o.projects,
 		startTier: Math.round(reading),
 	});
-	if (switching && reading > 0) page.climb.goTo(reading);
 
 	const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
 	let smooth = page.climb.progress;
@@ -71,27 +64,19 @@ export function createStillClimb(o: StillClimbOptions) {
 	}
 	window.addEventListener('scroll', schedule, { passive: true });
 	window.addEventListener('resize', remeasure);
-	// section heights change with fonts, panel content and the layout switch itself
+	// section heights change with the window, and the page's height with the footer's content
 	const layoutWatch = new ResizeObserver(remeasure);
 	layoutWatch.observe(document.body);
 	schedule();
 
 	return {
-		/**
-		 * Stops it. `handBack` returns the page to the plain layout with the reading position
-		 * carried over, for the live tower taking over (its activation switches it back to the
-		 * climb the same way).
-		 */
-		dispose(handBack = false) {
+		/** Stops it, leaving the page where it is (for the live tower taking over, or for good). */
+		dispose() {
 			cancelAnimationFrame(frame);
 			window.removeEventListener('scroll', schedule);
 			window.removeEventListener('resize', remeasure);
 			layoutWatch.disconnect();
-			const progress = page.climb.progress;
 			page.dispose();
-			if (!handBack) return;
-			root.classList.remove(CLIMB_CLASS);
-			if (progress > 0) window.scrollTo({ top: scrollFor(sectionTops(sectionEls), progress), behavior: 'instant' });
 		},
 	};
 }

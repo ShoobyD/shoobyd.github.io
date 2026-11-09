@@ -1,10 +1,8 @@
 <script setup lang="ts">
 /**
- * One tier of the tower: a full-height section holding one arch panel.
+ * One tier of the tower: a tall scroll span of the climb, holding one arch panel, fixed over the
+ * tower; the tower island fades each panel in around its own tier.
  * The section id is the anchor the altitude gauge links to.
- *
- * When the page is the climb (`html.sd-climb`), each section becomes a tall scroll span and its
- * panel is fixed over the tower; the tower island fades each panel in around its own tier.
  * The heading's content can be replaced through the `title` slot (e.g. the summit's Babel joke).
  */
 import ArchPanel from '../../theme/components/ArchPanel.vue';
@@ -57,15 +55,12 @@ defineProps<{
 </template>
 
 <style scoped>
+/* ---------- the climb ----------
+ * Each tier is a 1.5-viewport scroll span (the summit just one); the camera parks when a
+ * section's top meets the viewport's. Panels are fixed at the inline-start, clear of the tower. */
 .tier {
 	position: relative;
-	min-block-size: 100vh;
-	min-block-size: 100svh;
-	display: flex;
-	align-items: center;
-	padding-block: var(--sd-space-8);
-	/* the inline-end side is kept clear for the tower (6b) and the altitude gauge */
-	padding-inline: var(--sd-gutter) calc(var(--sd-gutter) + 9rem);
+	block-size: 150vh;
 	scroll-margin-block-start: 0;
 }
 
@@ -120,33 +115,16 @@ h2.tier__title {
 	clip-path: none;
 }
 
-@media (max-width: 47.5rem) {
-	.tier {
-		padding-block: 6rem var(--sd-space-7);
-		/* room on the inline-end for the altitude gauge's marks (only the current tier is named) */
-		padding-inline: var(--sd-gutter) calc(var(--sd-gutter) + 1.9rem);
-	}
-}
-
-/* ---------- the climb (html.sd-climb) ----------
- * Each tier is a 1.5-viewport scroll span (the summit just one); the camera parks when a
- * section's top meets the viewport's. Panels are fixed at the inline-start, clear of the tower. */
-html.sd-climb .tier {
-	block-size: 150vh;
-	min-block-size: 0;
-	padding: 0;
-}
-
-html.sd-climb .tier:last-of-type {
+.tier:last-of-type {
 	block-size: 100vh;
 }
 
 /* a tier with stops holds the climb: half a viewport more per stop after the first */
-html.sd-climb .tier[data-stops] {
+.tier[data-stops] {
 	block-size: calc(150vh + (var(--stops) - 1) * 50vh);
 }
 
-html.sd-climb .tier__panel {
+.tier__panel {
 	position: fixed;
 	z-index: 6;
 	inset-inline-start: clamp(16px, 6vw, 112px);
@@ -166,7 +144,7 @@ html.sd-climb .tier__panel {
 /* a panel taller than the window scrolls its content under the title, not itself: the title stays
  * in view, and the scrollbar stays inside the panel, by its straight side, rather than running up
  * past the arch (the negative margin and matching padding put it near the edge, clear of the text) */
-html.sd-climb .tier__body {
+.tier__body {
 	flex: 1 1 auto;
 	min-block-size: 0;
 	/* only up and down; a tilted picture's corner (the self-portrait hangs askew) mustn't make it
@@ -191,8 +169,8 @@ html.sd-climb .tier__body {
 		--thumb var(--sd-dur);
 }
 
-html.sd-climb .tier__body:hover,
-html.sd-climb .tier__body.is-scrolling {
+.tier__body:hover,
+.tier__body.is-scrolling {
 	--thumb: var(--sd-ochre);
 }
 
@@ -214,7 +192,7 @@ html.sd-climb .tier__body.is-scrolling {
 	initial-value: 0px;
 }
 
-html.sd-climb .tier__panel.is-on {
+.tier__panel.is-on {
 	pointer-events: auto;
 }
 
@@ -230,7 +208,7 @@ html.sd-climb .tier__panel.is-on {
 
 @media (max-width: 47.5rem) {
 	/* the sheet scrolls itself (sheet.ts reads and resets its scroll), its content doesn't */
-	html.sd-climb .tier__panel {
+	.tier__panel {
 		display: block;
 		overflow: auto;
 		overscroll-behavior: contain;
@@ -259,7 +237,7 @@ html.sd-climb .tier__panel.is-on {
 			--sheet-fade 420ms var(--sd-ease);
 	}
 
-	html.sd-climb .tier__body {
+	.tier__body {
 		overflow: visible;
 		margin-inline-end: 0;
 		padding-inline-end: 0;
@@ -268,24 +246,24 @@ html.sd-climb .tier__panel.is-on {
 		mask-image: none;
 	}
 
-	html.sd-climb .tier__panel.is-sheet-collapsed {
+	.tier__panel.is-sheet-collapsed {
 		--sheet-fade: 0px;
 		translate: 0 calc(100% - var(--sheet-peek, 150px));
 		overflow: hidden;
 	}
 
 	/* under a finger the sheet follows it exactly (an inline translate) and shows all it holds */
-	html.sd-climb .tier__panel.is-sheet-dragging {
+	.tier__panel.is-sheet-dragging {
 		--sheet-fade: 100vh;
 		transition: none;
 	}
 
 	/* the handle takes the keystone's place */
-	html.sd-climb .tier__panel::before {
+	.tier__panel::before {
 		display: none;
 	}
 
-	html.sd-climb .tier__sheet {
+	.tier__sheet {
 		display: grid;
 	}
 }

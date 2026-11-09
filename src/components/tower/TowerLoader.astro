@@ -6,8 +6,9 @@
  * It only ever appears for visitors who will actually get the 3D: TowerLoaderBoot, an inline
  * script in <head>, runs before the first paint and repeats TowerScene's checks (WebGL 2, no
  * reduced motion, no Save-Data, no `?no3d`). When a check fails there is no loader and the page
- * is the still climb at once; without JavaScript, the plain page. TowerScene removes the loading class when the
- * scene is live or when it gives up; a 20 s fail-safe removes it if the island never mounts.
+ * is the still climb at once; without JavaScript, a message takes its place. TowerScene removes
+ * the loading class when the scene is live or when it gives up; a 20 s fail-safe removes it if
+ * the island never mounts.
  *
  * Keep the checks in TowerLoaderBoot in sync with `wanted()` / `hasWebGL2()` in TowerScene.vue,
  * and the class name with `LOADING_CLASS` in mode.ts (an inline script cannot import them).

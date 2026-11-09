@@ -1,9 +1,9 @@
 ---
 /**
- * Before the first paint: lays the page out as the climb (`html.sd-climb`), so it never starts as
- * anything else and jumps, and switches the tower loader on for visitors who will get the 3D
- * (the others get the still climb at once, see ../tower/still-climb.ts). Without JavaScript none
- * of this runs, and a message takes the page's place (home/NoJsMessage.astro).
+ * Before the first paint: switches the tower loader on for visitors who will get the 3D (the
+ * others get the still climb at once, see ../tower/still-climb.ts), and gives up on the page if
+ * nothing comes to run the climb. Without JavaScript none of this runs, and a message takes the
+ * page's place (home/NoJsMessage.astro).
  * Place it in the page head: `<TowerLoaderBoot slot="head" />` (see TowerLoader.astro).
  */
 ---
@@ -11,7 +11,6 @@
 <script is:inline>
 	(function () {
 		var root = document.documentElement;
-		root.classList.add('sd-climb');
 		// if nothing comes to run the climb (the tower island failed to load), the page can't work:
 		// a message takes its place (home/NoJsMessage.astro), until a climb that comes late takes it back
 		function giveUpAfter(ms) {

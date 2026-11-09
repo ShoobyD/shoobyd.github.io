@@ -8,7 +8,7 @@
  * the arrow and page keys step through them one at a time like tiers.
  */
 import { clamp, sstep } from './util';
-import { progressAt, scrollFor, sectionHolds, sectionTops } from '../mode';
+import { progressAt, sectionHolds, sectionTops } from '../mode';
 
 export function createClimb(sections: HTMLElement[], panels: HTMLElement[]) {
 	const last = sections.length - 1;
@@ -125,11 +125,6 @@ export function createClimb(sections: HTMLElement[], panels: HTMLElement[]) {
 		},
 		measure,
 		goTier,
-		/** Scrolls to a fractional progress (used to carry the reading position across a layout switch). */
-		goTo(p: number) {
-			window.scrollTo({ top: scrollFor(tops, p, holds), behavior: 'instant' });
-			read();
-		},
 		/**
 		 * Each panel is fully shown within ±0.14 tier of its park and gone by ±0.46, drifting
 		 * upward as it leaves. `enter` (0..1) fades the whole set in when the climb starts; `drift`

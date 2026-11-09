@@ -1,12 +1,11 @@
 <script setup lang="ts">
 /**
  * The altitude gauge: the home page's navigation, drawn as the tower's height scale.
- * Tiers are plain anchor links (they work without JavaScript, and in the 3D climb they land on
- * the tier's park); once hydrated, the gauge marks the tier in view and reads the current
- * altitude in cubits from the scroll position, in either layout.
+ * Tiers are plain anchor links, which land on the tier's park; once hydrated, the gauge marks the
+ * tier in view and reads the current altitude in cubits from the scroll position.
  */
 import { onBeforeUnmount, onMounted, ref } from 'vue';
-import { isClimbing, progressAt, sectionHolds, sectionTops } from '../tower/mode';
+import { progressAt, sectionHolds, sectionTops } from '../tower/mode';
 
 export interface GaugeTier {
 	id: string;
@@ -28,50 +27,16 @@ let sections: HTMLElement[] = [];
 let layout: ResizeObserver | null = null;
 
 /**
- * In the 3D climb a tier is reached when its (tall) section's top meets the viewport's top,
- * the same progress the camera and panels follow, so the gauge reads where the climb is going.
+ * A tier is reached when its (tall) section's top meets the viewport's top, the same progress the
+ * tower and the panels follow, so the gauge reads where the climb is going.
  */
-function measureClimb() {
+function measure() {
+	frame = 0;
 	const progress = progressAt(sectionTops(sections), window.scrollY, sectionHolds(sections));
 	const i = Math.min(Math.floor(progress), props.tiers.length - 2);
 	const t = progress - i;
 	current.value = props.tiers[Math.round(progress)].id;
 	altitude.value = Math.round(props.tiers[i].altitude + (props.tiers[i + 1].altitude - props.tiers[i].altitude) * t);
-}
-
-/**
- * On the plain page (not laid out as the climb: under the 3D loader, or if the tower island never
- * loads) a tier reads its exact altitude when its centre crosses the middle of the viewport;
- * between two centres the altitude is interpolated. The current tier is the nearest centre.
- */
-function measure() {
-	frame = 0;
-	if (isClimbing()) {
-		measureClimb();
-		return;
-	}
-	const probe = window.innerHeight * 0.5;
-	const centres = sections.map((el) => {
-		const r = el.getBoundingClientRect();
-		return r.top + r.height / 2;
-	});
-
-	let nearest = 0;
-	centres.forEach((c, i) => {
-		if (Math.abs(c - probe) < Math.abs(centres[nearest] - probe)) nearest = i;
-	});
-	current.value = props.tiers[nearest].id;
-
-	const last = centres.length - 1;
-	let i = 0;
-	while (i < last && centres[i + 1] <= probe) i++;
-	const from = props.tiers[i].altitude;
-	if (probe <= centres[0] || i === last) {
-		altitude.value = probe <= centres[0] ? props.tiers[0].altitude : props.tiers[last].altitude;
-		return;
-	}
-	const progress = (probe - centres[i]) / (centres[i + 1] - centres[i]);
-	altitude.value = Math.round(from + (props.tiers[i + 1].altitude - from) * progress);
 }
 
 function schedule() {
@@ -86,7 +51,7 @@ onMounted(() => {
 	measure();
 	window.addEventListener('scroll', schedule, { passive: true });
 	window.addEventListener('resize', schedule);
-	// the page changes height when the 3D climb switches on or off
+	// section heights change with the window, and the page's height with the footer's content
 	layout = new ResizeObserver(schedule);
 	layout.observe(document.body);
 });
