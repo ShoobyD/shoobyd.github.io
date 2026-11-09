@@ -115,8 +115,8 @@ async function start() {
 				lost = true;
 				stop();
 			},
-			// the still climb gives the page back as the scene switches it into its own climb
-			onActivate: () => stopStill(true),
+			// the still climb lets go of the page (the same climb) as the scene takes it over
+			onActivate: () => stopStill(false),
 		});
 		if (!alive || !wanted()) stop();
 		else live.value = markRaw(handle);

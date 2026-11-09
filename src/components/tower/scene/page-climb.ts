@@ -30,9 +30,11 @@ export function createPageClimb(o: PageClimbOptions) {
 	const sheet = createSheet(o.panels, o.startTier);
 	const projects = createProjects(o.projects, o.onLight);
 	let lastTier = -1;
-	// a climb is running the panels (TowerLoaderBoot's fallback looks for it)
+	// a climb is running the panels (TowerLoaderBoot's fallback looks for it); one that came late,
+	// after the fallback gave up on it, takes the page back from its message
 	const root = document.documentElement;
 	root.dataset.climb = 'live';
+	root.classList.remove('sd-js-failed');
 
 	return {
 		climb,

@@ -3,10 +3,10 @@
  * This module (and Three.js with it) is loaded on demand by TowerScene.vue, only once the
  * page has painted and the browser has passed the WebGL / reduced-motion checks.
  *
- * Activation is the last step: the scene renders its first frames behind the page (the plain
- * page under the loader, or the still climb if it starts mid-visit), whatever ran the page hands
- * it back (`onActivate`), then the root gets `html.webgl` and `html.sd-climb`, the layout turns into the climb, and the
- * scroll position is carried over so the visitor stays on the tier they were reading.
+ * The page is laid out as the climb from its first paint (TowerLoaderBoot). Activation is the
+ * last step: the scene renders its first frames behind it (under the loader, or behind the still
+ * climb if it starts mid-visit), whatever ran the panels lets go of them (`onActivate`), and the
+ * root gets `html.webgl`: the scene runs the climb from the tier the visitor is on.
  */
 import * as THREE from 'three';
 import { clamp, createRandom, damp, easeOut, isNarrow, lerp, sstep } from './util';
@@ -32,7 +32,7 @@ import { createGlyphs } from './tiers/glyphs';
 import { STRING_COUNT, createStrings } from './tiers/strings';
 import { createGuitarSound } from './tiers/guitar-sound';
 import { createPortrait, type PortraitSpec } from './tiers/portrait';
-import { CLIMB_CLASS, TOWER_CLASS, progressAt, scrollFor, sectionTops } from '../mode';
+import { CLIMB_CLASS, TOWER_CLASS, progressAt, sectionHolds, sectionTops } from '../mode';
 
 export type { DoorSpec, PortraitSpec };
 // game mode rides in this chunk; it plugs in through the handle below and nothing else
@@ -49,8 +49,8 @@ export interface TowerOptions {
 	/** Called if the GPU drops the context; the caller tears the scene down (the still climb takes over). */
 	onLost?: () => void;
 	/**
-	 * Called as the scene takes the page over, just before it switches the layout into the climb:
-	 * whatever ran the page until then (the still climb) hands it back first.
+	 * Called as the scene takes the climb over: whatever ran the panels until then (the still
+	 * climb) lets go of them first.
 	 */
 	onActivate?: () => void;
 }
@@ -219,11 +219,9 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 	window.addEventListener('pointerdown', onPointerDown, { passive: true });
 	window.addEventListener('click', onClick);
 
-	// ---------- activation: carry the reading position over into the climb layout ----------
-	// Until the first frames are on screen the page stays as it is, and the camera reads its
-	// progress; then whatever ran the page hands it back as the plain page, the root class flips
-	// the layout and the scroll position is mapped onto the tall climb spans so the visitor stays
-	// on the tier they were reading.
+	// ---------- activation: the scene takes the climb over where the visitor is ----------
+	// Until the first frames are on screen the camera reads the page's progress; then whatever
+	// ran the panels lets go of them and the scene runs the climb from the same scroll position.
 	// the page's side of the climb (./page-climb.ts): its progress and keys, and on narrow screens
 	// the bottom sheets (./sheet.ts), here for short
 	let page: PageClimb | null = null;
@@ -241,7 +239,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 		return i >= 0 ? i : null;
 	})();
 	const readingNow = () => {
-		const at = progressAt(sectionTops(sectionEls), window.scrollY);
+		const at = progressAt(sectionTops(sectionEls), window.scrollY, sectionHolds(sectionEls));
 		return linkedTier !== null && Math.abs(at - linkedTier) < 1 ? linkedTier : at;
 	};
 	/**
@@ -337,7 +335,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 
 	const loop = createLoop((dt, now) => {
 		time += dt;
-		const target = climb ? climb.progress : progressAt(sectionTops(sectionEls), window.scrollY);
+		const target = climb ? climb.progress : progressAt(sectionTops(sectionEls), window.scrollY, sectionHolds(sectionEls));
 		smooth = climb ? smooth + (target - smooth) * damp(3.2, dt) : target;
 		if (Math.abs(target - smooth) < 1e-4) smooth = target;
 		nearest = Math.round(smooth);
@@ -427,13 +425,9 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 			if (disposed) return;
 			disposed = true;
 			loop.dispose();
-			if (page && climb) {
-				// hand the reading position back to the plain layout (the still climb takes it from there)
-				const progress = climb.progress;
-				page.dispose();
-				root.classList.remove(TOWER_CLASS, CLIMB_CLASS);
-				if (progress > 0) window.scrollTo({ top: scrollFor(sectionTops(sectionEls), progress), behavior: 'instant' });
-			}
+			// the page stays the climb, where it is: the still climb takes it from there
+			page?.dispose();
+			root.classList.remove(TOWER_CLASS);
 			window.removeEventListener('pointermove', onPointerMove);
 			window.removeEventListener('pointerdown', onPointerDown);
 			window.removeEventListener('click', onClick);

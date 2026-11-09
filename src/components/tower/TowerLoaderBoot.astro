@@ -1,9 +1,9 @@
 ---
 /**
- * Before the first paint: switches the tower loader on for visitors who will get the 3D, and lays
- * the page out as the climb for those who won't (the still climb runs it, see ../tower/still-climb.ts),
- * so it doesn't start as the plain page and jump. Without JavaScript none of this runs, and a
- * message takes the page's place (home/NoJsMessage.astro).
+ * Before the first paint: lays the page out as the climb (`html.sd-climb`), so it never starts as
+ * anything else and jumps, and switches the tower loader on for visitors who will get the 3D
+ * (the others get the still climb at once, see ../tower/still-climb.ts). Without JavaScript none
+ * of this runs, and a message takes the page's place (home/NoJsMessage.astro).
  * Place it in the page head: `<TowerLoaderBoot slot="head" />` (see TowerLoader.astro).
  */
 ---
@@ -11,27 +11,30 @@
 <script is:inline>
 	(function () {
 		var root = document.documentElement;
-		function stillClimb() {
-			root.classList.add('sd-climb');
-			// if nothing comes to run it (the tower island failed to load), the page can't work: a
-			// message takes its place (home/NoJsMessage.astro)
+		root.classList.add('sd-climb');
+		// if nothing comes to run the climb (the tower island failed to load), the page can't work:
+		// a message takes its place (home/NoJsMessage.astro), until a climb that comes late takes it back
+		function giveUpAfter(ms) {
 			setTimeout(function () {
 				if (!root.dataset.climb) root.classList.add('sd-js-failed');
-			}, 6000);
+			}, ms);
 		}
 		try {
-			if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return stillClimb();
-			if (new URLSearchParams(location.search).has('no3d')) return stillClimb();
+			if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return giveUpAfter(6000);
+			if (new URLSearchParams(location.search).has('no3d')) return giveUpAfter(6000);
 			var connection = navigator.connection;
-			if (connection && connection.saveData) return stillClimb();
+			if (connection && connection.saveData) return giveUpAfter(6000);
 			var gl = document.createElement('canvas').getContext('webgl2');
-			if (!gl) return stillClimb();
+			if (!gl) return giveUpAfter(6000);
 			var lose = gl.getExtension('WEBGL_lose_context');
 			if (lose) lose.loseContext();
 			root.classList.add('sd-tower-loading');
+			// the 3D takes longer to come: the loader's own fail-safe, then the message
 			setTimeout(function () { root.classList.remove('sd-tower-loading'); }, 20000);
+			giveUpAfter(20000);
 		} catch (e) {
 			root.classList.remove('sd-tower-loading');
+			giveUpAfter(6000);
 		}
 	})();
 </script>
