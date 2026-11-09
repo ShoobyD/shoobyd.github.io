@@ -156,6 +156,12 @@ h2.tier__title {
 	padding-inline-end: 1.3rem;
 	margin-block-end: -8px;
 	padding-block-end: 8px;
+	/* and room on the other sides for a keyboard focus ring (drawn outside the links), so a link
+	 * that spans the panel isn't clipped at its edge; the margins put the content back in place */
+	margin-inline-start: -6px;
+	padding-inline-start: 6px;
+	margin-block-start: -6px;
+	padding-block-start: 6px;
 	/* soft edges where it scrolls: at the top once scrolled (the content slips under the title), at
 	 * the bottom while there is more below; the climb sets them (scene/climb.ts) */
 	mask-image: linear-gradient(to bottom, transparent, #000 var(--fade-top), #000 calc(100% - var(--fade-bottom)), transparent);
@@ -239,10 +245,8 @@ h2.tier__title {
 
 	.tier__body {
 		overflow: visible;
-		margin-inline-end: 0;
-		padding-inline-end: 0;
-		margin-block-end: 0;
-		padding-block-end: 0;
+		margin: 0;
+		padding: 0;
 		mask-image: none;
 	}
 

@@ -163,6 +163,15 @@ const { image, alt, openLabel, caption, closeLabel } = Astro.props;
 		transform: translateY(-4px);
 		box-shadow: 0 24px 40px -14px rgb(10 8 6 / 0.75), inset 0 0 0 1px rgb(45 42 38 / 0.15);
 	}
+	/* the keyboard's focus ring goes round the drawing itself, not the link around it: it hugs the
+	 * mat evenly and lifts with it */
+	.portrait__open:focus-visible {
+		outline: none;
+	}
+	.portrait__open:focus-visible .portrait__mat {
+		outline: 3px solid var(--sd-focus);
+		outline-offset: 3px;
+	}
 	/* <Image> renders its own <img>, outside this component's style scope */
 	.portrait__mat :global(img),
 	.portrait-view__mat :global(img) {
