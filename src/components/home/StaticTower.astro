@@ -1,9 +1,10 @@
 ---
 /**
  * The still tower, behind the climb when there is no live 3D one (reduced motion, no WebGL2,
- * Save-Data, `?no3d`, or the scene gave up): one picture of the whole tower with every tier's point of interest turned to the front,
- * standing on its plain: a CSS gradient below a sharp horizon behind its foot, with the plain's
- * houses and trees laid side by side across the whole window (the tower and the houses rendered by
+ * Save-Data, `?no3d`, or the scene gave up): one picture of the whole tower with every tier's
+ * point of interest turned to the front, standing on its plain: a CSS gradient below a sharp
+ * horizon behind its foot, with the plain's houses and trees laid side by side across the whole
+ * window in the whole tower's view, fading out as it closes in (the tower and the houses rendered by
  * scripts/render-tower-still.mjs, from one camera, so everything lines up exactly). It stands
  * behind the climb the live tower would (../tower/still-climb.ts runs the panels) and follows the
  * same progress: each tier's focus comes level with that tier's fixed panel on wide screens, and
@@ -62,15 +63,27 @@ const layout = { foci: still.foci, axis: still.axis, size: [still.width, still.h
 		img.decoding = 'async';
 		[img.width, img.height] = layout.size;
 		box.append(img);
-		/** The ground: one long strip of the tile, repeated; it carries on in the plain's colour below. */
+		/**
+		 * The ground: one long strip of the plain, and along its top the houses' tile, repeated. The
+		 * houses belong to the view of the whole tower: drawn at the tower's scale they would loom far
+		 * too large when it is close, so they fade out as it closes in, and only the plain stays.
+		 */
 		const ground = document.createElement('div');
 		ground.className = 'static-tower__ground';
+		const houses = document.createElement('div');
+		houses.className = 'static-tower__houses';
+		ground.append(houses);
 		groundLayer.append(ground);
 		/** Tiles in the strip, either side of the one under the tower: enough to fill the window when drawn back. */
 		const TILES = 15;
 
 		/** How close the tower is: at a tier, and the least it draws back to half-way between two. */
-		const zoom = () => (phone.matches ? { near: 2.3, far: 1.9 } : { near: 2.4, far: 1.95 });
+		const zoom = () => (phone.matches ? { near: 2.3, far: 1.9 } : { near: 2, far: 1.7 });
+		/** The houses' opacity at scale `s`: there in the whole tower's view, gone once it is close. */
+		const housesAt = (s: number) => {
+			const x = Math.min(1, Math.max(0, (s - 1) / 0.4));
+			return 1 - x * x * (3 - 2 * x);
+		};
 		/** 0 at a tier, 1 half-way to the next: flat around each tier, the change mostly in between. */
 		const away = (t: number) => {
 			const d = Math.min(t, 1 - t) * 2;
@@ -160,9 +173,10 @@ const layout = { foci: still.foci, axis: still.axis, size: [still.width, still.h
 			// at the base): a full window's height at that scale, from wherever its top is on screen
 			const least = Math.min(overview().s, zoom().far);
 			ground.style.blockSize = `${(tileH + Math.max(img!.offsetHeight * 2, window.innerHeight / least)).toFixed(1)}px`;
-			ground.style.backgroundImage = `url("${layout.ground.src}"), linear-gradient(transparent ${edge.toFixed(1)}px, ${far} ${edge.toFixed(1)}px, ${near} ${tileH.toFixed(1)}px, ${near})`;
-			ground.style.backgroundSize = `${tileW.toFixed(1)}px ${tileH.toFixed(1)}px, 100% 100%`;
-			ground.style.backgroundPosition = '0 0, 0 0';
+			ground.style.backgroundImage = `linear-gradient(transparent ${edge.toFixed(1)}px, ${far} ${edge.toFixed(1)}px, ${near} ${tileH.toFixed(1)}px, ${near})`;
+			houses.style.blockSize = `${tileH.toFixed(1)}px`;
+			houses.style.backgroundImage = `url("${layout.ground.src}")`;
+			houses.style.backgroundSize = `${tileW.toFixed(1)}px ${tileH.toFixed(1)}px`;
 			return { tileW, tileH };
 		}
 
@@ -184,6 +198,7 @@ const layout = { foci: still.foci, axis: still.axis, size: [still.width, still.h
 			const lx = layout.axis * w0 - stripAxis, ly = layout.ground.top * h0;
 			const tx = imgX + f.x + f.s * lx - groundX, ty = imgY + f.y + f.s * ly - groundY;
 			ground.style.transform = `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px) scale(${f.s.toFixed(4)})`;
+			houses.style.opacity = housesAt(f.s).toFixed(3);
 		}
 		let groundSize = { tileW: 0, tileH: 0 };
 
@@ -291,9 +306,12 @@ const layout = { foci: still.foci, axis: still.axis, size: [still.width, still.h
 		pointer-events: none;
 		transition: opacity 0.22s ease;
 	}
+	/* the tower stands in the inline-end part of the window, and when close it carries on past it,
+	 * behind the panel (whose glass blurs it), as the live tower does */
 	.static-tower {
 		inset-inline-end: 0;
 		inline-size: 60vw;
+		overflow: visible;
 	}
 	/* the ground runs the whole width, under the panels too */
 	.static-tower-ground {
@@ -308,13 +326,6 @@ const layout = { foci: still.foci, axis: still.axis, size: [still.width, still.h
 	:global(html:not(.webgl)) .static-tower[data-ready],
 	:global(html:not(.webgl)) .static-tower-ground[data-ready] {
 		display: block;
-	}
-	/* towards the panels the tower fades out */
-	:global([dir="rtl"]) .static-tower {
-		mask-image: linear-gradient(to right, #000 72%, transparent);
-	}
-	:global([dir="ltr"]) .static-tower {
-		mask-image: linear-gradient(to left, #000 72%, transparent);
 	}
 
 	/* the pictures are created by the script, so they are outside this file's scope */
@@ -332,9 +343,15 @@ const layout = { foci: still.foci, axis: still.axis, size: [still.width, still.h
 		position: absolute;
 		inset-block-start: 0;
 		inset-inline-start: 0;
-		background-repeat: repeat-x, no-repeat;
+		background-repeat: no-repeat;
 		transform-origin: 0 0;
 		will-change: transform;
+	}
+	.static-tower-ground :global(.static-tower__houses) {
+		position: absolute;
+		inset-block-start: 0;
+		inset-inline: 0;
+		background-repeat: repeat-x;
 	}
 
 	/* phones: the tower stands behind the panels, its focus just above each one */
@@ -342,10 +359,6 @@ const layout = { foci: still.foci, axis: still.axis, size: [still.width, still.h
 		.static-tower {
 			inset-inline: 0;
 			inline-size: auto;
-		}
-		:global([dir="rtl"]) .static-tower,
-		:global([dir="ltr"]) .static-tower {
-			mask-image: none;
 		}
 		.static-tower :global(.static-tower__img) {
 			inline-size: 100vw;
