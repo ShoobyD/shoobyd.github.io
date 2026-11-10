@@ -95,11 +95,22 @@ const layout = { foci: still.foci, axis: still.axis, size: [still.width, still.h
 		const still = window.matchMedia('(prefers-reduced-motion: reduce)');
 		// Save-Data: the pictures are decoration, so they aren't fetched at all (nothing shows)
 		const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
-		if (!saveData) {
+		/**
+		 * Fetched only once it is wanted: a climb is running the page (`data-climb`) without the live
+		 * tower, that is the still climb (at once on its own path; when the 3D drops out or never
+		 * comes). Behind the live tower it would never show.
+		 */
+		const root = document.documentElement;
+		let fetched = false;
+		function fetchPicture() {
+			if (fetched || saveData || root.dataset.climb !== 'live' || isTowerActive()) return;
+			fetched = true;
 			// the size to fetch: the picture is drawn this much wider than its base width
-			img.sizes = `calc(${phone.matches ? '100vw' : '46vw'} * ${zoom().near})`;
-			img.srcset = box.dataset.srcset ?? '';
+			img!.sizes = `calc(${phone.matches ? '100vw' : '46vw'} * ${zoom().near})`;
+			img!.srcset = box!.dataset.srcset ?? '';
 		}
+		new MutationObserver(fetchPicture).observe(root, { attributeFilter: ['class', 'data-climb'] });
+		fetchPicture();
 
 		/** Below the fixed header. */
 		const TOP = 72;
