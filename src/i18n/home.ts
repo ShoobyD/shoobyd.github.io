@@ -157,7 +157,7 @@ export const home: Record<Lang, HomeCopy> = {
 			hint: 'גללו כדי לטפס',
 			portraitAlt: 'דיוקן עצמי בקווי עט: ברוך יושב מול מחשב, יד על הפנים, ומביט במסך כחול של שגיאה.',
 			portraitOpen: 'הגדלת הדיוקן העצמי',
-			portraitCaption: 'דיוקן עצמי. קורה גם לטובים ביותר.',
+			portraitCaption: 'BSoD: קורה גם לטובים ביותר (דיוקן עצמי)',
 			portraitClose: 'סגירה',
 		},
 		code: {
@@ -265,7 +265,7 @@ export const home: Record<Lang, HomeCopy> = {
 			hint: 'Scroll to climb',
 			portraitAlt: 'A self-portrait in pen: Baruch at a computer, hand on his face, staring at a blue error screen.',
 			portraitOpen: 'Enlarge the self-portrait',
-			portraitCaption: 'Self-portrait. It happens to the best of us.',
+			portraitCaption: 'BSoD: it happens to the best of us (self-portrait)',
 			portraitClose: 'Close',
 		},
 		code: {
