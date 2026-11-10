@@ -15,6 +15,10 @@
 	--sd-ink:          #2d2a26; /* shadow ink, text on gold */
 	--sd-gold:         #f2c37e; /* lamplight accent */
 	--sd-gold-hot:     #ffd89a; /* focus / active */
+	/* the gold's warm wash and edge on something pointed at (a contact row, a profile pill);
+	 * other one-off strengths mix the gold the same way rather than copy its value */
+	--sd-gold-wash:    color-mix(in srgb, var(--sd-gold) 10%, transparent);
+	--sd-gold-edge:    color-mix(in srgb, var(--sd-gold) 65%, transparent);
 
 	/* sky by altitude: dawn at the base → night at the summit */
 	--sd-sky:          #6f8fb3;

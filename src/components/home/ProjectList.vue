@@ -115,8 +115,8 @@ defineProps<{ items: ProjectItem[] }>();
 a.project:hover,
 a.project:focus-visible,
 a.project.is-lit {
-	background: rgb(242 195 126 / 0.12);
-	border-color: rgb(242 195 126 / 0.6);
+	background: color-mix(in srgb, var(--sd-gold) 12%, transparent);
+	border-color: color-mix(in srgb, var(--sd-gold) 60%, transparent);
 	transform: translateY(-2px);
 }
 

@@ -1,12 +1,14 @@
 ---
 /**
  * Home: the spiral Tower of Babel (direction contract: .impeccable/surfaces/src-pages-index-astro.md).
- * The readable content layer — every tier as real HTML on the climbing sky — is the whole page
- * without JavaScript. With it the page is the climb (fixed panels, bottom sheets on phones) over
- * the tower: the live 3D one (TowerScene, see src/components/tower/), or, without WebGL, with
- * reduced motion or Save-Data, the still picture (StaticTower), reusing these same panels.
- * Game mode's two ways in (the header toggle and the summit's CTA) are rendered here and wired
- * by the island (TowerGame.vue); they show only while the 3D tower is live.
+ * The readable content layer is every tier as real HTML on the climbing sky. The page is the
+ * climb (fixed panels, bottom sheets on phones) over the tower: the live 3D one (TowerScene, see
+ * src/components/tower/), or, without WebGL, with reduced motion or Save-Data, the still picture
+ * (StaticTower), over these same panels. Without JavaScript a message takes its place
+ * (NoJsMessage).
+ * Game mode's ways in: the header toggle, rendered here, and a click or tap on the tower's
+ * unfinished top (the scene sends `tower:play`), with a cue over it on touch screens; the island
+ * (TowerGame.vue) wires them, and they exist only while the 3D tower is live.
  */
 import Base from '../layouts/Base.astro';
 import TierSection from '../components/home/TierSection.vue';
@@ -281,7 +283,7 @@ const elsewhere = [
 		font-weight: 600;
 		color: var(--sd-gold);
 		background: rgb(20 18 16 / 0.72);
-		border: 1px solid rgb(242 195 126 / 0.55);
+		border: 1px solid color-mix(in srgb, var(--sd-gold) 55%, transparent);
 		border-radius: var(--sd-pill);
 		animation: cue-bob 2.4s ease-in-out infinite;
 	}
@@ -293,7 +295,7 @@ const elsewhere = [
 		margin-inline: auto;
 		inline-size: 1px;
 		block-size: 14px;
-		background: rgb(242 195 126 / 0.55);
+		background: color-mix(in srgb, var(--sd-gold) 55%, transparent);
 	}
 	@keyframes cue-bob {
 		50% { translate: 0 -5px; }
@@ -459,8 +461,8 @@ const elsewhere = [
 		color: var(--sd-gold);
 	}
 	.chips--links li:has(a:hover, a:focus-visible) {
-		border-color: rgb(242 195 126 / 0.65);
-		background: rgb(242 195 126 / 0.1);
+		border-color: var(--sd-gold-edge);
+		background: var(--sd-gold-wash);
 	}
 
 	/* the brick glyph on game mode's controls: a course laid, the next one coming down */

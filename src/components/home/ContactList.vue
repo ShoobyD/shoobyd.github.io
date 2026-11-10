@@ -63,8 +63,8 @@ defineProps<{ items: ContactItem[] }>();
 
 .contacts a:hover,
 .contacts a:focus-visible {
-	border-color: rgb(242 195 126 / 0.65);
-	background: rgb(242 195 126 / 0.1);
+	border-color: var(--sd-gold-edge);
+	background: var(--sd-gold-wash);
 }
 
 .contacts__label {

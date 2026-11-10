@@ -303,8 +303,8 @@ watch(() => props.run, load, { immediate: true });
 }
 
 .board__row.is-you {
-	background: rgb(242 195 126 / 0.14);
-	outline: 1px solid rgb(242 195 126 / 0.7);
+	background: color-mix(in srgb, var(--sd-gold) 14%, transparent);
+	outline: 1px solid color-mix(in srgb, var(--sd-gold) 70%, transparent);
 }
 
 .board__row.is-slot .board__name {

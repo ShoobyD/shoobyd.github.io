@@ -9,6 +9,8 @@ colors:
   shadow-ink: "#2d2a26"
   lamplight-gold: "#f2c37e"
   hot-lamplight: "#ffd89a"
+  lamplight-wash: "color-mix(in srgb, #f2c37e 10%, transparent)"
+  lamplight-edge: "color-mix(in srgb, #f2c37e 65%, transparent)"
   flemish-sky: "#6f8fb3"
   dawn-zenith: "#2a3a62"
   dawn-horizon: "#f3b98a"
@@ -160,6 +162,7 @@ The palette is the tower's materials under a sky that shifts with altitude, with
 ### Primary
 - **Lamplight Gold** (#f2c37e): the "alive" colour. It marks links' underlines, the lit project card's border and wash, the live project's status pill, contact labels and icons, the current gauge tier's mark, quote rules and citations, the handle "ShoobyD", the formula, the selection, the caret and the skip link. Its washes are translucent forms of the same colour: about 10-12% fill and 55-65% border on hovered or lit cards and rows.
 - **Hot Lamplight** (#ffd89a): the focus ring (`--sd-focus`), hover on the gold control, and form error text and borders in the game's leaderboard.
+- **Lamplight Wash** and **Lamplight Edge** (`--sd-gold-wash`, `--sd-gold-edge`: the gold at 10% and 65%): the warm fill and border of something pointed at, a contact row or a profile pill. Other one-off strengths (the lit project card, the game board's own row, the summit cue) mix the gold the same way, `color-mix(in srgb, var(--sd-gold) N%, transparent)`, rather than copy its value.
 
 ### Secondary
 - **Sun-baked Mudbrick** (#c98b4a): the tower's own brick. It appears in the brand mark's tiers, the loader's bricks, the lower brick in the game icon and the scrollbar thumb (pale at 28% until the panel is scrolled or hovered).
