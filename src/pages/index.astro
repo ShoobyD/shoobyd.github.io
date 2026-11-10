@@ -98,7 +98,7 @@ const elsewhere = [
 	<TierSection id="base" sheetLabel={c.sheet.toggle} title={c.base.title} level={1}>
 		<!-- in the page's direction, under the title; only the name itself is isolated as English -->
 		<p class="handle"><bdi lang="en" dir="ltr">ShoobyD</bdi></p>
-		<p class="lead">{c.base.lead}</p>
+		<p class="lead">{c.base.lead} <span class="lead__more">{c.base.leadMore}</span></p>
 		<SelfPortrait
 			image={selfPortrait}
 			alt={c.base.portraitAlt}
@@ -325,6 +325,11 @@ const elsewhere = [
 	.lead {
 		max-inline-size: var(--sd-measure);
 		font-size: var(--sd-text-lg);
+	}
+	/* the base line's punchline stays whole: if it doesn't fit after the first sentence it moves to
+	 * a line of its own (and the dash never opens a line) */
+	.lead__more {
+		white-space: nowrap;
 	}
 	.dim {
 		color: var(--sd-text-dim);

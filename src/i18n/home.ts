@@ -31,9 +31,11 @@ interface HomeCopy {
 	 * The self-portrait in the base panel: `portraitAlt` describes the drawing, `portraitOpen`
 	 * labels the link that enlarges it, `portraitCaption` / `portraitClose` belong to the dialog.
 	 */
+	/** `leadMore` follows `lead` on the same line, its punchline, kept whole (it doesn't break). */
 	base: {
 		title: string;
 		lead: string;
+		leadMore: string;
 		hint: string;
 		portraitAlt: string;
 		portraitOpen: string;
@@ -150,7 +152,8 @@ export const home: Record<Lang, HomeCopy> = {
 		},
 		base: {
 			title: 'ברוך מוסטקיס',
-			lead: 'מפתח־ווב, מתמטיקאי בהכשרתו. טפסו למעלה.',
+			lead: 'מפתח פרונטאנד בכיר, מתמטיקאי בהכשרתו.',
+			leadMore: 'כל השאר – במעלה המגדל.',
 			hint: 'גללו כדי לטפס',
 			portraitAlt: 'דיוקן עצמי בקווי עט: ברוך יושב מול מחשב, יד על הפנים, ומביט במסך כחול של שגיאה.',
 			portraitOpen: 'הגדלת הדיוקן העצמי',
@@ -257,7 +260,8 @@ export const home: Record<Lang, HomeCopy> = {
 		},
 		base: {
 			title: 'Baruch Mustakis',
-			lead: 'Web developer, mathematician by training. Climb up.',
+			lead: 'Senior frontend engineer, mathematician by training.',
+			leadMore: 'Everything else – up the tower.',
 			hint: 'Scroll to climb',
 			portraitAlt: 'A self-portrait in pen: Baruch at a computer, hand on his face, staring at a blue error screen.',
 			portraitOpen: 'Enlarge the self-portrait',
