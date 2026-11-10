@@ -151,7 +151,7 @@ export const home: Record<Lang, HomeCopy> = {
 		},
 		base: {
 			title: 'ברוך מוסטקיס',
-			lead: 'מפתח פרונטאנד בכיר, מתמטיקאי בהכשרתו.',
+			lead: 'מפתח פרונטאנד בכיר עם 10+ שנות ניסיון, מתמחה בארכיטקטורה ב־Vue וב־TypeScript. מתמטיקאי בהכשרתו.',
 			leadMore: 'כל השאר – במעלה המגדל.',
 			hint: 'גללו כדי לטפס',
 			portraitAlt: 'דיוקן עצמי בקווי עט: ברוך יושב מול מחשב, יד על הפנים, ומביט במסך כחול של שגיאה.',
@@ -257,7 +257,7 @@ export const home: Record<Lang, HomeCopy> = {
 		},
 		base: {
 			title: 'Baruch Mustakis',
-			lead: 'Senior frontend engineer, mathematician by training.',
+			lead: 'Senior frontend engineer with 10+ years of experience, specializing in Vue and TypeScript architecture. Mathematician by training.',
 			leadMore: 'Everything else – up the tower.',
 			hint: 'Scroll to climb',
 			portraitAlt: 'A self-portrait in pen: Baruch at a computer, hand on his face, staring at a blue error screen.',
