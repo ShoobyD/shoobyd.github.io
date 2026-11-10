@@ -78,7 +78,7 @@ export function createSheet(panels: HTMLElement[], startTier: number) {
 		panels.forEach((p, i) => {
 			const t = titles[i];
 			if (!t) return;
-			// a peek slot below the title (the code tier's project in focus, under its lead) shows
+			// a peek slot below the title (the projects tier's project in focus, under its title) shows
 			// only while collapsed, and the peek reaches down past it: its height is taken then, and
 			// kept for the next collapse while open
 			const now = nows[i];

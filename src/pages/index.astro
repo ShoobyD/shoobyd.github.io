@@ -116,8 +116,7 @@ const elsewhere = [
 	</TierSection>
 
 	<TierSection id="code" sheetLabel={c.sheet.toggle} title={c.code.title} stops={projectItems.length}>
-		<p class="lead dim">{c.code.lead} <span class="tower-hint">{c.code.doorHint}</span></p>
-		<!-- the collapsed mobile sheet's peek at the project in focus, under the lead as the list is
+		<!-- the collapsed mobile sheet's peek at the project in focus, under the title as the list is
 		     when open: a copy of its card, filled in by the tower as the scroll steps through the
 		     projects (the list below stays the real one) -->
 		<div class="tier-now" data-stop-now aria-hidden="true" inert></div>
@@ -497,7 +496,7 @@ const elsewhere = [
 		blockquote p { font-size: 1.12rem; }
 	}
 
-	/* the project in focus, under the code tier's lead: only in the collapsed mobile sheet (open,
+	/* the project in focus, under the projects tier's title: only in the collapsed mobile sheet (open,
 	 * the list itself is in view) */
 	.tier-now { display: none; }
 	@media (max-width: 47.5rem) {

@@ -42,8 +42,7 @@ interface HomeCopy {
 		portraitCaption: string;
 		portraitClose: string;
 	};
-	/** `doorHint`, like `making.stringsHint`, is shown only while the 3D tower is on screen. */
-	code: { title: string; lead: string; doorHint: string; status: Record<ProjectStatus, string> };
+	code: { title: string; status: Record<ProjectStatus, string> };
 	math: { title: string; lead: string; aside: string };
 	languages: { title: string; quote: string; cite: string; topics: string[]; latin: string; latinLink: string };
 	/** `stringsHint` is for a hovering pointer, `stringsHintTouch` for fingers (a sideways swipe). */
@@ -143,7 +142,7 @@ export const home: Record<Lang, HomeCopy> = {
 		gauge: {
 			label: 'קומות המגדל',
 			unit: 'אמות',
-			tiers: { base: 'יסוד', code: 'קוד', math: 'מתמטיקה', languages: 'שפות', making: 'יצירה', summit: 'פסגה' },
+			tiers: { base: 'יסוד', code: 'פרויקטים', math: 'מתמטיקה', languages: 'שפות', making: 'יצירה', summit: 'פסגה' },
 		},
 		sheet: { toggle: 'תוכן הקומה' },
 		noJs: {
@@ -161,9 +160,7 @@ export const home: Record<Lang, HomeCopy> = {
 			portraitClose: 'סגירה',
 		},
 		code: {
-			title: 'קוד',
-			lead: 'כל פתח מואר בקיר הוא פרויקט.',
-			doorHint: 'רחפו מעל פתח, והוא נדלק.',
+			title: 'פרויקטים',
 			status: { live: 'חי', archive: 'ארכיון', closed: 'סגור' },
 		},
 		math: {
@@ -251,7 +248,7 @@ export const home: Record<Lang, HomeCopy> = {
 		gauge: {
 			label: 'Tower tiers',
 			unit: 'cubits',
-			tiers: { base: 'Base', code: 'Code', math: 'Math', languages: 'Languages', making: 'Making', summit: 'Summit' },
+			tiers: { base: 'Base', code: 'Projects', math: 'Math', languages: 'Languages', making: 'Making', summit: 'Summit' },
 		},
 		sheet: { toggle: 'Tier content' },
 		noJs: {
@@ -269,9 +266,7 @@ export const home: Record<Lang, HomeCopy> = {
 			portraitClose: 'Close',
 		},
 		code: {
-			title: 'Code',
-			lead: 'Every lit doorway in the wall is a project.',
-			doorHint: 'Hover a doorway and it lights up.',
+			title: 'Projects',
 			status: { live: 'Live', archive: 'Archive', closed: 'Closed' },
 		},
 		math: {
