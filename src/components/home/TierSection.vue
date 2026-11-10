@@ -57,8 +57,11 @@ defineProps<{
 <style scoped>
 /* ---------- the climb ----------
  * Each tier is a 1.5-viewport scroll span (the summit just one); the camera parks when a
- * section's top meets the viewport's. Panels are fixed at the inline-start, clear of the tower. */
-.tier {
+ * section's top meets the viewport's. Panels are fixed at the inline-start, clear of the tower.
+ * The climb's rules carry `:root`: the panel is also an ArchPanel, whose own scoped rules
+ * (`position: relative`, its width, padding and corners) are just as specific, and the bundle
+ * may well put them later, so without it the panels fall back into the page's flow. */
+:root .tier {
 	position: relative;
 	block-size: 150vh;
 	scroll-margin-block-start: 0;
@@ -115,16 +118,16 @@ h2.tier__title {
 	clip-path: none;
 }
 
-.tier:last-of-type {
+:root .tier:last-of-type {
 	block-size: 100vh;
 }
 
 /* a tier with stops holds the climb: half a viewport more per stop after the first */
-.tier[data-stops] {
+:root .tier[data-stops] {
 	block-size: calc(150vh + (var(--stops) - 1) * 50vh);
 }
 
-.tier__panel {
+:root .tier__panel {
 	position: fixed;
 	z-index: 6;
 	inset-inline-start: clamp(16px, 6vw, 112px);
@@ -144,7 +147,7 @@ h2.tier__title {
 /* a panel taller than the window scrolls its content under the title, not itself: the title stays
  * in view, and the scrollbar stays inside the panel, by its straight side, rather than running up
  * past the arch (the negative margin and matching padding put it near the edge, clear of the text) */
-.tier__body {
+:root .tier__body {
 	flex: 1 1 auto;
 	min-block-size: 0;
 	/* only up and down; a tilted picture's corner (the self-portrait hangs askew) mustn't make it
@@ -175,8 +178,8 @@ h2.tier__title {
 		--thumb var(--sd-dur);
 }
 
-.tier__body:hover,
-.tier__body.is-scrolling {
+:root .tier__body:hover,
+:root .tier__body.is-scrolling {
 	--thumb: var(--sd-ochre);
 }
 
@@ -198,7 +201,7 @@ h2.tier__title {
 	initial-value: 0px;
 }
 
-.tier__panel.is-on {
+:root .tier__panel.is-on {
 	pointer-events: auto;
 }
 
@@ -214,7 +217,7 @@ h2.tier__title {
 
 @media (max-width: 47.5rem) {
 	/* the sheet scrolls itself (sheet.ts reads and resets its scroll), its content doesn't */
-	.tier__panel {
+	:root .tier__panel {
 		display: block;
 		overflow: auto;
 		overscroll-behavior: contain;
@@ -243,31 +246,31 @@ h2.tier__title {
 			--sheet-fade 420ms var(--sd-ease);
 	}
 
-	.tier__body {
+	:root .tier__body {
 		overflow: visible;
 		margin: 0;
 		padding: 0;
 		mask-image: none;
 	}
 
-	.tier__panel.is-sheet-collapsed {
+	:root .tier__panel.is-sheet-collapsed {
 		--sheet-fade: 0px;
 		translate: 0 calc(100% - var(--sheet-peek, 150px));
 		overflow: hidden;
 	}
 
 	/* under a finger the sheet follows it exactly (an inline translate) and shows all it holds */
-	.tier__panel.is-sheet-dragging {
+	:root .tier__panel.is-sheet-dragging {
 		--sheet-fade: 100vh;
 		transition: none;
 	}
 
 	/* the handle takes the keystone's place */
-	.tier__panel::before {
+	:root .tier__panel::before {
 		display: none;
 	}
 
-	.tier__sheet {
+	:root .tier__sheet {
 		display: grid;
 	}
 }
