@@ -38,6 +38,15 @@
         ],
         "createdAt": "2026-11-07T14:58:39.373Z",
         "reason": "Claude: review viewer page, light text (#e9e3d3/#cfc7b4/#f2c37e) on #1d1b18 is >9:1; detector misreads the background"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/**"
+        ],
+        "createdAt": "2026-11-10T01:15:02.926Z",
+        "reason": "decision mocks and alternate prototypes from the design exploration, not site surfaces; they predate DESIGN.md"
       }
     ]
   }

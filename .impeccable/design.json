@@ -1,0 +1,588 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-10T01:13:45.604Z",
+  "title": "Design System: ShoobyD",
+  "extensions": {
+    "colorMeta": {
+      "sun-baked-mudbrick": {
+        "role": "secondary",
+        "displayName": "Sun-baked Mudbrick",
+        "canonical": "#c98b4a",
+        "cssVar": "--sd-ochre",
+        "oklch": "oklch(68.6% 0.111 65.3)",
+        "tonalRamp": [
+          "#1e0100",
+          "#3f1900",
+          "#623600",
+          "#875418",
+          "#ad7436",
+          "#d49657",
+          "#f7bc81",
+          "#ffe2ac"
+        ]
+      },
+      "fired-mudbrick": {
+        "role": "secondary",
+        "displayName": "Fired Mudbrick",
+        "canonical": "#a9713a",
+        "cssVar": "--sd-ochre-deep",
+        "oklch": "oklch(59.6% 0.100 63.2)",
+        "tonalRamp": [
+          "#1e0100",
+          "#3f1900",
+          "#623600",
+          "#865420",
+          "#ac743e",
+          "#cf9866",
+          "#f2bd8f",
+          "#ffe4b8"
+        ]
+      },
+      "limestone-cornice": {
+        "role": "neutral",
+        "displayName": "Limestone Cornice",
+        "canonical": "#e9e3d3",
+        "cssVar": "--sd-limestone / --sd-text",
+        "oklch": "oklch(91.6% 0.022 89.8)",
+        "tonalRamp": [
+          "#0d0b06",
+          "#28251e",
+          "#454239",
+          "#656157",
+          "#868276",
+          "#aaa597",
+          "#cec9ba",
+          "#f4eede"
+        ]
+      },
+      "weathered-limestone": {
+        "role": "neutral",
+        "displayName": "Weathered Limestone",
+        "canonical": "#cbbf9f",
+        "cssVar": "--sd-limestone-dk",
+        "oklch": "oklch(80.6% 0.045 89.9)",
+        "tonalRamp": [
+          "#100a01",
+          "#2b2413",
+          "#49412d",
+          "#696149",
+          "#8c8267",
+          "#afa487",
+          "#d4c8a9",
+          "#f9eed0"
+        ]
+      },
+      "shadow-ink": {
+        "role": "neutral",
+        "displayName": "Shadow Ink",
+        "canonical": "#2d2a26",
+        "cssVar": "--sd-ink",
+        "oklch": "oklch(28.7% 0.008 75.2)",
+        "tonalRamp": [
+          "#0d0b08",
+          "#272521",
+          "#44413d",
+          "#64615d",
+          "#85827e",
+          "#a7a4a1",
+          "#cbc9c5",
+          "#f0eeeb"
+        ]
+      },
+      "lamplight-gold": {
+        "role": "primary",
+        "displayName": "Lamplight Gold",
+        "canonical": "#f2c37e",
+        "cssVar": "--sd-gold / --sd-accent",
+        "oklch": "oklch(84.4% 0.102 76.2)",
+        "tonalRamp": [
+          "#180600",
+          "#371f00",
+          "#583c0a",
+          "#7b5a27",
+          "#a07b42",
+          "#c79d5f",
+          "#efc07c",
+          "#ffe6a5"
+        ]
+      },
+      "hot-lamplight": {
+        "role": "primary",
+        "displayName": "Hot Lamplight",
+        "canonical": "#ffd89a",
+        "cssVar": "--sd-gold-hot / --sd-focus",
+        "oklch": "oklch(90.1% 0.090 78.8)",
+        "tonalRamp": [
+          "#160700",
+          "#332100",
+          "#543e18",
+          "#765d32",
+          "#9a7d4e",
+          "#c09f6a",
+          "#e8c388",
+          "#ffe8ac"
+        ]
+      },
+      "flemish-sky": {
+        "role": "tertiary",
+        "displayName": "Flemish Sky",
+        "canonical": "#6f8fb3",
+        "cssVar": "--sd-sky / --sd-field",
+        "oklch": "oklch(63.9% 0.065 251.8)",
+        "tonalRamp": [
+          "#000b1e",
+          "#11263d",
+          "#2c445f",
+          "#486482",
+          "#6685a8",
+          "#89a8cb",
+          "#afccee",
+          "#d5f2ff"
+        ]
+      },
+      "dawn-zenith": {
+        "role": "tertiary",
+        "displayName": "Dawn Zenith",
+        "canonical": "#2a3a62",
+        "cssVar": "--sd-sky-dawn-top",
+        "oklch": "oklch(35.5% 0.073 266.3)",
+        "tonalRamp": [
+          "#020725",
+          "#152346",
+          "#304068",
+          "#4f6088",
+          "#7182a8",
+          "#95a5ca",
+          "#bac9ec",
+          "#e0efff"
+        ]
+      },
+      "dawn-horizon": {
+        "role": "tertiary",
+        "displayName": "Dawn Horizon",
+        "canonical": "#f3b98a",
+        "cssVar": "--sd-sky-dawn-low",
+        "oklch": "oklch(82.8% 0.091 60.1)",
+        "tonalRamp": [
+          "#1a0400",
+          "#3a1d01",
+          "#5c391a",
+          "#805735",
+          "#a57751",
+          "#cd996e",
+          "#f5bc8d",
+          "#ffe2b5"
+        ]
+      },
+      "summit-night": {
+        "role": "tertiary",
+        "displayName": "Summit Night",
+        "canonical": "#101a33",
+        "cssVar": "--sd-sky-night",
+        "oklch": "oklch(22.3% 0.051 266.0)",
+        "tonalRamp": [
+          "#03091f",
+          "#1a243d",
+          "#36425b",
+          "#56617a",
+          "#77829b",
+          "#9aa5bc",
+          "#bfc9df",
+          "#e5efff"
+        ]
+      },
+      "limestone-dim": {
+        "role": "neutral",
+        "displayName": "Limestone Dim",
+        "canonical": "rgb(233 227 211 / 0.8)",
+        "cssVar": "--sd-text-dim",
+        "oklch": "oklch(91.6% 0.022 89.8)",
+        "tonalRamp": [
+          "#0d0b06",
+          "#28251e",
+          "#454239",
+          "#656157",
+          "#868276",
+          "#aaa597",
+          "#cec9ba",
+          "#f4eede"
+        ]
+      },
+      "cornice-line": {
+        "role": "neutral",
+        "displayName": "Cornice Line",
+        "canonical": "rgb(233 227 211 / 0.2)",
+        "cssVar": "--sd-line",
+        "oklch": "oklch(91.6% 0.022 89.8)",
+        "tonalRamp": [
+          "#0d0b06",
+          "#28251e",
+          "#454239",
+          "#656157",
+          "#868276",
+          "#aaa597",
+          "#cec9ba",
+          "#f4eede"
+        ]
+      },
+      "cornice-line-strong": {
+        "role": "neutral",
+        "displayName": "Cornice Line Strong",
+        "canonical": "rgb(233 227 211 / 0.3)",
+        "cssVar": "--sd-line-strong",
+        "oklch": "oklch(91.6% 0.022 89.8)",
+        "tonalRamp": [
+          "#0d0b06",
+          "#28251e",
+          "#454239",
+          "#656157",
+          "#868276",
+          "#aaa597",
+          "#cec9ba",
+          "#f4eede"
+        ]
+      },
+      "smoked-glass": {
+        "role": "neutral",
+        "displayName": "Smoked Glass",
+        "canonical": "rgb(36 32 28 / 0.7)",
+        "cssVar": "--sd-glass",
+        "oklch": "oklch(24.7% 0.010 67.4)",
+        "tonalRamp": [
+          "#0e0a07",
+          "#282420",
+          "#45413d",
+          "#64605c",
+          "#85817e",
+          "#a8a4a1",
+          "#ccc8c5",
+          "#f1eeeb"
+        ]
+      },
+      "smoked-glass-deep": {
+        "role": "neutral",
+        "displayName": "Smoked Glass Deep",
+        "canonical": "rgb(24 22 19 / 0.8)",
+        "cssVar": "--sd-glass-strong",
+        "oklch": "oklch(20.1% 0.007 78.2)",
+        "tonalRamp": [
+          "#0d0b08",
+          "#272522",
+          "#44423e",
+          "#63615e",
+          "#84827f",
+          "#a7a5a2",
+          "#cac9c6",
+          "#f0eeec"
+        ]
+      },
+      "control-glass": {
+        "role": "neutral",
+        "displayName": "Control Glass",
+        "canonical": "rgb(30 27 24 / 0.58)",
+        "cssVar": "--sd-control",
+        "oklch": "oklch(22.4% 0.007 67.4)",
+        "tonalRamp": [
+          "#0d0b08",
+          "#272421",
+          "#44413e",
+          "#64615e",
+          "#85827f",
+          "#a7a4a2",
+          "#cbc9c6",
+          "#f0eeeb"
+        ]
+      },
+      "control-glass-hover": {
+        "role": "neutral",
+        "displayName": "Control Glass Hover",
+        "canonical": "rgb(30 27 24 / 0.78)",
+        "cssVar": "--sd-control-hover",
+        "oklch": "oklch(22.4% 0.007 67.4)",
+        "tonalRamp": [
+          "#0d0b08",
+          "#272421",
+          "#44413e",
+          "#64615e",
+          "#85827f",
+          "#a7a4a2",
+          "#cbc9c6",
+          "#f0eeeb"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display (Suez One)",
+        "purpose": "The name at the base, the page's single h1; sized from the panel width (min(var(--sd-text-h1), 17cqi)) so it never wraps."
+      },
+      "headline": {
+        "displayName": "Headline (Suez One)",
+        "purpose": "Each tier's title (h2), balanced wrapping."
+      },
+      "title": {
+        "displayName": "Title (Suez One)",
+        "purpose": "h3; the same face sets project names, contact values, the header name, the handle and the gauge readout."
+      },
+      "carved-serif": {
+        "displayName": "Carved Serif (Frank Ruhl Libre)",
+        "purpose": "Asides under a thin rule, quotes, the formula, the portrait caption."
+      },
+      "lead": {
+        "displayName": "Lead (Assistant)",
+        "purpose": "The first paragraph under a tier title, max 68ch."
+      },
+      "body": {
+        "displayName": "Body (Assistant)",
+        "purpose": "Running text, 17px at 1.6."
+      },
+      "label": {
+        "displayName": "Label (Assistant 700)",
+        "purpose": "Contact labels, project status, the inline \"גם ב:\" lead. No uppercase transforms."
+      },
+      "caption": {
+        "displayName": "Caption (Assistant)",
+        "purpose": "The header tagline and small print."
+      }
+    },
+    "shadows": [
+      {
+        "name": "panel-lift",
+        "value": "0 30px 80px -30px rgb(10 8 6 / 0.65), inset 0 1px 0 rgb(255 240 215 / 0.12)",
+        "purpose": "The arch panel only: a long offset drop plus a warm hairline along its top."
+      },
+      {
+        "name": "legibility-glow",
+        "value": "0 1px 2px rgb(20 16 12 / 0.85), 0 0 10px rgb(20 16 12 / 0.7)",
+        "purpose": "text-shadow for text set straight over the scene (header, gauge, loader, portrait caption)."
+      },
+      {
+        "name": "mat",
+        "value": "0 14px 30px -12px rgb(10 8 6 / 0.7), inset 0 0 0 1px rgb(45 42 38 / 0.15)",
+        "purpose": "The self-portrait's limestone mat at rest."
+      },
+      {
+        "name": "mat-lifted",
+        "value": "0 24px 40px -14px rgb(10 8 6 / 0.75), inset 0 0 0 1px rgb(45 42 38 / 0.15)",
+        "purpose": "The mat on hover/focus, as it straightens and lifts."
+      },
+      {
+        "name": "glass-blur-panel",
+        "value": "backdrop-filter: blur(16px) saturate(1.15)",
+        "purpose": "The arch panel's glass."
+      },
+      {
+        "name": "glass-blur-control",
+        "value": "backdrop-filter: blur(10px)",
+        "purpose": "The pill control's glass."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease",
+        "value": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "Exponential ease-out for state changes and the sheet."
+      },
+      {
+        "name": "dur-fast",
+        "value": "0.25s",
+        "purpose": "Colour, border and small transform changes (0s with reduced motion)."
+      },
+      {
+        "name": "dur",
+        "value": "0.6s",
+        "purpose": "Lifts, chevron rotation, chrome fades (0s with reduced motion)."
+      },
+      {
+        "name": "dur-slow",
+        "value": "1.3s",
+        "purpose": "Slow fades (0s with reduced motion)."
+      },
+      {
+        "name": "sheet",
+        "value": "420ms cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "Bottom sheet open/collapse translate."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "prefers-reduced-motion: reduce",
+        "purpose": "Panels only fade (no drift); the still tower crossfades between tiers instead of travelling."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sheet",
+        "value": "47.5rem",
+        "purpose": "At and below: panels become bottom sheets; the gauge moves to the top and names only the current tier."
+      },
+      {
+        "name": "narrow",
+        "value": "30rem",
+        "purpose": "At and below: tighter panel padding, arch 50% 3.6rem."
+      }
+    ],
+    "focus": {
+      "value": "outline: 2px solid var(--sd-focus); outline-offset: 3px; border-radius: var(--sd-corner)",
+      "notes": "Sheet handle: 2px at 2px offset, clip removed while focused. Self-portrait: 3px at 3px offset, drawn on the mat. Scrolling panel bodies keep 6px of room so rings are not clipped."
+    }
+  },
+  "components": [
+    {
+      "name": "Pill Control",
+      "kind": "button",
+      "refersTo": "control",
+      "description": "Dark glass pill that warms to gold on hover: header actions, dialog and game buttons.",
+      "html": "<button class=\"ds-control\" type=\"button\">מצב משחק</button>",
+      "css": ".ds-control{display:inline-flex;align-items:center;justify-content:center;gap:var(--sd-space-2);min-block-size:44px;min-inline-size:52px;padding:9px 16px;background:var(--sd-control);color:var(--sd-text);border:1px solid var(--sd-line-strong);border-radius:var(--sd-pill);font-family:var(--sd-font-text);font-weight:600;font-size:0.95rem;line-height:1;cursor:pointer;backdrop-filter:blur(10px);transition:border-color var(--sd-dur-fast),background var(--sd-dur-fast),transform var(--sd-dur-fast) var(--sd-ease)}.ds-control:hover{border-color:var(--sd-gold);background:var(--sd-control-hover)}.ds-control:active{transform:scale(0.97)}.ds-control:focus-visible{outline:2px solid var(--sd-focus);outline-offset:3px}"
+    },
+    {
+      "name": "Gold Control",
+      "kind": "button",
+      "refersTo": "control-gold",
+      "description": "The single main action in a dialog or the game (download the CV, submit a score, play again).",
+      "html": "<button class=\"ds-control-gold\" type=\"button\">הורדה</button>",
+      "css": ".ds-control-gold{display:inline-flex;align-items:center;justify-content:center;min-block-size:44px;min-inline-size:52px;padding:9px 16px;background:var(--sd-gold);color:var(--sd-ink);border:1px solid var(--sd-gold);border-radius:var(--sd-pill);font-family:var(--sd-font-text);font-weight:600;font-size:0.95rem;line-height:1;cursor:pointer;transition:border-color var(--sd-dur-fast),background var(--sd-dur-fast),transform var(--sd-dur-fast) var(--sd-ease)}.ds-control-gold:hover{background:var(--sd-gold-hot);border-color:var(--sd-gold-hot)}.ds-control-gold:active{transform:scale(0.97)}.ds-control-gold:focus-visible{outline:2px solid var(--sd-focus);outline-offset:3px}"
+    },
+    {
+      "name": "Arch Panel",
+      "kind": "card",
+      "refersTo": "arch-panel",
+      "description": "Each tier's container: arch-topped dark blurred glass with a limestone keystone.",
+      "html": "<article class=\"ds-arch-panel\" dir=\"rtl\"><h2 class=\"ds-arch-panel__title\">מתמטיקה ופיזיקה</h2><p class=\"ds-arch-panel__lead\">תואר B.Sc.‎ במתמטיקה עיונית, בהצטיינות, לצד לימודי השלמה במדעי המחשב.</p></article>",
+      "css": ".ds-arch-panel{position:relative;inline-size:min(31rem,100%);padding:4.4rem 2.1rem 2rem;color:var(--sd-text);font-family:var(--sd-font-text);background:linear-gradient(180deg,var(--sd-glass),var(--sd-glass-strong));backdrop-filter:blur(16px) saturate(1.15);border:1px solid var(--sd-line);border-start-start-radius:var(--sd-arch);border-start-end-radius:var(--sd-arch);border-end-start-radius:var(--sd-corner);border-end-end-radius:var(--sd-corner);box-shadow:var(--sd-shadow-panel)}.ds-arch-panel::before{content:\"\";position:absolute;inset-block-start:-1px;inset-inline:0;margin-inline:auto;inline-size:26px;block-size:20px;background:var(--sd-limestone);opacity:0.85;clip-path:polygon(0 0,100% 0,78% 100%,22% 100%)}.ds-arch-panel__title{margin:0 0 var(--sd-space-4);font-family:var(--sd-font-display);font-weight:400;font-size:var(--sd-text-h2);line-height:var(--sd-leading-tight)}.ds-arch-panel__lead{margin:0;font-size:var(--sd-text-lg);line-height:var(--sd-leading)}"
+    },
+    {
+      "name": "Project Doorway Card",
+      "kind": "card",
+      "refersTo": "project-card",
+      "description": "A project as a doorway; lit (gold wash, glowing door, full-colour description) on hover, focus or its climb stop.",
+      "html": "<a class=\"ds-project\" href=\"#\" dir=\"rtl\"><span class=\"ds-project__door\"></span><bdi class=\"ds-project__name\">Sudoku Solver</bdi><span class=\"ds-project__desc\">פותר סודוקו</span><span class=\"ds-project__status\">חי</span></a>",
+      "css": ".ds-project{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:4px 14px;padding:12px 14px;color:var(--sd-text);font-family:var(--sd-font-text);text-decoration:none;background:rgb(255 240 215 / 0.03);border:1px solid rgb(233 227 211 / 0.14);border-start-start-radius:var(--sd-arch-small);border-start-end-radius:var(--sd-arch-small);border-end-start-radius:var(--sd-corner);border-end-end-radius:var(--sd-corner);transition:background var(--sd-dur-fast),border-color var(--sd-dur-fast),transform var(--sd-dur) var(--sd-ease)}.ds-project__door{grid-row:span 2;inline-size:26px;block-size:34px;background:#1e1b18;border:2px solid rgb(233 227 211 / 0.5);border-radius:13px 13px 2px 2px;transition:background var(--sd-dur-fast),border-color var(--sd-dur-fast)}.ds-project__name{font-family:var(--sd-font-display);font-size:1.22rem;line-height:1.15}.ds-project__desc{grid-column:2;font-size:0.93rem;line-height:1.35;color:var(--sd-text-dim)}.ds-project__status{grid-row:1 / span 2;grid-column:3;padding:4px 10px;border:1px solid currentColor;border-radius:var(--sd-pill);font-size:var(--sd-text-xs);font-weight:700;letter-spacing:0.04em;color:var(--sd-gold);white-space:nowrap}.ds-project:hover,.ds-project:focus-visible{background:rgb(242 195 126 / 0.12);border-color:rgb(242 195 126 / 0.6);transform:translateY(-2px)}.ds-project:hover .ds-project__door,.ds-project:focus-visible .ds-project__door{background:radial-gradient(circle at 50% 70%,#fff1c9,#ffb35c 55%,#c46a22);border-color:var(--sd-limestone)}.ds-project:hover .ds-project__desc,.ds-project:focus-visible .ds-project__desc{color:var(--sd-text)}.ds-project:focus-visible{outline:2px solid var(--sd-focus);outline-offset:3px}"
+    },
+    {
+      "name": "Contact Row",
+      "kind": "custom",
+      "refersTo": "contact-row",
+      "description": "Summit contact: gold icon and label, the value in Suez One; warms to gold on hover/focus.",
+      "html": "<a class=\"ds-contact\" href=\"#\" dir=\"rtl\"><span class=\"ds-contact__label\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" aria-hidden=\"true\"><rect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"2\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"/><path d=\"M3 7l9 6 9-6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"/></svg>אימייל</span><bdi class=\"ds-contact__value\">bmusty@gmail.com</bdi></a>",
+      "css": ".ds-contact{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 12px;padding:11px 14px;color:var(--sd-text);font-family:var(--sd-font-text);text-decoration:none;background:rgb(255 240 215 / 0.04);border:1px solid rgb(233 227 211 / 0.14);border-radius:8px;transition:border-color var(--sd-dur-fast),background var(--sd-dur-fast)}.ds-contact:hover,.ds-contact:focus-visible{border-color:rgb(242 195 126 / 0.65);background:rgb(242 195 126 / 0.1)}.ds-contact:focus-visible{outline:2px solid var(--sd-focus);outline-offset:3px}.ds-contact__label{display:inline-flex;align-items:center;gap:8px;font-size:0.85rem;font-weight:700;letter-spacing:0.04em;color:var(--sd-gold)}.ds-contact__value{font-family:var(--sd-font-display);font-size:1.08rem;overflow-wrap:break-word;min-inline-size:0}"
+    },
+    {
+      "name": "Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Faint limestone pill for topics; as a link it warms to gold.",
+      "html": "<ul class=\"ds-chips\" dir=\"rtl\"><li>בלשנות</li><li>מיתולוגיה</li><li><a href=\"#\">ויקיפדיה</a></li></ul>",
+      "css": ".ds-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none;color:var(--sd-text);font-family:var(--sd-font-text)}.ds-chips li{padding:5px 13px;background:rgb(233 227 211 / 0.09);border:1px solid rgb(233 227 211 / 0.18);border-radius:var(--sd-pill);font-size:0.95rem;font-weight:600;transition:background var(--sd-dur-fast),border-color var(--sd-dur-fast)}.ds-chips a{color:inherit;text-decoration:none}.ds-chips li:has(a:hover,a:focus-visible){border-color:rgb(242 195 126 / 0.65);background:rgb(242 195 126 / 0.1)}.ds-chips a:focus-visible{outline:2px solid var(--sd-focus);outline-offset:3px;border-radius:var(--sd-corner)}"
+    },
+    {
+      "name": "Altitude Gauge",
+      "kind": "nav",
+      "refersTo": "gauge-label",
+      "description": "The page's navigation as the tower's height scale in אמות; the current tier's mark turns gold.",
+      "html": "<nav class=\"ds-gauge\" dir=\"rtl\"><p class=\"ds-gauge__alt\"><b>210</b><span>אמות</span></p><ol class=\"ds-gauge__tiers\"><li><a href=\"#\"><span class=\"ds-gauge__label\">יסוד</span><i class=\"ds-gauge__mark\"></i></a></li><li><a href=\"#\" aria-current=\"location\"><span class=\"ds-gauge__label\">קוד</span><i class=\"ds-gauge__mark\"></i></a></li><li><a href=\"#\"><span class=\"ds-gauge__label\">פסגה</span><i class=\"ds-gauge__mark\"></i></a></li></ol></nav>",
+      "css": ".ds-gauge{display:flex;flex-direction:column;align-items:flex-end;gap:14px;block-size:260px;padding:16px;background:var(--sd-sky-gradient);color:var(--sd-text);font-family:var(--sd-font-text)}.ds-gauge__alt{margin:0;font-family:var(--sd-font-display);font-size:0.95rem;line-height:1.1;text-align:end;text-shadow:var(--sd-shadow-text)}.ds-gauge__alt b{display:block;font-weight:400;font-size:1.5rem;font-variant-numeric:tabular-nums}.ds-gauge__tiers{position:relative;flex:1;display:flex;flex-direction:column-reverse;justify-content:space-between;margin:0;padding:0;list-style:none}.ds-gauge__tiers::before{content:\"\";position:absolute;inset-block:8px;inset-inline-end:7px;inline-size:2px;background:linear-gradient(to top,rgb(233 227 211 / 0.15),rgb(233 227 211 / 0.55));border-radius:2px}.ds-gauge__tiers a{position:relative;display:flex;align-items:center;justify-content:flex-end;gap:10px;padding-block:4px;color:var(--sd-text);font-size:0.86rem;font-weight:600;text-decoration:none}.ds-gauge__label{padding:2px 8px;background:rgb(30 27 24 / 0.5);border-radius:var(--sd-pill);text-shadow:var(--sd-shadow-text);white-space:nowrap}.ds-gauge__mark{flex:none;inline-size:16px;block-size:16px;background:rgb(233 227 211 / 0.35);border:2px solid rgb(30 27 24 / 0.6);border-radius:3px 3px 1px 1px;transition:background var(--sd-dur-fast),transform var(--sd-dur-fast) var(--sd-ease)}.ds-gauge__tiers a:hover .ds-gauge__mark{background:var(--sd-limestone)}.ds-gauge__tiers a:focus-visible{outline:2px solid var(--sd-focus);outline-offset:3px;border-radius:var(--sd-corner)}.ds-gauge__tiers a[aria-current] .ds-gauge__label{background:var(--sd-glass-strong)}.ds-gauge__tiers a[aria-current] .ds-gauge__mark{background:var(--sd-gold);transform:scale(1.15)}"
+    },
+    {
+      "name": "Pill Input",
+      "kind": "input",
+      "refersTo": "control",
+      "description": "The leaderboard name field: a pill with a faint warm wash; errors in Hot Lamplight.",
+      "html": "<input class=\"ds-input\" dir=\"rtl\" />",
+      "css": ".ds-input{min-block-size:44px;min-inline-size:0;padding-inline:14px;background:rgb(255 240 215 / 0.06);color:var(--sd-text);border:1px solid var(--sd-line-strong);border-radius:var(--sd-pill);font-family:var(--sd-font-text);font-size:1rem}.ds-input::placeholder{color:var(--sd-text-dim)}.ds-input:focus-visible{outline:2px solid var(--sd-focus);outline-offset:3px}.ds-input[aria-invalid=\"true\"]{border-color:var(--sd-gold-hot)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Unfinished Tower",
+    "overview": "The site is a tower that is always under construction: scaffolding and treadwheel cranes stand at its top, game mode lets a visitor lay more bricks, and the summit owns up to it (\"הפסגה עדיין בבנייה\"). It is the home of a developer who keeps building, so the system reads warm, humorous and open rather than finished and polished. Scrolling is the climb. Each tier is one of Baruch's worlds, and the sky changes with altitude, from dawn at the base to night at the summit.\n\nThe mood is warm, monumental and playful. The monumental part is the name at the base and the tower itself, set in sun-baked mudbrick, limestone and a Flemish sky. Winks balance it: the self-portrait facing a blue error screen, the summit heading that scrambles through scripts before it settles, and the brick-stacking game. The world is loud: a lit, moving 3D tower, or its still picture. The interface stays quiet over it. Panels are dark blurred glass that step back and let the tower lead. Gold appears only where something is alive.\n\nDensity is low. One panel holds the screen at a time, with a short lead, a single list or quote, and plenty of the sky and tower around it. The page is Hebrew RTL today and he/en later, so every rule here is written in logical directions (inline-start / inline-end).\n\nThe interface is the main piece in the portfolio. Beyond telling visitors who Baruch is and what he makes, it should make them say \"wow\", and leave them knowing that whoever built it is good at what he does. That is why the home page is a 3D climb with a non-standard scroll. The impression never costs legibility, accessibility or performance: the still climb, reduced motion and keyboard focus are part of the craft, not exceptions to it.",
+    "keyCharacteristics": [
+      "A full-page climb: one arch-topped glass panel per tier, fixed at the inline-start over the tower.",
+      "The palette comes from the tower's materials (mudbrick, limestone, ink) and an altitude sky; lamplight gold is the only accent.",
+      "Arches, not rounded rectangles: elliptical arch tops on squared feet, with a limestone keystone.",
+      "Three faces: Suez One (monumental), Frank Ruhl Libre (carved serif), Assistant (text).",
+      "The same page and the same panels with or without WebGL; only the background changes."
+    ],
+    "rules": [
+      {
+        "name": "The Proof Rule",
+        "body": "The site is its own best project. When a choice is between a safe, standard solution and a crafted, distinctive one, choose the crafted one, as long as legibility, accessibility and performance hold. New pages and sections never fall back to a generic template (a card grid, a standard scroll).",
+        "section": "overview"
+      },
+      {
+        "name": "The Lamplight Rule",
+        "body": "Gold appears only where something is alive: a link, the lit doorway and its card, focus, the current tier, a live status, a contact you can reach. Never use gold as decoration on still content.",
+        "section": "colors"
+      },
+      {
+        "name": "The Sky Owns the Field Rule",
+        "body": "The background is always the sky, or the tower and its sky. No flat page colour sits behind the content, and no panel is opaque.",
+        "section": "colors"
+      },
+      {
+        "name": "The Readable Dim Rule",
+        "body": "Secondary text on glass uses Limestone Dim, which keeps at least 4.5:1 over the panels on every tier. Where a surface warms (the lit, hovered or focused project card), its description switches to full Limestone Cornice rather than fading on the warmer glass.",
+        "section": "colors"
+      },
+      {
+        "name": "The One-Line Name Rule",
+        "body": "The name at the base never wraps. Its size follows the panel through container-query units, never through a smaller fixed size. The summit's \"גם ב:\" row works the same way: one font size (`clamp(0.75rem, 4cqi, 0.95rem)`) with everything inside in em, so it stays on one line and wraps only once it would drop below 12px.",
+        "section": "typography"
+      },
+      {
+        "name": "The No Kicker Rule",
+        "body": "Nothing sits on its own line above a heading. A label that introduces a group flows inline at the start of that group, like \"גם ב:\" at the start of its pill row.",
+        "section": "typography"
+      },
+      {
+        "name": "The Logical Direction Rule",
+        "body": "Use only logical properties (`inline-start/end`, `block-start/end`); there are no physical left/right rules. `lang` and `dir` are set per page, and all strings live in the dictionary (`src/i18n/home.ts`). The page layout mirrors with `dir`.",
+        "section": "layout"
+      },
+      {
+        "name": "The Tower Never Mirrors Rule",
+        "body": "The tower is a physical object. Its ramp always climbs clockwise, and the project doorways keep the same order in both languages. Only the page layout follows `dir`.",
+        "section": "layout"
+      },
+      {
+        "name": "The Same Climb Rule",
+        "body": "With reduced motion, panels only fade (no drift) and the still picture crossfades between tiers instead of travelling. With Save-Data, no pictures are fetched. Neither changes the layout or the spans.",
+        "section": "layout"
+      },
+      {
+        "name": "The Quiet Glass Rule",
+        "body": "Panels are dark, blurred, translucent glass that steps back. The world is loud and the interface is not: no bright surfaces, no opaque cards, no glow effects on the chrome.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Glow, Not Scrim Rule",
+        "body": "Text set straight over the scene (header tagline, gauge readout) keeps its legibility glow and gets no pill or scrim behind it. The gauge's tier labels are the exception: they sit on small dark pills (`rgb(30 27 24 / 0.5)`, Smoked Glass Deep for the current one) so they stay legible over any tier.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do use only logical CSS properties and set `lang`/`dir` per page; keep every string in `src/i18n/home.ts`.",
+      "Do keep the tower unmirrored in LTR: the ramp climbs clockwise and the doorway order is fixed. Only the page layout follows `dir`.",
+      "Do keep the page the climb in every mode: the same spans, panels and sheets over either the live tower or the still picture. With reduced motion, fade instead of drift; with Save-Data, fetch no pictures.",
+      "Do spend Lamplight Gold only on what is alive: links, the lit card and door, focus, the current tier, live status, reachable contacts.",
+      "Do set secondary text over glass in Limestone Dim (at least 4.5:1 on every tier), and switch it to full Limestone Cornice on a warmed (lit, hovered, focused) surface.",
+      "Do keep the base name on one line by sizing it from the panel (`min(var(--sd-text-h1), 17cqi)`), and size one-line rows like \"גם ב:\" from a single em-based font size.",
+      "Do isolate only the English word in a Hebrew line (`<bdi dir=\"ltr\">ShoobyD</bdi>`), with the line itself in the page's direction.",
+      "Do keep 6px of room around a scrolling panel body so focus rings are never clipped, and draw the portrait's ring on its mat.",
+      "Do give text set straight over the scene the legibility glow; put the gauge's tier labels on dark pills.",
+      "Do show game-mode controls only while the live tower is running.",
+      "Do use arches for containers: an elliptical top on squared 6px feet, with a keystone at the crown."
+    ],
+    "donts": [
+      "Don't let a new page or section fall back to a generic template; the interface is the evidence (The Proof Rule).",
+      "Don't put a kicker or eyebrow label on its own line above a heading; an introducing label flows inline at the start of its group.",
+      "Don't add a pill or scrim behind the header tagline or the gauge readout; they keep their text-shadow.",
+      "Don't use physical left/right properties, or \"fix\" the doorway order for LTR.",
+      "Don't make panels opaque or bright, or give inner cards their own drop shadows; the glass steps back and the tower leads.",
+      "Don't use gold as decoration on still content, or bring in a second accent hue.",
+      "Don't shrink the name to a fixed smaller size or let it wrap.",
+      "Don't render game-mode controls (the header toggle, the summit's touch cue) over the still picture, without JavaScript, or under the loader.",
+      "Don't let a page without JavaScript show a broken climb; it shows the full-tower message instead."
+    ]
+  }
+}
+

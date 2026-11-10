@@ -22,9 +22,10 @@ The two audiences carry equal weight:
 
 The personal home of Baruch Mustakis, a.k.a. **ShoobyD**: who he is, what he has made, and how to contact him. It is also the hub for his other projects. Those live in their own GitHub repos and are served on the same origin under `https://shoobyd.github.io/<repo>/` (e.g. `/sudoku/`, `/chinese-vocabulary/`).
 
-Success means two things:
+Success means three things:
 - A professional visitor quickly understands his profile and finds the CV or contact details.
 - A curious visitor wants to click into the projects.
+- The interface itself is evidence: the visitor leaves with a "wow", and with the understanding that whoever built it is good at what he does. This is why the home page is a 3D climb with a non-standard scroll rather than a template.
 
 ## Positioning
 
