@@ -161,7 +161,7 @@ export const home: Record<Lang, HomeCopy> = {
 		},
 		code: {
 			title: 'פרויקטים',
-			status: { live: 'חי', archive: 'ארכיון', closed: 'סגור' },
+			status: { live: 'פעיל', archive: 'ארכיון', closed: 'סגור' },
 		},
 		math: {
 			title: 'מתמטיקה ופיזיקה',
