@@ -77,6 +77,8 @@ interface HomeCopy {
 	summit: {
 		title: string;
 		wink: string;
+		/** For a hovering pointer: a click on the tower's unfinished top starts the game (fingers get `game.cue`). */
+		playHint: string;
 		babel: string[];
 		contacts: { linkedin: string; email: string; github: string; cv: string };
 		alsoOn: string;
@@ -242,6 +244,7 @@ export const home: Record<Lang, HomeCopy> = {
 		summit: {
 			title: 'בואו נדבר',
 			wink: 'הפסגה עדיין בבנייה. זהירות: מעל גובה מסוים השפות מתחילות להתבלבל.',
+			playHint: 'לחצו על ראש המגדל כדי לעזור בבנייה.',
 			babel: ['Loquamur', '我们聊聊吧', 'Ας μιλήσουμε', "Let's talk"],
 			contacts: { linkedin: 'לינקדאין', email: 'אימייל', github: 'גיטהאב', cv: 'קורות־חיים' },
 			alsoOn: 'גם ב:',
@@ -374,6 +377,7 @@ export const home: Record<Lang, HomeCopy> = {
 		summit: {
 			title: "Let's talk",
 			wink: 'The summit is still under construction. Careful: above a certain altitude, languages start to get confused.',
+			playHint: 'Click the top of the tower to help build it.',
 			babel: ['Loquamur', '我们聊聊吧', 'Ας μιλήσουμε', 'בואו נדבר'],
 			contacts: { linkedin: 'LinkedIn', email: 'Email', github: 'GitHub', cv: 'CV' },
 			alsoOn: 'Also on:',
