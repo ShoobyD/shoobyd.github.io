@@ -60,7 +60,18 @@ interface HomeCopy {
 	math: { title: string; path: PathStage[]; formulaLabel: string; aside: string };
 	languages: { title: string; quote: string; cite: string; topics: string[]; latin: string; latinLink: string };
 	/** `stringsHint` is for a hovering pointer, `stringsHintTouch` for fingers (a sideways swipe). */
-	making: { title: string; guitar: string; drawing: string; drawingLink: string; cooking: string; diy: string; stringsHint: string; stringsHintTouch: string };
+	making: {
+		title: string;
+		guitar: string;
+		drawing: string;
+		drawingLink: string;
+		dance: string;
+		cooking: string;
+		diy: string;
+		volunteering: string;
+		stringsHint: string;
+		stringsHintTouch: string;
+	};
 	/** `babel`: the languages the heading passes through before it settles (the summit joke). */
 	/** `contacts` are the main ways to reach him; `alsoOn` / `elsewhere` the lighter row of other profiles under them. */
 	summit: {
@@ -217,12 +228,14 @@ export const home: Record<Lang, HomeCopy> = {
 			latinLink: 'קורס',
 		},
 		making: {
-			title: 'יצירה',
-			guitar: 'גיטרה',
-			drawing: 'ציור ואיור, בקבוצת הפייסבוק {link}',
+			title: 'תחביבים ועשייה',
+			guitar: 'נגינה, בעיקר בגיטרה',
+			drawing: 'ציור ואיור, ומייסד קבוצת הפייסבוק {link}',
 			drawingLink: '„ציירו אותי”',
+			dance: 'ריקוד, ופעילות בקהילת „מדיה נוצ׳ה סלסה”',
 			cooking: 'בישול',
-			diy: 'עשה־זאת־בעצמך',
+			diy: 'בנייה, נגרות ו־DIY',
+			volunteering: 'התנדבות ב„ידידים” ובארגוני הצלת מזון',
 			stringsHint: 'העבירו את הסמן על פני המיתרים שליד המגדל.',
 			stringsHintTouch: 'החליקו לרוחב על המיתרים שליד המגדל.',
 		},
@@ -347,12 +360,14 @@ export const home: Record<Lang, HomeCopy> = {
 			latinLink: 'course',
 		},
 		making: {
-			title: 'Making',
-			guitar: 'Guitar',
-			drawing: 'Drawing & illustration, in the {link} Facebook group',
+			title: 'Hobbies & pursuits',
+			guitar: 'Music, mostly guitar',
+			drawing: 'Drawing & illustration, and founder of the {link} Facebook group',
 			drawingLink: '“ציירו אותי” (Draw Me)',
+			dance: 'Dance, and taking part in the “Media Noche Salsa” community',
 			cooking: 'Cooking',
-			diy: 'DIY',
+			diy: 'Building, woodwork & DIY',
+			volunteering: 'Volunteering with “Yedidim” and food-rescue organizations',
 			stringsHint: 'Sweep the pointer across the strings by the tower.',
 			stringsHintTouch: 'Swipe sideways across the strings by the tower.',
 		},
