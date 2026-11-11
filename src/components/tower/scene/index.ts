@@ -328,6 +328,10 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 		pathView.zoom = lerp(1, lerp(A.zoom, B.zoom, t), near);
 		return pathView;
 	}
+	// dev only: `?tune` puts a panel on the page for trying the shots live (./dev-tune.ts)
+	if (import.meta.env.DEV && new URLSearchParams(location.search).has('tune')) {
+		void import('./dev-tune').then((m) => m.createPathTuner(PATH_VIEWS, sectionEls[ARMILLARY_TIER]));
+	}
 
 	const loop = createLoop((dt, now) => {
 		time += dt;
