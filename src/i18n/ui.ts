@@ -31,6 +31,8 @@ export const ui = {
 	he: {
 		'site.title':       'ברוך מוסטקיס · ShoobyD',
 		'site.description': 'ברוך מוסטקיס (ShoobyD), מפתח פרונטאנד בכיר, מתמחה בארכיטקטורה ובהובלה טכנית. מגדל בבל אישי שעוד בבנייה: פרויקטים, ניסיון, תחומי־עניין, יצירה, ומשחק לבנים בפסגה.',
+		'share.role':       'מפתח פרונטאנד בכיר · ארכיטקטורה והובלה טכנית',
+		'share.imageAlt':   'מגדל בבל שעוד בבנייה, בשמי שחר מעל כפר, ולצדו: ברוך מוסטקיס, מפתח פרונטאנד בכיר.',
 		'brand.name':       'ShoobyD',
 		'brand.tagline':    'ברוך מוסטקיס',
 		'nav.home':         'לעמוד הבית',
@@ -43,6 +45,8 @@ export const ui = {
 	en: {
 		'site.title':       'Baruch Mustakis · ShoobyD',
 		'site.description': 'Baruch Mustakis (ShoobyD), senior frontend engineer specializing in architecture and technical leadership. A personal Tower of Babel still under construction: projects, experience, interests, creative work, and a brick game at the summit.',
+		'share.role':       'Senior Frontend Engineer · Architecture and technical leadership',
+		'share.imageAlt':   'A Tower of Babel still under construction, in a dawn sky over a village, and beside it: Baruch Mustakis, senior frontend engineer.',
 		'brand.name':       'ShoobyD',
 		'brand.tagline':    'Baruch Mustakis',
 		'nav.home':         'Home page',
