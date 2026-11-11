@@ -209,12 +209,12 @@ export const home: Record<Lang, HomeCopy> = {
 			aside: 'הקומה הזאת עומדת על הוכחות, לא על טיח.',
 		},
 		languages: {
-			title: 'שפות ומיתוס',
+			title: 'תחומי־עניין',
 			quote: 'וַיְהִי כָל־הָאָרֶץ שָׂפָה אֶחָת וּדְבָרִים אֲחָדִים',
 			cite: 'בראשית י״א, א׳',
-			topics: ['בלשנות', 'לימוד תנ״ך', 'מיתולוגיה', 'היסטוריה', 'פילוסופיה'],
-			latin: 'לימדתי {link} בפורום פרש.',
-			latinLink: 'קורס לטינית',
+			topics: ['בלשנות', 'חקר־המקרא', 'מיתולוגיה', 'היסטוריה', 'פילוסופיה', 'מתמטיקה', 'פיזיקה', 'אסטרונומיה'],
+			latin: 'וגם לטינית: {link} שהועבר בפורום „פרש”.',
+			latinLink: 'קורס',
 		},
 		making: {
 			title: 'יצירה',
@@ -339,12 +339,12 @@ export const home: Record<Lang, HomeCopy> = {
 			aside: 'This tier stands on proofs, not plaster.',
 		},
 		languages: {
-			title: 'Languages & Myth',
+			title: 'Interests',
 			quote: 'And the whole earth was of one language, and of one speech.',
 			cite: 'Genesis 11:1',
-			topics: ['Linguistics', 'Bible study', 'Mythology', 'History', 'Philosophy'],
-			latin: 'I taught a {link} on the Fresh forum.',
-			latinLink: 'Latin course',
+			topics: ['Linguistics', 'Biblical studies', 'Mythology', 'History', 'Philosophy', 'Mathematics', 'Physics', 'Astronomy'],
+			latin: 'And Latin, too: a {link} given on the Fresh forum.',
+			latinLink: 'course',
 		},
 		making: {
 			title: 'Making',
@@ -415,7 +415,8 @@ export const home: Record<Lang, HomeCopy> = {
 };
 
 export const links = {
-	latinCourse: 'http://bit.ly/latincourse',
+	/** The Latin course thread on the Fresh forum (fresh.co.il); the referrer id credits ShoobyD with the visit. */
+	latinCourse: 'https://www.fresh.co.il/vBulletin/showthread.php?t=485276&referrerid=90538',
 	/** Pi is wrong: the formula on the education tier is Euler's identity with tau. */
 	tauManifesto: 'https://www.tauday.com/tau-manifesto',
 	drawMeGroup: 'https://www.facebook.com/groups/tzayruoti/',
