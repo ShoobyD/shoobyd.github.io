@@ -125,7 +125,10 @@ const elsewhere = [
 
 	<TierSection id="math" sheetLabel={c.sheet.toggle} title={c.math.title}>
 		<p class="lead">{c.math.lead}</p>
-		<p class="formula" dir="ltr" aria-hidden="true">e<sup>iπ</sup> + 1 = 0</p>
+		<!-- Euler's identity with tau, since pi is wrong: a link to the manifesto that says so -->
+		<p class="formula" dir="ltr">
+			<a href={links.tauManifesto} rel="noopener" target="_blank" aria-label={c.math.formulaLabel} title={c.math.formulaLabel}>e<sup>iτ</sup> = 1 + 0i</a>
+		</p>
 		<p class="aside">{c.math.aside}</p>
 	</TierSection>
 
@@ -362,6 +365,17 @@ const elsewhere = [
 		color: var(--sd-gold);
 		letter-spacing: 0.03em;
 		text-align: center;
+	}
+	/* the formula is the link: gold already, it warms and glows under the pointer rather than underlined */
+	.formula a {
+		color: inherit;
+		text-decoration: none;
+		transition: color var(--sd-dur-fast), text-shadow var(--sd-dur-fast);
+	}
+	.formula a:hover,
+	.formula a:focus-visible {
+		color: var(--sd-gold-hot);
+		text-shadow: 0 0 18px color-mix(in srgb, var(--sd-gold) 55%, transparent);
 	}
 	.aside {
 		margin-block-start: var(--sd-space-4);

@@ -43,7 +43,8 @@ interface HomeCopy {
 		portraitClose: string;
 	};
 	code: { title: string; status: Record<ProjectStatus, string> };
-	math: { title: string; lead: string; aside: string };
+	/** `formulaLabel` names the formula, a link to the Tau Manifesto (its symbols alone say little to a screen reader). */
+	math: { title: string; lead: string; formulaLabel: string; aside: string };
 	languages: { title: string; quote: string; cite: string; topics: string[]; latin: string; latinLink: string };
 	/** `stringsHint` is for a hovering pointer, `stringsHintTouch` for fingers (a sideways swipe). */
 	making: { title: string; guitar: string; drawing: string; drawingLink: string; cooking: string; diy: string; stringsHint: string; stringsHintTouch: string };
@@ -167,6 +168,7 @@ export const home: Record<Lang, HomeCopy> = {
 			title: 'מתמטיקה ופיזיקה',
 			// the LRM after "B.Sc." keeps its final period with it in the Hebrew line (not before the B)
 			lead: 'תואר B.Sc.‎ במתמטיקה עיונית, בהצטיינות, לצד לימודי השלמה במדעי המחשב.',
+			formulaLabel: 'זהות אוילר בגרסת טאו: המניפסט של טאו',
 			aside: 'הקומה הזאת עומדת על הוכחות, לא על טיח.',
 		},
 		languages: {
@@ -272,6 +274,7 @@ export const home: Record<Lang, HomeCopy> = {
 		math: {
 			title: 'Mathematics & Physics',
 			lead: 'B.Sc. in pure mathematics, with honors, plus supplementary computer science studies.',
+			formulaLabel: "Euler's identity, the tau version: The Tau Manifesto",
 			aside: 'This tier stands on proofs, not plaster.',
 		},
 		languages: {
@@ -352,6 +355,8 @@ export const home: Record<Lang, HomeCopy> = {
 
 export const links = {
 	latinCourse: 'http://bit.ly/latincourse',
+	/** Pi is wrong: the formula on the education tier is Euler's identity with tau. */
+	tauManifesto: 'https://www.tauday.com/tau-manifesto',
 	drawMeGroup: 'https://www.facebook.com/groups/tzayruoti/',
 	linkedin: 'https://www.linkedin.com/in/ShoobyD/',
 	email: 'mailto:bmusty@gmail.com',
