@@ -237,6 +237,8 @@ export function createSheet(panels: HTMLElement[], startTier: number) {
 	panels.forEach((p, i) => {
 		set(i, i === 0 && startTier === 0);
 		watch.observe(p);
+		// a peek slot's height changes with what it holds (and its width with the window)
+		if (nows[i]) watch.observe(nows[i]);
 		handles[i]?.addEventListener('click', onHandle[i]);
 		p.addEventListener('click', onClickCapture, true);
 		p.addEventListener('click', onTap[i], true);

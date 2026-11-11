@@ -124,6 +124,9 @@ const elsewhere = [
 	</TierSection>
 
 	<TierSection id="math" sheetLabel={c.sheet.toggle} title={c.math.title} stops={c.math.path.length}>
+		<!-- the collapsed mobile sheet's peek at the stage in focus, like the projects tier's: a compact
+		     copy, filled in as the scroll steps through the path (the list below stays the real one) -->
+		<div class="tier-now" data-stop-now aria-hidden="true" inert></div>
 		<!-- the path, newest first: a rail down the inline-start with a mark per stage, today's lit; the
 		     climb steps through it, one stage in focus at a time (../components/tower/scene/path.ts) -->
 		<ol class="path">
@@ -378,7 +381,8 @@ const elsewhere = [
 	/* the path (experience and education): a mark per stage down the inline-start, in the shape of
 	 * the gauge's, joined by a rail; as the static timeline every stage is open and today's mark lit
 	 * gold (the only one still going) */
-	.path {
+	.path,
+	.path-now {
 		position: relative;
 		margin: 0;
 		padding: 0;
@@ -662,7 +666,7 @@ const elsewhere = [
 		blockquote p { font-size: 1.12rem; }
 	}
 
-	/* the project in focus, under the projects tier's title: only in the collapsed mobile sheet (open,
+	/* the project (or the stage) in focus, under the projects (or the path's) tier's title: only in the collapsed mobile sheet (open,
 	 * the list itself is in view) */
 	.tier-now { display: none; }
 	@media (max-width: 47.5rem) {

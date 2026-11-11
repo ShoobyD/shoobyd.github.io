@@ -31,7 +31,7 @@ export function createProjects(specs: readonly ProjectSpec[], onLight: (i: numbe
 	 * tier's lead): a copy of its card, inert and hidden from assistive tech, as the real list
 	 * below stays the one to read and use. It starts on the first project.
 	 */
-	const stopNow = document.querySelector<HTMLElement>('[data-stop-now]');
+	const stopNow = cards.find(Boolean)?.closest('[data-tier-panel]')?.querySelector<HTMLElement>('[data-stop-now]') ?? null;
 	let nowShown = -1;
 	function showNow(i: number) {
 		const card = cards[i];
