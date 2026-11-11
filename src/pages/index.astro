@@ -28,7 +28,8 @@ import NoJsMessage from '../components/home/NoJsMessage.astro';
 import selfPortrait from '../assets/images/self-portrait-bsod.jpg';
 import { projects, projectName } from '../data/projects';
 import { home, links, tierAltitude, tierIds } from '../i18n/home';
-import type { Lang } from '../i18n/ui';
+import { otherLang, useTranslations, type Lang } from '../i18n/ui';
+import { getImage } from 'astro:assets';
 
 const lang: Lang = 'he';
 const c = home[lang];
@@ -66,6 +67,22 @@ const contacts = [
 	{ id: 'cv', icon: 'cv' as const, label: c.summit.contacts.cv, value: 'PDF', href: links.cv, external: true, opens: 'cv' },
 ];
 
+/**
+ * Who the page is about, for search engines (JSON-LD, schema.org): it ties the site to the public
+ * profiles, so a search for the name finds them together. The image is the self-portrait.
+ */
+const portraitImage = await getImage({ src: selfPortrait, width: 800, format: 'jpg' });
+const person = {
+	'@context': 'https://schema.org',
+	'@type': 'Person',
+	name: c.base.title,
+	alternateName: [home[otherLang(lang)].base.title, 'ShoobyD'],
+	jobTitle: useTranslations(lang)('person.jobTitle'),
+	url: new URL(lang === 'he' ? '/' : `/${lang}/`, Astro.site).href,
+	image: new URL(portraitImage.src, Astro.site).href,
+	sameAs: [links.linkedin, links.github, links.facebook, links.deviantart, links.wikipedia],
+};
+
 /** Other profiles, a lighter row under the main contacts. */
 const elsewhere = [
 	{ id: 'facebook' as const, label: c.summit.elsewhere.facebook, href: links.facebook },
@@ -76,6 +93,7 @@ const elsewhere = [
 
 <Base lang={lang}>
 	<TowerLoaderBoot slot="head" />
+	<script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(person)} />
 	<button slot="header-actions" class="sd-control game-control" type="button" aria-pressed="false" data-tower-game="toggle">
 		<svg viewBox="0 0 20 20" aria-hidden="true">
 			<rect class="brick-icon__low" x="2" y="12" width="16" height="5" rx="1" />
