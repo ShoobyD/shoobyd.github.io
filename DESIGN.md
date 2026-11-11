@@ -285,7 +285,7 @@ Dark glass that warms to gold on hover.
 
 ### Navigation
 - **Header:** fixed over the climb. The brand is the tower mark plus the name in Suez One with a caption tagline under it, both with the legibility glow. Pill controls sit at the inline-end.
-- **Altitude gauge:** the page's navigation, drawn as the tower's height scale counted in אמות. A thin limestone rail (15% to 55%, rising toward the summit) carries arched marks. The current tier's mark turns Lamplight Gold at 1.15 scale and its label pill deepens. The readout above (Suez One, tabular numbers) counts the current altitude. Tiers are plain anchor links to each tier's park.
+- **Altitude gauge:** the page's navigation, drawn as the tower's height scale counted in אמות. A thin limestone rail (15% to 55%, rising toward the summit) carries arched marks. The current tier's mark turns Lamplight Gold at 1.15 scale and its label pill deepens. The readout above (Suez One, tabular numbers) counts the current altitude. Tiers are plain anchor links to each tier's park. Their labels are a poem of the climb rather than the tiers' titles (היסוד, הקוד, הדרך, העניין, הלב, הפסגה); each link carries its tier's title in its accessible name, after the label, and as a tooltip.
 - **Skip link:** a Lamplight Gold pill with Shadow Ink 700 text that slides in on focus.
 
 ### Focus

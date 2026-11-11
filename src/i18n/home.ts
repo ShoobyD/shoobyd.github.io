@@ -169,7 +169,7 @@ export const home: Record<Lang, HomeCopy> = {
 		gauge: {
 			label: 'קומות המגדל',
 			unit: 'אמות',
-			tiers: { base: 'יסוד', code: 'פרויקטים', math: 'ניסיון', languages: 'שפות', making: 'יצירה', summit: 'פסגה' },
+			tiers: { base: 'היסוד', code: 'הקוד', math: 'הדרך', languages: 'העניין', making: 'הלב', summit: 'הפסגה' },
 		},
 		sheet: { toggle: 'תוכן הקומה' },
 		noJs: {
@@ -303,7 +303,7 @@ export const home: Record<Lang, HomeCopy> = {
 		gauge: {
 			label: 'Tower tiers',
 			unit: 'cubits',
-			tiers: { base: 'Base', code: 'Projects', math: 'Experience', languages: 'Languages', making: 'Making', summit: 'Summit' },
+			tiers: { base: 'The Base', code: 'The Code', math: 'The Path', languages: 'The Curiosity', making: 'The Heart', summit: 'The Summit' },
 		},
 		sheet: { toggle: 'Tier content' },
 		noJs: {

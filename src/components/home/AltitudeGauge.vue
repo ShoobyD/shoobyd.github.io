@@ -3,6 +3,9 @@
  * The altitude gauge: the home page's navigation, drawn as the tower's height scale.
  * Tiers are plain anchor links, which land on the tier's park; once hydrated, the gauge marks the
  * tier in view and reads the current altitude in cubits from the scroll position.
+ *
+ * The labels are evocative rather than plain (the base, the code, the path…), so each link also
+ * carries its tier's title: in its accessible name, after the label it shows, and as a tooltip.
  */
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { progressAt, sectionHolds, sectionTops } from '../tower/mode';
@@ -10,6 +13,8 @@ import { progressAt, sectionHolds, sectionTops } from '../tower/mode';
 export interface GaugeTier {
 	id: string;
 	label: string;
+	/** The tier's own title (its panel's heading). */
+	name?: string;
 	altitude: number;
 }
 
@@ -72,7 +77,12 @@ onBeforeUnmount(() => {
 		</p>
 		<ol class="gauge__tiers">
 			<li v-for="tier in tiers" :key="tier.id">
-				<a :href="`#tier-${tier.id}`" :aria-current="current === tier.id ? 'location' : undefined">
+				<a
+					:href="`#tier-${tier.id}`"
+					:aria-current="current === tier.id ? 'location' : undefined"
+					:aria-label="tier.name ? `${tier.label}: ${tier.name}` : undefined"
+					:title="tier.name"
+				>
 					<span class="gauge__label">{{ tier.label }}</span>
 					<i class="gauge__mark" aria-hidden="true" />
 				</a>

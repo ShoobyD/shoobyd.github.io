@@ -34,7 +34,8 @@ import { getImage } from 'astro:assets';
 const lang: Lang = 'he';
 const c = home[lang];
 
-const gaugeTiers = tierIds.map((id) => ({ id, label: c.gauge.tiers[id], altitude: tierAltitude[id] }));
+// the gauge's labels are a poem of the climb; each link also carries its tier's plain title
+const gaugeTiers = tierIds.map((id) => ({ id, label: c.gauge.tiers[id], name: c[id].title, altitude: tierAltitude[id] }));
 
 const projectItems = projects.map((p) => ({
 	id: p.id,
