@@ -6,7 +6,7 @@
  */
 import * as THREE from 'three';
 import { damp, lerp, sstep } from './util';
-import { LAST_TIER, PARK, type Park } from './dimensions';
+import { LAST_TIER, PARK, type OrbitView, type Park } from './dimensions';
 
 /** Interpolated park for progress `p`. */
 export function rigAt(p: number, out: Park): Park {
@@ -23,6 +23,27 @@ export function rigAt(p: number, out: Park): Park {
 	out.y = lerp(A.y, B.y, te);
 	out.look = lerp(A.look, B.look, te);
 	return out;
+}
+
+const UP = new THREE.Vector3(0, 1, 0);
+const _axis = new THREE.Vector3();
+const _q = new THREE.Quaternion();
+
+/**
+ * Turns a shot (camera position and target) rigidly about `center`: by `yaw` around the vertical,
+ * then by `pitch` up over it (negative: from below), and draws it in by `zoom`. The centre keeps
+ * its place in the frame while everything behind it swings past.
+ */
+export function orbitShot(shot: { pos: THREE.Vector3; look: THREE.Vector3 }, center: THREE.Vector3, v: OrbitView) {
+	for (const p of [shot.pos, shot.look]) {
+		p.sub(center).applyAxisAngle(UP, v.yaw);
+	}
+	// the pitch turns about the level axis across the line of sight
+	_axis.copy(shot.pos).setY(0).cross(UP).normalize();
+	_q.setFromAxisAngle(_axis, v.pitch);
+	for (const p of [shot.pos, shot.look]) {
+		p.applyQuaternion(_q).multiplyScalar(v.zoom).add(center);
+	}
 }
 
 export interface RigInput {

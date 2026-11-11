@@ -10,7 +10,7 @@
  */
 import * as THREE from 'three';
 import { clamp, createRandom, damp, easeOut, isNarrow, lerp, sstep } from './util';
-import { DOOR_PAN, DOOR_STEP, LAST_TIER, PLINTH_TOP, doorAngles, doorPanMax } from './dimensions';
+import { DOOR_PAN, DOOR_STEP, LAST_TIER, PATH_VIEWS, PLINTH_TOP, doorAngles, doorPanMax, type OrbitView } from './dimensions';
 import { createRenderer } from './renderer';
 import { createSky } from './sky';
 import { createLandscape } from './landscape';
@@ -20,14 +20,14 @@ import { createTower } from './tower';
 import { createFigures } from './figures';
 import { createSummit } from './summit';
 import { createClouds } from './clouds';
-import { createCameraRig } from './camera-path';
+import { createCameraRig, orbitShot } from './camera-path';
 import type { Climb } from './climb';
 import type { Sheet } from './sheet';
 import { createPageClimb, type PageClimb } from './page-climb';
 import { createLoop } from './loop';
 import { disposeScene } from './dispose';
 import { createDoors, type DoorSpec } from './tiers/doors';
-import { createArmillary } from './tiers/armillary';
+import { ARMILLARY_TIER, createArmillary } from './tiers/armillary';
 import { createGlyphs } from './tiers/glyphs';
 import { STRING_COUNT, createStrings } from './tiers/strings';
 import { createGuitarSound } from './tiers/guitar-sound';
@@ -298,6 +298,37 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 		return near * (doorAt - (count - 1) / 2) * DOOR_STEP * DOOR_PAN;
 	}
 
+	/**
+	 * On the experience tier each stop of the path has its own shot of the armillary sphere
+	 * (PATH_VIEWS): the camera circles it to another side, from below or above, nearer or farther,
+	 * gliding from one to the next as the scroll passes between the stops. Below the tier the
+	 * degree's shot waits, above it today's; the shot fades out as the climb moves away.
+	 */
+	const pathStops = Math.min(PATH_VIEWS.length, Number(sectionEls[ARMILLARY_TIER]?.dataset.stops) || 1);
+	let pathAt = 0;
+	const pathView: OrbitView = { yaw: 0, pitch: 0, zoom: 1 };
+	function pathShot(dt: number): OrbitView | null {
+		// it fades in over the last stretch of the climb up to the tier, and out over the whole way
+		// on to the next, so today's shot (from above) hands over to the climb without a dip
+		const d = smooth - ARMILLARY_TIER;
+		const near = 1 - sstep(0, d > 0 ? 0.9 : 0.45, Math.abs(d));
+		if (pathStops < 2 || near <= 0) return null;
+		const stop = climb?.stop;
+		let to: number;
+		if (stop && stop.tier === ARMILLARY_TIER) {
+			const k = Math.floor(stop.at);
+			to = Math.min(pathStops - 1, k + sstep(0.15, 0.85, stop.at - k));
+		} else to = smooth < ARMILLARY_TIER ? 0 : pathStops - 1;
+		pathAt += (to - pathAt) * damp(2.6, dt);
+		const k = Math.min(pathStops - 2, Math.floor(pathAt));
+		const t = sstep(0, 1, pathAt - k);
+		const A = PATH_VIEWS[k], B = PATH_VIEWS[k + 1];
+		pathView.yaw = lerp(A.yaw, B.yaw, t) * near;
+		pathView.pitch = lerp(A.pitch, B.pitch, t) * near;
+		pathView.zoom = lerp(1, lerp(A.zoom, B.zoom, t), near);
+		return pathView;
+	}
+
 	const loop = createLoop((dt, now) => {
 		time += dt;
 		const target = climb ? climb.progress : progressAt(sectionTops(sectionEls), window.scrollY, sectionHolds(sectionEls));
@@ -314,6 +345,9 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 		// a director (game mode) can take the camera over; the climb shot is blended toward its own
 		shot.pos.copy(rig.pos);
 		shot.look.copy(rig.look);
+		// on the experience tier, the stop's shot around the armillary sphere
+		const around = pathShot(dt);
+		if (around) orbitShot(shot, armillary.center, around);
 		let blend = 0;
 		let altitude = clamp(smooth / LAST_TIER, 0, 1);
 		if (director) {
@@ -345,7 +379,11 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 		}
 		summit.update(time, dt);
 		placeCue();
-		armillary.update(time);
+		// the sphere builds up with the experience tier's path (page-climb.ts): all off until the camera
+		// nears the tier, lighting as its panel fades in (half shown about 0.3 of a tier away, climb.ts),
+		// and its stage in focus only while the camera is there (above it, all lit and none in focus)
+		const fromSphere = smooth - ARMILLARY_TIER;
+		armillary.update(time, dt, page && fromSphere > -0.3 ? page.pathLevel : -1, Math.abs(fromSphere) < 0.3);
 		glyphs.update(time, smooth);
 		strings.update(dt, time, smooth);
 

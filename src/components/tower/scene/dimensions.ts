@@ -56,6 +56,29 @@ export const DOOR_STEP = 0.27;
  */
 export const DOOR_PAN = 0.8;
 
+/** A shot around the armillary sphere: turned about it (yaw, pitch, in radians) and drawn in (zoom, a share of the distance). */
+export interface OrbitView {
+	yaw: number;
+	pitch: number;
+	zoom: number;
+}
+
+/**
+ * The experience tier's shots, one per stop of its path (the degree first): the camera swings
+ * around the armillary sphere from side to side, every shot from a side of its own (none goes back
+ * to one already taken, so no move is undone by the next), and each move another way: across, up
+ * or down, and nearer each time. The first, wide (farther out than the park), goes on from the way
+ * the camera arrives (behind: climbing, it turns against a positive yaw); the last, today's, is the
+ * whole sphere almost head-on, from below after the one from above before it, and the nearest; the
+ * exit goes on from it, onward and up (see camera-path.ts, orbitShot).
+ */
+export const PATH_VIEWS: OrbitView[] = [
+	{ yaw: 0.3, pitch: 0.01, zoom: 1.2 },
+	{ yaw: -0.2, pitch: -0.05, zoom: 0.86 },
+	{ yaw: 0.18, pitch: 0.23, zoom: 0.72 },
+	{ yaw: -0.03, pitch: -0.17, zoom: 0.6 },
+];
+
 /** The widest turn of that walk either way, for `count` doorways. */
 export const doorPanMax = (count: number) => ((Math.max(1, count) - 1) / 2) * DOOR_STEP * DOOR_PAN;
 

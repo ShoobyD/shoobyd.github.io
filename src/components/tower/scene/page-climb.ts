@@ -36,6 +36,8 @@ export function createPageClimb(o: PageClimbOptions) {
 	const path = pathList ? createPath(pathList) : null;
 	const pathStops = pathList ? pathList.querySelectorAll(':scope > .path__stage').length : 0;
 	let lastTier = -1;
+	/** the path's stop: 0 (the degree) below and on its first stop .. the last (today) above */
+	let pathLevel = 0;
 	// a climb is running the panels (TowerLoaderBoot's fallback looks for it); one that came late,
 	// after the fallback gave up on it, takes the page back from its message
 	const root = document.documentElement;
@@ -45,6 +47,13 @@ export function createPageClimb(o: PageClimbOptions) {
 	return {
 		climb,
 		sheet,
+		/**
+		 * The path's stop the climb is at, 0 (the degree; also below its tier) .. its last (today), as
+		 * the panel shows it; the tower builds with it.
+		 */
+		get pathLevel() {
+			return pathLevel;
+		},
 		/**
 		 * The lit project: `door` is the doorway under the pointer (-1 for none); while `paused` (a
 		 * game takes the camera) the code tier's stops light nothing.
@@ -65,7 +74,8 @@ export function createPageClimb(o: PageClimbOptions) {
 			if (path) {
 				// the stop the scroll is at on the path's tier; below it the degree, above it today
 				const stop = climb.stop;
-				path.update(stop && stop.tier === pathTier ? Math.round(stop.at) : climb.progress < pathTier ? 0 : pathStops - 1);
+				pathLevel = stop && stop.tier === pathTier ? Math.round(stop.at) : climb.progress < pathTier ? 0 : pathStops - 1;
+				path.update(pathLevel);
 			}
 			if (nearest !== lastTier) {
 				lastTier = nearest;
