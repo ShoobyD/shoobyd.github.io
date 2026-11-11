@@ -216,7 +216,14 @@ h2.tier__title {
 }
 
 @media (max-width: 47.5rem) {
-	/* the sheet scrolls itself (sheet.ts reads and resets its scroll), its content doesn't */
+	/* the sheet scrolls itself (sheet.ts reads and resets its scroll), its content doesn't, and keeps
+	 * that scroll to itself, so reading to the end of a long one doesn't climb on and collapse it.
+	 * One whose content fits (sheet.ts marks it) isn't a scroll box at all, only clipped: a swipe on
+	 * it goes to the page and climbs the tower (a fixed scroll box keeps it, even with nothing to
+	 * scroll). Collapsed, it is hidden like the rest (below, later in the same weight). */
+	:root .tier__panel.is-sheet-fits {
+		overflow: clip;
+	}
 	:root .tier__panel {
 		display: block;
 		overflow: auto;

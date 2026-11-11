@@ -10,6 +10,9 @@
  *   opens it, so focus is never hidden.
  * - Game mode collapses them (it hides the panels anyway).
  * - While one is open the root carries `sd-sheet-open` (the altitude gauge dims under it).
+ * - A sheet whose content fits carries `is-sheet-fits`: with nothing to scroll inside it, a swipe
+ *   on it climbs the tower (TierSection.vue makes it no scroll box); a longer one keeps its scroll
+ *   to itself, so reading to its end doesn't climb on and collapse it.
  *
  * The CSS (TierSection.vue) does the moving, with the `translate` property, so it composes with
  * the climb's own `transform` on the panel; this only keeps the state and measures each sheet's
@@ -19,6 +22,7 @@ import { isNarrow } from './util';
 
 const COLLAPSED = 'is-sheet-collapsed';
 const OPEN_CLASS = 'sd-sheet-open';
+const FITS = 'is-sheet-fits';
 const GAME_CLASS = 'tower-game';
 /** How much of the first lines below the title the collapsed sheet shows, in px. */
 const PEEK_BELOW_TITLE = 56;
@@ -85,6 +89,7 @@ export function createSheet(panels: HTMLElement[], startTier: number) {
 			if (now && now.offsetParent) nowHeights[i] = now.offsetTop + now.offsetHeight - (t.offsetTop + t.offsetHeight);
 			const below = nowHeights[i] ? nowHeights[i] + PEEK_BELOW_SLOT : PEEK_BELOW_TITLE;
 			p.style.setProperty('--sheet-peek', `${t.offsetTop + t.offsetHeight + below}px`);
+			p.classList.toggle(FITS, p.scrollHeight <= p.clientHeight + 1);
 		});
 		headerBottom = header ? Math.round(header.getBoundingClientRect().bottom) : 0;
 		root.style.setProperty('--sheet-top', `${headerBottom + 6}px`);
@@ -146,8 +151,9 @@ export function createSheet(panels: HTMLElement[], startTier: number) {
 	// A finger moves the sheet with it, then lets it settle open or collapsed by where it was
 	// left and how fast it was moving. What starts a drag:
 	// - on a collapsed sheet, a swipe up (a swipe down there still climbs the tower);
-	// - on an open one, any swipe on its handle or title band, or a swipe down on its content
-	//   when that is already scrolled to its top (otherwise the content scrolls as usual).
+	// - on an open one, any swipe on its handle or title band; on its content, a swipe down when
+	//   that is a long one already scrolled to its top. Otherwise the content scrolls as usual,
+	//   or, all of it in view (`is-sheet-fits`), the swipe climbs the tower, up or down.
 	let drag: {
 		i: number;
 		y0: number;
@@ -190,7 +196,7 @@ export function createSheet(panels: HTMLElement[], startTier: number) {
 		if (drag.on === null) {
 			if (Math.abs(dy) < 4) return;
 			const collapsed = drag.from > 0;
-			drag.on = collapsed ? dy < 0 : drag.band || (dy > 0 && p.scrollTop <= 0);
+			drag.on = collapsed ? dy < 0 : drag.band || (dy > 0 && p.scrollTop <= 0 && !p.classList.contains(FITS));
 			if (!drag.on) {
 				drag = null;
 				return;
@@ -296,7 +302,7 @@ export function createSheet(panels: HTMLElement[], startTier: number) {
 				p.style.removeProperty('translate');
 				p.removeEventListener('click', onTap[i], true);
 				p.removeEventListener('focusin', onFocus[i]);
-				p.classList.remove(COLLAPSED);
+				p.classList.remove(COLLAPSED, FITS);
 				p.style.removeProperty('--sheet-peek');
 				handles[i]?.setAttribute('aria-expanded', 'true');
 			});
