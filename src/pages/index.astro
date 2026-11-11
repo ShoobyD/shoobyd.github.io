@@ -123,8 +123,9 @@ const elsewhere = [
 		<ProjectList items={projectItems} />
 	</TierSection>
 
-	<TierSection id="math" sheetLabel={c.sheet.toggle} title={c.math.title}>
-		<!-- the path, newest first: a rail down the inline-start with a mark per stage, today's lit -->
+	<TierSection id="math" sheetLabel={c.sheet.toggle} title={c.math.title} stops={c.math.path.length}>
+		<!-- the path, newest first: a rail down the inline-start with a mark per stage, today's lit; the
+		     climb steps through it, one stage in focus at a time (../components/tower/scene/path.ts) -->
 		<ol class="path">
 			{c.math.path.map((stage) => (
 				<li class="path__stage">
@@ -133,9 +134,11 @@ const elsewhere = [
 						{stage.role}
 						{stage.org && <span class="path__org">· <bdi>{stage.org}</bdi></span>}
 					</span>
-					<ul class="path__details">
-						{stage.details.map((detail) => <li>{detail}</li>)}
-					</ul>
+					<div class="path__more">
+						<ul class="path__details">
+							{stage.details.map((detail) => <li>{detail}</li>)}
+						</ul>
+					</div>
 				</li>
 			))}
 		</ol>
@@ -372,22 +375,14 @@ const elsewhere = [
 		.hint svg { animation: none; }
 	}
 
-	/* the path (experience and education): a rail down the inline-start, a mark per stage in the
-	 * shape of the gauge's, today's lit gold (the only one still going) */
+	/* the path (experience and education): a mark per stage down the inline-start, in the shape of
+	 * the gauge's, joined by a rail; as the static timeline every stage is open and today's mark lit
+	 * gold (the only one still going) */
 	.path {
 		position: relative;
 		margin: 0;
 		padding: 0;
 		list-style: none;
-	}
-	.path::before {
-		content: "";
-		position: absolute;
-		inset-block: 8px;
-		inset-inline-start: 5px;
-		inline-size: 2px;
-		border-radius: 2px;
-		background: linear-gradient(to bottom, var(--sd-gold), rgb(233 227 211 / 0.16) 30%);
 	}
 	.path__stage {
 		position: relative;
@@ -399,6 +394,7 @@ const elsewhere = [
 	.path__stage::before {
 		content: "";
 		position: absolute;
+		z-index: 1;
 		inset-inline-start: 0;
 		inset-block-start: 5px;
 		inline-size: 12px;
@@ -409,6 +405,16 @@ const elsewhere = [
 	}
 	.path__stage:first-child::before {
 		background: var(--sd-gold);
+	}
+	/* the rail: each stage's piece runs from its mark down to the next one's */
+	.path__stage:not(:last-child)::after {
+		content: "";
+		position: absolute;
+		inset-inline-start: 5px;
+		inset-block-start: 11px;
+		inline-size: 2px;
+		block-size: calc(100% + var(--sd-space-3));
+		background: rgb(233 227 211 / 0.16);
 	}
 	.path__years {
 		display: block;
@@ -431,13 +437,77 @@ const elsewhere = [
 		color: var(--sd-text-dim);
 		white-space: nowrap;
 	}
+	/* the details open and close as a grid row (0fr to 1fr), so they slide rather than jump */
+	.path__more {
+		display: grid;
+		grid-template-rows: 1fr;
+	}
 	.path__details {
-		margin: 2px 0 0;
-		padding: 0;
+		min-block-size: 0;
+		overflow: hidden;
+		margin: 0;
+		padding: 2px 0 0;
 		list-style: none;
 		font-size: 0.93rem;
 		line-height: 1.45;
 		color: var(--sd-text-dim);
+	}
+
+	/* stepping (path.ts sets data-stepping): the stage in focus opens, a little larger and fully lit,
+	 * the others close to their years and role and fade; the stages the focus has climbed past keep
+	 * their marks and their piece of rail in gold, so the rail fills from the degree up to the focus */
+	.path[data-stepping] .path__stage {
+		opacity: 0.5;
+		transition: opacity 320ms var(--sd-ease);
+	}
+	.path[data-stepping] .path__stage.is-on {
+		opacity: 1;
+	}
+	.path[data-stepping] .path__stage::before {
+		background: #4a443d;
+		transition: background 320ms var(--sd-ease), scale 320ms var(--sd-ease);
+	}
+	.path[data-stepping] .path__stage.is-past::before {
+		background: color-mix(in srgb, var(--sd-gold) 55%, #4a443d);
+	}
+	.path[data-stepping] .path__stage.is-on::before {
+		background: var(--sd-gold);
+		scale: 1.2;
+	}
+	.path[data-stepping] .path__stage::after {
+		transition: background 320ms var(--sd-ease);
+	}
+	.path[data-stepping] .path__stage:is(.is-on, .is-past)::after {
+		background: color-mix(in srgb, var(--sd-gold) 70%, transparent);
+	}
+	.path[data-stepping] .path__role {
+		transition: font-size 320ms var(--sd-ease);
+	}
+	.path[data-stepping] .path__stage.is-on .path__role {
+		font-size: 1.22rem;
+	}
+	.path[data-stepping] .path__more {
+		grid-template-rows: 0fr;
+		transition: grid-template-rows 420ms var(--sd-ease);
+	}
+	.path[data-stepping] .path__stage.is-on .path__more {
+		grid-template-rows: 1fr;
+	}
+	.path[data-stepping] .path__stage.is-on .path__details {
+		color: var(--sd-text);
+	}
+	/* while path.ts measures its states, and with reduced motion, nothing slides or grows: the stage in
+	 * focus just fades in */
+	.path.is-measuring,
+	.path.is-measuring * {
+		transition: none !important;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.path[data-stepping] .path__more,
+		.path[data-stepping] .path__role,
+		.path[data-stepping] .path__stage::before {
+			transition: none;
+		}
 	}
 
 	.formula {

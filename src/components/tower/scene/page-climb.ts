@@ -1,13 +1,14 @@
 /**
  * The page's side of the climb, whatever is behind it (the live tower, or the still picture):
- * the scroll progress and keys (./climb.ts), the bottom sheets on narrow screens (./sheet.ts) and
- * the code tier's lit project (./projects.ts). Pure DOM; whoever runs the frames calls `update`
- * with the progress it shows (the camera's eased progress, for the live tower) and `light` with
- * the doorway under the pointer, if it has one.
+ * the scroll progress and keys (./climb.ts), the bottom sheets on narrow screens (./sheet.ts), the
+ * code tier's lit project (./projects.ts) and the experience tier's path (./path.ts). Pure DOM;
+ * whoever runs the frames calls `update` with the progress it shows (the camera's eased progress,
+ * for the live tower) and `light` with the doorway under the pointer, if it has one.
  */
 import { createClimb } from './climb';
 import { createSheet } from './sheet';
 import { createProjects, type ProjectSpec } from './projects';
+import { createPath } from './path';
 
 export interface PageClimbOptions {
 	sections: HTMLElement[];
@@ -29,6 +30,11 @@ export function createPageClimb(o: PageClimbOptions) {
 	const climb = createClimb(o.sections, o.panels);
 	const sheet = createSheet(o.panels, o.startTier);
 	const projects = createProjects(o.projects, o.onLight);
+	// the experience tier's path, found by what its panel holds
+	const pathTier = o.panels.findIndex((p) => p.querySelector('.path'));
+	const pathList = pathTier >= 0 ? o.panels[pathTier].querySelector<HTMLElement>('.path') : null;
+	const path = pathList ? createPath(pathList) : null;
+	const pathStops = pathList ? pathList.querySelectorAll(':scope > .path__stage').length : 0;
 	let lastTier = -1;
 	// a climb is running the panels (TowerLoaderBoot's fallback looks for it); one that came late,
 	// after the fallback gave up on it, takes the page back from its message
@@ -56,6 +62,11 @@ export function createPageClimb(o: PageClimbOptions) {
 			const nearest = Math.round(progress);
 			climb.updatePanels(progress, enter, drift);
 			sheet.update(nearest, Math.round(climb.progress));
+			if (path) {
+				// the stop the scroll is at on the path's tier; below it the degree, above it today
+				const stop = climb.stop;
+				path.update(stop && stop.tier === pathTier ? Math.round(stop.at) : climb.progress < pathTier ? 0 : pathStops - 1);
+			}
 			if (nearest !== lastTier) {
 				lastTier = nearest;
 				window.dispatchEvent(new CustomEvent('tower:tier', { detail: o.tiers[nearest] }));
@@ -65,6 +76,7 @@ export function createPageClimb(o: PageClimbOptions) {
 			climb.dispose();
 			sheet.dispose();
 			projects.dispose();
+			path?.dispose();
 			delete root.dataset.climb;
 		},
 	};
