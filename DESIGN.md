@@ -112,6 +112,13 @@ components:
     typography: "{typography.label}"
     rounded: "{rounded.pill}"
     padding: "4px 10px"
+  path-mark:
+    backgroundColor: "{colors.lamplight-gold}"
+    rounded: "3px 3px 1px 1px"
+    width: "12px"
+    height: "12px"
+  path-years:
+    textColor: "{colors.lamplight-gold}"
   contact-row:
     textColor: "{colors.limestone-cornice}"
     padding: "11px 14px"
@@ -215,10 +222,10 @@ Measured values (altitude, scores, years, ranks) use tabular numerals.
 
 ## Layout
 
-The page is always the climb. Each tier is a tall scroll span: 1.5 viewports (`150vh`), the summit one viewport, and the code tier half a viewport more per project "stop" after the first. The camera parks when a section's top meets the viewport's top. Behind it sits either the live 3D tower (`html.webgl`) or the still picture (StaticTower). Panels, gauge, sheets and scroll spans behave the same in both; only the background differs.
+The page is always the climb. Each tier is a tall scroll span: 1.5 viewports (`150vh`), the summit one viewport. A tier that steps through its items gets half a viewport more per "stop" after the first: the code tier one per project, the experience tier one per stage of its path. The camera parks when a section's top meets the viewport's top. Behind it sits either the live 3D tower (`html.webgl`) or the still picture (StaticTower). Panels, gauge, sheets and scroll spans behave the same in both; only the background differs.
 
 - **Wide screens (above 47.5rem):** each tier's arch panel is fixed at the inline-start (`clamp(16px, 6vw, 112px)` in), vertically centred, `min(31rem, 40vw)` wide and at most the viewport minus 150px tall. A panel taller than that scrolls its body under a fixed title, with the scrollbar running down its straight side, and soft mask fades where more content waits. The body keeps 6px of room (padding with a matching negative margin) on its inline-start and top, so focus rings aren't clipped. The tower stands at the inline-end. The altitude gauge runs down the inline-end edge, `min(58vh, 470px)` tall.
-- **Phones (47.5rem and below):** the panel becomes a bottom sheet, inset 8px. Open, it rises to just under the header. Collapsed, only a 150px peek (title and fading first lines) stays above the bottom edge. It opens and closes through the keystone handle, by drag, by a tap outside, or with Esc. On the code tier, the collapsed sheet shows a copy of the project currently in focus. The gauge moves to the top (from 76px down, 34vh tall), names only the current tier, and dims to 20% while a sheet is open; its label steps aside entirely.
+- **Phones (47.5rem and below):** the panel becomes a bottom sheet, inset 8px. Open, it rises to just under the header. Collapsed, only a 150px peek (title and fading first lines) stays above the bottom edge. It opens and closes through the keystone handle, by drag, by a tap outside, or with Esc. On the tiers with stops, the collapsed sheet shows a copy of what is in focus under its title: the project, or the stage of the path (its years and role), each kept to one height from stop to stop. An open sheet whose content fits isn't a scroll box: a swipe on it climbs the tower, up or down, and only its handle or title band drags it closed. A longer one scrolls inside, and the page holds. The gauge moves to the top (from 76px down, 34vh tall), names only the current tier, and dims to 20% while a sheet is open; its label steps aside entirely.
 - **Very narrow (30rem and below):** panel padding tightens (3.6rem / 1.4rem) and the arch becomes `50% 3.6rem`.
 - **Header:** fixed over the climb, brand at the inline-start and actions (game mode, language) at the inline-end, with `var(--sd-gutter)` inline padding.
 - **Without JavaScript or if loading fails:** a full-screen message replaces the page. The whole tower stands on its plain under the dawn sky, with an arch panel saying "האתר צריך JavaScript".
@@ -247,7 +254,7 @@ Depth is atmospheric: translucent, blurred glass over a lit scene, plus one deep
 
 ## Shapes
 
-The geometry is the tower's: arches, not rounded rectangles. A panel has an elliptical arch top (Arch, `15.5rem 5.6rem`) on squared feet (Corner, 6px), with a limestone keystone, a 26 × 20px trapezoid, at its crown. A project card is a small doorway (Arch Small, `30px 22px` top, 6px feet). On phones, the sheet's arch is `50% 2.6rem` with no bottom corners or bottom border, and the keystone becomes a larger 44 × 30px handle carrying a chevron. Pills (999px) serve controls, chips, status tags, gauge labels and inputs. Small shapes repeat the motif: each gauge mark is a tiny arched block (`3px 3px 1px 1px`), and the door inside a project card is a 26 × 34px arched doorway. The focus ring takes the 6px corner. Contact rows use a plain 8px radius.
+The geometry is the tower's: arches, not rounded rectangles. A panel has an elliptical arch top (Arch, `15.5rem 5.6rem`) on squared feet (Corner, 6px), with a limestone keystone, a 26 × 20px trapezoid, at its crown. A project card is a small doorway (Arch Small, `30px 22px` top, 6px feet). On phones, the sheet's arch is `50% 2.6rem` with no bottom corners or bottom border, and the keystone becomes a larger 44 × 30px handle carrying a chevron. Pills (999px) serve controls, chips, status tags, gauge labels and inputs. Small shapes repeat the motif: each gauge mark is a tiny arched block (`3px 3px 1px 1px`), and so is each stage's mark on the path, and the door inside a project card is a 26 × 34px arched doorway. The focus ring takes the 6px corner. Contact rows use a plain 8px radius.
 
 ## Components
 
@@ -267,6 +274,7 @@ Dark glass that warms to gold on hover.
 ### Cards / Containers
 - **Arch panel:** see Shapes. Fill is a top-to-bottom gradient from Smoked Glass to Smoked Glass Deep, with a Cornice Line border and the panel-lift shadow. Padding is 4.4rem at the top (under the arch), 2.1rem inline and 2rem at the bottom. Each tier's content has one title, then a body that scrolls.
 - **Project doorway card:** a three-column grid (door, name over description, status pill). At rest it has a 3% warm wash and a limestone border at 14%. **Lit** (hover, focus, or the climb's stop on that project, which is also when its doorway in the tower is hovered): a 12% gold wash, 60% gold border, a 2px lift, and the door glows (radial white-gold to amber). The description takes full Limestone Cornice. A closed project's door is bricked up in fired mudbrick and never glows; at its stop only the border brightens.
+- **Path (timeline):** the experience tier's stages, newest first, down a 2px rail at the inline-start (limestone at 16%). Each stage has a 12px arched mark, today's in Lamplight Gold. A stage is its years (gold 700 at 0.8rem), its role in Suez One at 1.1rem with the place after it in Limestone Dim (kept whole, never broken at a maqaf), and one or two detail lines (0.93rem, Limestone Dim). **Stepping** (the climb's stops, degree first): the stage in focus opens its details (a grid row sliding from 0fr to 1fr), its role grows to 1.22rem and its mark turns gold at 1.2 scale. The others close to years and role at 50%. The stages already passed keep a muted gold mark and their piece of rail in gold, so the rail fills from the degree up to the focus. The list keeps the height of its tallest state, so the panel never moves between stops. With reduced motion only the fade remains. Without the script every stage stays open.
 - **Contact row:** a label (gold icon and gold 700 label) and the value in Suez One, space-between, wrapping the value whole under the label if it can't fit. 4% warm wash, 14% limestone border, 8px radius, warming to gold on hover/focus.
 - **Craft list:** gold 26px line icons beside 1.06rem text, separated by limestone hairlines at 10%.
 
