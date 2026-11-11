@@ -448,7 +448,7 @@
       "kind": "card",
       "refersTo": "arch-panel",
       "description": "Each tier's container: arch-topped dark blurred glass with a limestone keystone.",
-      "html": "<article class=\"ds-arch-panel\" dir=\"rtl\"><h2 class=\"ds-arch-panel__title\">מתמטיקה ופיזיקה</h2><p class=\"ds-arch-panel__lead\">תואר B.Sc.‎ במתמטיקה עיונית, בהצטיינות, לצד לימודי השלמה במדעי המחשב.</p></article>",
+      "html": "<article class=\"ds-arch-panel\" dir=\"rtl\"><h2 class=\"ds-arch-panel__title\">ניסיון והשכלה</h2><p class=\"ds-arch-panel__lead\">תואר B.Sc.‎ במתמטיקה עיונית, בהצטיינות, לצד לימודי השלמה במדעי המחשב.</p></article>",
       "css": ".ds-arch-panel{position:relative;inline-size:min(31rem,100%);padding:4.4rem 2.1rem 2rem;color:var(--sd-text);font-family:var(--sd-font-text);background:linear-gradient(180deg,var(--sd-glass),var(--sd-glass-strong));backdrop-filter:blur(16px) saturate(1.15);border:1px solid var(--sd-line);border-start-start-radius:var(--sd-arch);border-start-end-radius:var(--sd-arch);border-end-start-radius:var(--sd-corner);border-end-end-radius:var(--sd-corner);box-shadow:var(--sd-shadow-panel)}.ds-arch-panel::before{content:\"\";position:absolute;inset-block-start:-1px;inset-inline:0;margin-inline:auto;inline-size:26px;block-size:20px;background:var(--sd-limestone);opacity:0.85;clip-path:polygon(0 0,100% 0,78% 100%,22% 100%)}.ds-arch-panel__title{margin:0 0 var(--sd-space-4);font-family:var(--sd-font-display);font-weight:400;font-size:var(--sd-text-h2);line-height:var(--sd-leading-tight)}.ds-arch-panel__lead{margin:0;font-size:var(--sd-text-lg);line-height:var(--sd-leading)}"
     },
     {

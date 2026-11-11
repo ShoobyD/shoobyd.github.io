@@ -19,6 +19,15 @@ export const tierAltitude: Record<TierId, number> = {
 	summit: 160,
 };
 
+/** One stage of the path on the experience and education tier. */
+export interface PathStage {
+	years: string;
+	role: string;
+	/** Where (an employer, a university); none for freelance teaching. */
+	org?: string;
+	details: string[];
+}
+
 interface HomeCopy {
 	/** Shown on the full-screen loader while the 3D tower is being prepared. */
 	loader: string;
@@ -44,7 +53,11 @@ interface HomeCopy {
 	};
 	code: { title: string; status: Record<ProjectStatus, string> };
 	/** `formulaLabel` names the formula, a link to the Tau Manifesto (its symbols alone say little to a screen reader). */
-	math: { title: string; lead: string; formulaLabel: string; aside: string };
+	/**
+	 * The path: experience and education, newest first (the climb steps from the last, the degree, up
+	 * to today). Short and general on purpose: no figures, no client or product names, no task lists.
+	 */
+	math: { title: string; path: PathStage[]; formulaLabel: string; aside: string };
 	languages: { title: string; quote: string; cite: string; topics: string[]; latin: string; latinLink: string };
 	/** `stringsHint` is for a hovering pointer, `stringsHintTouch` for fingers (a sideways swipe). */
 	making: { title: string; guitar: string; drawing: string; drawingLink: string; cooking: string; diy: string; stringsHint: string; stringsHintTouch: string };
@@ -143,7 +156,7 @@ export const home: Record<Lang, HomeCopy> = {
 		gauge: {
 			label: 'קומות המגדל',
 			unit: 'אמות',
-			tiers: { base: 'יסוד', code: 'פרויקטים', math: 'מתמטיקה', languages: 'שפות', making: 'יצירה', summit: 'פסגה' },
+			tiers: { base: 'יסוד', code: 'פרויקטים', math: 'ניסיון', languages: 'שפות', making: 'יצירה', summit: 'פסגה' },
 		},
 		sheet: { toggle: 'תוכן הקומה' },
 		noJs: {
@@ -165,9 +178,33 @@ export const home: Record<Lang, HomeCopy> = {
 			status: { live: 'פעיל', archive: 'ארכיון', closed: 'סגור' },
 		},
 		math: {
-			title: 'מתמטיקה ופיזיקה',
-			// the LRM after "B.Sc." keeps its final period with it in the Hebrew line (not before the B)
-			lead: 'תואר B.Sc.‎ במתמטיקה עיונית, בהצטיינות, לצד לימודי השלמה במדעי המחשב.',
+			title: 'ניסיון והשכלה',
+			path: [
+				{
+					years: '2018–היום',
+					role: 'מפתח פרונטאנד בכיר',
+					org: 'Pic-Time',
+					details: ['הובלת הפיתוח של פלטפורמת SaaS לצלמים.', 'ארכיטקטורה, תשתיות משותפות ומערכות ליבה.'],
+				},
+				{
+					years: '2015–2018',
+					role: 'ראש צוות פיתוח והדרכה',
+					org: 'EqualWeb',
+					details: ['בניית מוצר נגישות ווב מאפס, שמוטמע בחברות מובילות, במשרדי ממשלה וברשויות.'],
+				},
+				{
+					years: 'עד 2015',
+					role: 'הוראה',
+					details: ['שיעורים פרטיים במתמטיקה ובפיזיקה, מתיכון ועד אוניברסיטה.', 'הדרכת תכנות לילדים ולנוער.'],
+				},
+				{
+					years: '2006–2008',
+					// the LRM after "B.Sc." keeps its final period with it in the Hebrew line (not before the B)
+					role: 'B.Sc.\u200E במתמטיקה עיונית, בהצטיינות',
+					org: 'אוניברסיטת בר־אילן',
+					details: ['לימודי השלמה במדעי המחשב (2011–2012).'],
+				},
+			],
 			formulaLabel: 'זהות אוילר בגרסת טאו: המניפסט של טאו',
 			aside: 'הקומה הזאת עומדת על הוכחות, לא על טיח.',
 		},
@@ -250,7 +287,7 @@ export const home: Record<Lang, HomeCopy> = {
 		gauge: {
 			label: 'Tower tiers',
 			unit: 'cubits',
-			tiers: { base: 'Base', code: 'Projects', math: 'Math', languages: 'Languages', making: 'Making', summit: 'Summit' },
+			tiers: { base: 'Base', code: 'Projects', math: 'Experience', languages: 'Languages', making: 'Making', summit: 'Summit' },
 		},
 		sheet: { toggle: 'Tier content' },
 		noJs: {
@@ -272,8 +309,32 @@ export const home: Record<Lang, HomeCopy> = {
 			status: { live: 'Live', archive: 'Archive', closed: 'Closed' },
 		},
 		math: {
-			title: 'Mathematics & Physics',
-			lead: 'B.Sc. in pure mathematics, with honors, plus supplementary computer science studies.',
+			title: 'Experience & Education',
+			path: [
+				{
+					years: '2018–today',
+					role: 'Senior Frontend Engineer',
+					org: 'Pic-Time',
+					details: ['Leading development of a SaaS platform for photographers.', 'Architecture, shared infrastructure and core systems.'],
+				},
+				{
+					years: '2015–2018',
+					role: 'Development and Training Team Lead',
+					org: 'EqualWeb',
+					details: ['Building a web accessibility product from scratch, used by leading companies, government offices and municipalities.'],
+				},
+				{
+					years: 'until 2015',
+					role: 'Teaching',
+					details: ['Private lessons in mathematics and physics, from high school to university.', 'Teaching programming to children and teenagers.'],
+				},
+				{
+					years: '2006–2008',
+					role: 'B.Sc. in Pure Mathematics, with honors',
+					org: 'Bar-Ilan University',
+					details: ['Completion studies in computer science (2011–2012).'],
+				},
+			],
 			formulaLabel: "Euler's identity, the tau version: The Tau Manifesto",
 			aside: 'This tier stands on proofs, not plaster.',
 		},
