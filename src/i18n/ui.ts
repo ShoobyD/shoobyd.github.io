@@ -30,7 +30,7 @@ export function isLang(value: string | undefined): value is Lang {
 export const ui = {
 	he: {
 		'site.title':       'ברוך מוסטקיס · ShoobyD',
-		'site.description': 'ברוך מוסטקיס (ShoobyD), מפתח פרונטאנד בכיר ומתמטיקאי. מגדל בבל אישי שעוד בבנייה: פרויקטים, תחומי־עניין, יצירה, ומשחק לבנים בפסגה.',
+		'site.description': 'ברוך מוסטקיס (ShoobyD), מפתח פרונטאנד בכיר, מתמחה בארכיטקטורה ובהובלה טכנית. מגדל בבל אישי שעוד בבנייה: פרויקטים, ניסיון, תחומי־עניין, יצירה, ומשחק לבנים בפסגה.',
 		'brand.name':       'ShoobyD',
 		'brand.tagline':    'ברוך מוסטקיס',
 		'nav.home':         'לעמוד הבית',
@@ -42,7 +42,7 @@ export const ui = {
 	},
 	en: {
 		'site.title':       'Baruch Mustakis · ShoobyD',
-		'site.description': 'Baruch Mustakis (ShoobyD), senior frontend engineer and mathematician. A personal Tower of Babel still under construction: projects, interests, creative work, and a brick game at the summit.',
+		'site.description': 'Baruch Mustakis (ShoobyD), senior frontend engineer specializing in architecture and technical leadership. A personal Tower of Babel still under construction: projects, experience, interests, creative work, and a brick game at the summit.',
 		'brand.name':       'ShoobyD',
 		'brand.tagline':    'Baruch Mustakis',
 		'nav.home':         'Home page',
