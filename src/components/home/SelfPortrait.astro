@@ -47,14 +47,10 @@ const { image, alt, openLabel, caption, closeLabel } = Astro.props;
 
 <script>
 	/*
-	 * The enlarged drawing grows out of the small one (a FLIP: the large drawing starts exactly
-	 * over the small one — same place, size and tilt — and animates to its own place), and shrinks
-	 * back into it on close. Esc, the close button or a click on the backdrop close it; focus
-	 * returns to the drawing (native <dialog>).
+	 * The enlarged drawing grows out of the small one and shrinks back into it on close (see
+	 * image-view.ts); it starts at the small drawing's tilt, straight while that is hovered or focused.
 	 */
-	const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-	const easing = 'cubic-bezier(0.22, 1, 0.36, 1)';
-	const duration = 520;
+	import { createImageView } from './image-view';
 
 	function setUp(root: HTMLElement) {
 		const open = root.querySelector<HTMLAnchorElement>('.portrait__open');
@@ -62,71 +58,17 @@ const { image, alt, openLabel, caption, closeLabel } = Astro.props;
 		const thumb = open?.querySelector<HTMLElement>('.portrait__mat');
 		const big = view?.querySelector<HTMLElement>('.portrait-view__mat');
 		if (!open || !view || !thumb || !big || typeof view.showModal !== 'function') return;
-		const extras = [...view.querySelectorAll<HTMLElement>('figcaption, .portrait-view__close')];
-		let closing = false;
-
-		/** The transform that lays the large drawing over the small one, as it sits right now. */
-		function fromThumb() {
-			const small = thumb!.getBoundingClientRect();
-			const large = big!.getBoundingClientRect();
-			const dx = small.x + small.width / 2 - (large.x + large.width / 2);
-			const dy = small.y + small.height / 2 - (large.y + large.height / 2);
-			const scale = small.width / large.width;
-			const tilt = open!.matches(':hover, :focus-visible') ? 0 : -1.4;
-			return `translate(${dx}px, ${dy}px) scale(${scale}) rotate(${tilt}deg)`;
-		}
-
-		function backdrop(keyframes: Keyframe[]) {
-			try {
-				view!.animate(keyframes, { duration, easing, fill: 'forwards', pseudoElement: '::backdrop' });
-			} catch {
-				// a browser that cannot animate ::backdrop just shows it at once
-			}
-		}
-
+		const image = createImageView({
+			view,
+			big,
+			hide: thumb,
+			source: () => ({ rect: thumb.getBoundingClientRect(), tilt: open.matches(':hover, :focus-visible') ? 0 : -1.4 }),
+			extras: [...view.querySelectorAll<HTMLElement>('figcaption, .portrait-view__close')],
+			closeForm: view.querySelector<HTMLFormElement>('.portrait-view__close'),
+		});
 		open.addEventListener('click', (e) => {
 			e.preventDefault();
-			view.showModal();
-			if (reduced.matches) return;
-			thumb.style.visibility = 'hidden';
-			big.animate([{ transform: fromThumb() }, { transform: 'none' }], { duration, easing });
-			backdrop([{ opacity: 0 }, { opacity: 1 }]);
-			extras.forEach((el) =>
-				el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, delay: duration * 0.6, easing, fill: 'backwards' }),
-			);
-		});
-
-		async function close() {
-			if (closing || !view!.open) return;
-			if (reduced.matches) {
-				view!.close();
-				return;
-			}
-			closing = true;
-			extras.forEach((el) => el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 140, fill: 'forwards' }));
-			backdrop([{ opacity: 1 }, { opacity: 0 }]);
-			const shrink = big!.animate([{ transform: 'none' }, { transform: fromThumb() }], { duration, easing, fill: 'forwards' });
-			await shrink.finished.catch(() => {});
-			view!.close();
-			thumb!.style.visibility = '';
-			view!.getAnimations({ subtree: true }).forEach((a) => a.cancel());
-			closing = false;
-		}
-
-		// every way out runs the shrink: Esc (cancel), the close button, a click on the backdrop
-		view.addEventListener('cancel', (e) => {
-			e.preventDefault();
-			close();
-		});
-		view.querySelector('.portrait-view__close')?.addEventListener('submit', (e) => {
-			e.preventDefault();
-			close();
-		});
-		view.addEventListener('click', (e) => {
-			if (e.target === view) close();
-		});
-		view.addEventListener('close', () => {
-			thumb.style.visibility = '';
+			image.open();
 		});
 	}
 
