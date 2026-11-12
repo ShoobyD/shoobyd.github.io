@@ -1,11 +1,12 @@
 /**
  * Projects shown on the home page's "code" tier, as doorways in the tower. Each stands on its own,
  * away from the site (its own repo, its own page), so its card and its doorway open it in a new tab.
- * Facts only (see PRODUCT.md → Evidence on Hand); the content phase will extend this list.
+ * A project in development has no link yet: its card and its bricked doorway only mark it.
  */
 import type { Lang } from '../i18n/ui';
 
-export type ProjectStatus = 'live' | 'archive' | 'closed';
+/** `dev`: in development and not public yet (it may turn commercial), so it has no link. */
+export type ProjectStatus = 'live' | 'archive' | 'dev';
 
 export interface Project {
 	id: string;
@@ -19,13 +20,50 @@ export interface Project {
 
 export const projects: Project[] = [
 	{
-		id: 'sudoku',
-		name: 'Sudoku Solver',
-		href: '/sudoku/',
+		id: 'gifted-prep',
+		name: {
+			he: 'מחוננים – תרגול',
+			en: 'Gifted Prep',
+		},
+		status: 'dev',
+		description: {
+			he: 'אפליקציית תרגול למבחן המחוננים, שעובדת גם בלי אינטרנט',
+			en: 'A practice app for the gifted screening test, offline too',
+		},
+	},
+	{
+		id: 'itamar-shop',
+		name: {
+			he: 'גלריית ציורים לילדים',
+			en: "Children's Drawings Gallery",
+		},
+		status: 'dev',
+		description: {
+			he: 'חנות שבה הילד מעלה, מתמחר ומסמן מה נמכר',
+			en: "A shop where the child uploads, prices and marks what's sold",
+		},
+	},
+	{
+		id: 'chinese-vocabulary',
+		name: {
+			he: 'לימוד סינית',
+			en: 'Chinese Vocabulary',
+		},
+		href: '/chinese-vocabulary/',
 		status: 'live',
 		description: {
-			he: 'פותר סודוקו',
-			en: 'A sudoku solver',
+			he: 'אוצר מילים בסינית לדוברי עברית: כרטיסיות ובחנים',
+			en: 'Chinese vocabulary for Hebrew speakers: flashcards and quizzes',
+		},
+	},
+	{
+		id: 'doppler',
+		name: 'Doppler Simulator',
+		href: '/doppler-effect-simulator/',
+		status: 'live',
+		description: {
+			he: 'סימולטור של אפקט דופלר, עם שינוי צליל אמיתי',
+			en: 'A Doppler-effect simulator, with real pitch shift',
 		},
 	},
 	{
@@ -46,28 +84,6 @@ export const projects: Project[] = [
 		description: {
 			he: 'מנהרת ICMP, בפייתון',
 			en: 'An ICMP tunnel, in Python',
-		},
-	},
-	{
-		id: 'fresh',
-		name: 'Fresh',
-		href: '/fresh/',
-		status: 'archive',
-		description: {
-			he: 'תוספי דפדפן, קאונטרים ועיצובים לפורום פרש',
-			en: 'Browser add-ons, counters and skins for the Fresh forum',
-		},
-	},
-	{
-		id: 'books',
-		name: {
-			he: 'מערכת הורדת ספרים',
-			en: 'Book downloads',
-		},
-		status: 'closed',
-		description: {
-			he: 'סגורה לקהל הרחב',
-			en: 'A book-download system, closed to the public',
 		},
 	},
 ];

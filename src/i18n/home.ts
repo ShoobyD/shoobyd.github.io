@@ -188,7 +188,7 @@ export const home: Record<Lang, HomeCopy> = {
 		},
 		code: {
 			title: 'פרויקטים',
-			status: { live: 'פעיל', archive: 'ארכיון', closed: 'סגור' },
+			status: { live: 'פעיל', archive: 'ארכיון', dev: 'בפיתוח' },
 		},
 		math: {
 			title: 'ניסיון והשכלה',
@@ -322,7 +322,7 @@ export const home: Record<Lang, HomeCopy> = {
 		},
 		code: {
 			title: 'Projects',
-			status: { live: 'Live', archive: 'Archive', closed: 'Closed' },
+			status: { live: 'Live', archive: 'Archive', dev: 'In development' },
 		},
 		math: {
 			title: 'Experience & Education',

@@ -104,10 +104,10 @@ defineProps<{ items: ProjectItem[] }>();
 
 .project--live .project__status { color: var(--sd-gold); }
 .project--archive .project__status,
-.project--closed .project__status { color: var(--sd-text-dim); }
+.project--dev .project__status { color: var(--sd-text-dim); }
 
-/* a closed project has no doorway to walk through */
-.project--closed .project__door {
+/* a project in development has no doorway to walk through yet */
+.project--dev .project__door {
 	background: repeating-linear-gradient(0deg, var(--sd-ochre-deep) 0 5px, #8a5b2c 5px 7px);
 	border-color: rgb(233 227 211 / 0.25);
 }
@@ -136,7 +136,7 @@ a.project.is-lit .project__desc {
 	color: var(--sd-text);
 }
 
-/* a closed project has no light behind its bricked doorway: its stop only marks the card */
+/* a project in development has no light behind its bricked doorway: its stop only marks the card */
 div.project.is-lit {
 	background: rgb(255 240 215 / 0.06);
 	border-color: rgb(233 227 211 / 0.45);
