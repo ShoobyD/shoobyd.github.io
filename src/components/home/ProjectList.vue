@@ -22,6 +22,8 @@ defineProps<{ items: ProjectItem[] }>();
 				class="project"
 				:class="`project--${item.status}`"
 				:href="item.href"
+				:target="item.href ? '_blank' : undefined"
+				:rel="item.href ? 'noopener' : undefined"
 				:data-project="item.id"
 			>
 				<span class="project__door" aria-hidden="true" />

@@ -1,5 +1,6 @@
 /**
- * Projects shown on the home page's "code" tier, as doorways in the tower.
+ * Projects shown on the home page's "code" tier, as doorways in the tower. Each stands on its own,
+ * away from the site (its own repo, its own page), so its card and its doorway open it in a new tab.
  * Facts only (see PRODUCT.md → Evidence on Hand); the content phase will extend this list.
  */
 import type { Lang } from '../i18n/ui';
@@ -40,7 +41,7 @@ export const projects: Project[] = [
 	{
 		id: 'icmptunnel',
 		name: 'ICMP Tunnel',
-		href: '/icmptunnel/',
+		href: 'https://github.com/ShoobyD/icmptunnel',
 		status: 'archive',
 		description: {
 			he: 'מנהרת ICMP, בפייתון',

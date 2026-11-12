@@ -20,7 +20,7 @@
 					'title' : 'balloonz',
 				},
 				{
-					'url'   : '/icmptunnel/',
+					'url'   : 'https://github.com/ShoobyD/icmptunnel',
 					'title' : 'ICMP Tunnel',
 				},
 				{

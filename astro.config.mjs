@@ -10,6 +10,8 @@ export default defineConfig({
 	redirects: {
 		// the old contact page: contact now lives at the tower's summit
 		'/contact/': '/#tier-summit',
+		// icmptunnel has no page of its own any more, only its repo (old links, from the Fresh forum too)
+		'/icmptunnel/': 'https://github.com/ShoobyD/icmptunnel',
 	},
 	i18n: {
 		defaultLocale: 'he',

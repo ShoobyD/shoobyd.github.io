@@ -202,7 +202,8 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 		pointer.lastY = e.clientY;
 		strings.resetTracking();
 	}
-	// clicking a doorway opens its project, and clicking the unfinished top starts the game (the
+	// clicking a doorway opens its project (in a new tab, like its card: each project stands on its
+	// own, away from the site), and clicking the unfinished top starts the game (the
 	// game UI listens for `tower:play`); the pick happens at click time so taps work too
 	function onClick(e: MouseEvent) {
 		if ((nearest !== 1 && nearest !== LAST_TIER) || !climb || pointerInUi(e.target) || director) return;
@@ -213,7 +214,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 		}
 		const i = doors.pick(ndc, camera);
 		const href = i >= 0 ? opts.doors[i].href : undefined;
-		if (href) window.location.href = href;
+		if (href) window.open(href, '_blank', 'noopener');
 	}
 	window.addEventListener('pointermove', onPointerMove, { passive: true });
 	window.addEventListener('pointerdown', onPointerDown, { passive: true });
