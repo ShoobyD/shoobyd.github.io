@@ -37,6 +37,20 @@ function sweep(rings: THREE.Vector3[][]) {
 	return g;
 }
 
+/**
+ * A ring split around gaps: the [thetaStart, thetaLength] runs of a CylinderGeometry that leave
+ * out `half` either side of each wall angle in `gaps` (three's theta runs from +z toward +x, so a
+ * wall angle `a`, at (cos a, sin a), sits at theta = PI / 2 - a). No gaps: the whole ring.
+ */
+function bandRuns(gaps: number[], half: number): [number, number][] {
+	if (!gaps.length) return [[0, TAU]];
+	const at = gaps.map((a) => (((Math.PI / 2 - a) % TAU) + TAU) % TAU).sort((p, q) => p - q);
+	return at.map((t, k) => {
+		const next = k + 1 < at.length ? at[k + 1] : at[0] + TAU;
+		return [t + half, next - t - 2 * half] as [number, number];
+	});
+}
+
 export function createTower(
 	tower: THREE.Group,
 	{ rnd }: Random,
@@ -65,10 +79,17 @@ export function createTower(
 		cornice.position.y = yb(i) + TH - 0.05;
 		cornice.castShadow = cornice.receiveShadow = true;
 		const mid = rAt(i, yb(i) + 3) + 0.14;
-		const band = new THREE.Mesh(new THREE.CylinderGeometry(mid, mid, 0.2, 144, 1, true), mats.limestone);
-		band.position.y = yb(i) + 3.05;
-		band.castShadow = true;
-		tower.add(wall, cornice, band);
+		tower.add(wall, cornice);
+		// on the code tier the band stops at each doorway, so it doesn't cross the top of the opening:
+		// at its height the arch is narrowing (the opening 0.36 either side, the frame 0.72), and its
+		// ends stop between them, hidden in the frame
+		for (const [start, length] of bandRuns(i === 1 ? doorAngles : [], 0.55 / mid)) {
+			const geo = new THREE.CylinderGeometry(mid, mid, 0.2, Math.max(2, Math.ceil((144 * length) / TAU)), 1, true, start, length);
+			const band = new THREE.Mesh(geo, mats.limestone);
+			band.position.y = yb(i) + 3.05;
+			band.castShadow = true;
+			tower.add(band);
+		}
 	}
 
 	// ---------- arches and pilasters, instanced; gaps are left for the doorways and the gate ----------
