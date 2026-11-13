@@ -125,6 +125,7 @@ export function createClimb(sections: HTMLElement[], panels: HTMLElement[]) {
 		},
 		measure,
 		goTier,
+		goStop,
 		/**
 		 * Each panel is fully shown within ±0.14 tier of its park and gone by ±0.46, drifting
 		 * upward as it leaves. `enter` (0..1) fades the whole set in when the climb starts; `drift`

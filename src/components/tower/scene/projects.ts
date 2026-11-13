@@ -16,7 +16,15 @@ export interface ProjectSpec {
 	href?: string;
 }
 
-export function createProjects(specs: readonly ProjectSpec[], onLight: (i: number) => void = () => {}) {
+/**
+ * `onFocus` is told of a card reached from the keyboard, so the scroll can go to its stop (and the
+ * tower turn to its doorway); a card the pointer clicks or hovers doesn't move the scroll.
+ */
+export function createProjects(
+	specs: readonly ProjectSpec[],
+	onLight: (i: number) => void = () => {},
+	onFocus: (i: number) => void = () => {},
+) {
 	const cards = specs.map((d) => document.querySelector<HTMLElement>(`[data-project="${CSS.escape(d.id)}"]`));
 	let doorHover = -1;
 	let cardHover = -1;
@@ -134,9 +142,15 @@ export function createProjects(specs: readonly ProjectSpec[], onLight: (i: numbe
 		};
 		card.addEventListener('pointerenter', on);
 		card.addEventListener('pointerleave', off);
-		card.addEventListener('focus', on);
+		const focus = () => {
+			on();
+			// after the panel's own handling of focus coming in (it brings the tier into view, at its
+			// first stop), so the stop lands last
+			if (card.matches(':focus-visible')) window.setTimeout(() => onFocus(k));
+		};
+		card.addEventListener('focus', focus);
 		card.addEventListener('blur', off);
-		return { card, on, off };
+		return { card, on, off, focus };
 	});
 
 	return {
@@ -156,7 +170,7 @@ export function createProjects(specs: readonly ProjectSpec[], onLight: (i: numbe
 				if (!h) return;
 				h.card.removeEventListener('pointerenter', h.on);
 				h.card.removeEventListener('pointerleave', h.off);
-				h.card.removeEventListener('focus', h.on);
+				h.card.removeEventListener('focus', h.focus);
 				h.card.removeEventListener('blur', h.off);
 				h.card.classList.remove('is-lit');
 			});

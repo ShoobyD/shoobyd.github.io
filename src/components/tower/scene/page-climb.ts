@@ -29,7 +29,8 @@ const CODE_TIER = 1;
 export function createPageClimb(o: PageClimbOptions) {
 	const climb = createClimb(o.sections, o.panels);
 	const sheet = createSheet(o.panels, o.startTier);
-	const projects = createProjects(o.projects, o.onLight);
+	// a project card reached from the keyboard takes the scroll to its stop on the code tier
+	const projects = createProjects(o.projects, o.onLight, (k) => climb.goStop(CODE_TIER, k));
 	// the experience tier's path, found by what its panel holds
 	const pathTier = o.panels.findIndex((p) => p.querySelector('.path'));
 	const pathList = pathTier >= 0 ? o.panels[pathTier].querySelector<HTMLElement>('.path') : null;
