@@ -187,7 +187,7 @@ export const home: Record<Lang, HomeCopy> = {
 			portraitClose: 'סגירה',
 		},
 		code: {
-			title: 'פרויקטים',
+			title: 'פרויקטים נבחרים',
 			status: { live: 'פעיל', archive: 'ארכיון', dev: 'בפיתוח' },
 		},
 		math: {
@@ -321,7 +321,7 @@ export const home: Record<Lang, HomeCopy> = {
 			portraitClose: 'Close',
 		},
 		code: {
-			title: 'Projects',
+			title: 'Selected Projects',
 			status: { live: 'Live', archive: 'Archive', dev: 'In development' },
 		},
 		math: {
