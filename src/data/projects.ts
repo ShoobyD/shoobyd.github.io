@@ -74,8 +74,8 @@ export const projects: Project[] = [
 		// a very old project
 		status: 'archive',
 		description: {
-			he: 'משחק פיצוץ בלונים שאפשר להטמיע בכל אתר',
-			en: 'An embeddable balloon-popping game',
+			he: 'משחק פיצוץ בלונים עתיק להטמעה באתרים, שנשמר למזכרת',
+			en: 'An ancient embeddable balloon-popping game, kept as a keepsake',
 		},
 	},
 	{
