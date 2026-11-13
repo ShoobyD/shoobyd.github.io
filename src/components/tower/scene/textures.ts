@@ -1,5 +1,5 @@
 /**
- * Procedural canvas textures: mudbrick, cloud puffs and the doorway's lamplight.
+ * Procedural canvas textures: mudbrick and cloud puffs.
  * Nothing is downloaded; every texture is painted at start-up.
  */
 import * as THREE from 'three';
@@ -77,21 +77,6 @@ export function cloudTexture(seed: number) {
 		g.arc(x, y, rad, 0, TAU);
 		g.fill();
 	}
-	const tex = new THREE.CanvasTexture(c);
-	tex.colorSpace = THREE.SRGBColorSpace;
-	return tex;
-}
-
-/** The lamplit inside of a doorway: hot at the threshold, fading to ember at the arch. */
-export function doorGlowTexture() {
-	const { c, g } = canvas(64, 128);
-	const lg = g.createRadialGradient(32, 120, 4, 32, 96, 110);
-	lg.addColorStop(0, '#fff2cf');
-	lg.addColorStop(0.35, '#ffc06a');
-	lg.addColorStop(0.75, '#c2601f');
-	lg.addColorStop(1, '#5a2a10');
-	g.fillStyle = lg;
-	g.fillRect(0, 0, 64, 128);
 	const tex = new THREE.CanvasTexture(c);
 	tex.colorSpace = THREE.SRGBColorSpace;
 	return tex;
