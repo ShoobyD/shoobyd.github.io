@@ -1,5 +1,5 @@
 /**
- * Dev only, for now: look around the tower freely, SketchUp style. A drag with the wheel button
+ * Look around the tower freely, SketchUp style. A drag with the wheel button
  * turns the camera about the point it looks at (across: around the tower; up and down: over it or
  * from below), the same drag with Shift held slides the view, and Ctrl + wheel draws it in or out
  * (the plain wheel still scrolls the climb). The view stays where it was left while looking around;

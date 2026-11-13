@@ -276,9 +276,9 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 	// ---------- the frame ----------
 	let director: Director | null = null;
 	const shot = { pos: new THREE.Vector3(), look: new THREE.Vector3() };
-	// dev only, for now: look around freely with the wheel button (./free-look.ts)
+	// look around freely with the wheel button (./free-look.ts): only where there's a mouse to do it
 	let freeLook: FreeLook | null = null;
-	if (import.meta.env.DEV) {
+	if (matchMedia('(pointer: fine)').matches) {
 		void import('./free-look').then((m) => {
 			if (!disposed) freeLook = m.createFreeLook(camera, pointerInUi);
 		});
