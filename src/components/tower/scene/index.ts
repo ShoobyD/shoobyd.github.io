@@ -22,6 +22,7 @@ import { createSummit } from './summit';
 import { createClouds } from './clouds';
 import { createCameraRig, orbitShot } from './camera-path';
 import type { Climb } from './climb';
+import type { FreeLook } from './free-look';
 import type { Sheet } from './sheet';
 import { createPageClimb, type PageClimb } from './page-climb';
 import { createLoop } from './loop';
@@ -275,6 +276,13 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 	// ---------- the frame ----------
 	let director: Director | null = null;
 	const shot = { pos: new THREE.Vector3(), look: new THREE.Vector3() };
+	// dev only, for now: look around freely with the wheel button (./free-look.ts)
+	let freeLook: FreeLook | null = null;
+	if (import.meta.env.DEV) {
+		void import('./free-look').then((m) => {
+			if (!disposed) freeLook = m.createFreeLook(camera, pointerInUi);
+		});
+	}
 	let time = 0;
 	let frames = 0;
 
@@ -362,6 +370,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 			shot.look.lerp(d.look, blend);
 			if (d.altitude !== undefined) altitude = lerp(altitude, d.altitude, blend);
 		}
+		freeLook?.apply(shot, dt, smooth);
 		// narrow screens: the tower rises into the room above the sheet in view, following it as it
 		// opens, collapses or is dragged (eased, so changing tiers doesn't jolt the frame)
 		const liftTo = narrow && sheet ? sheet.lift(nearest) : null;
@@ -433,6 +442,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 			if (disposed) return;
 			disposed = true;
 			loop.dispose();
+			freeLook?.dispose();
 			// the page stays the climb, where it is: the still climb takes it from there
 			page?.dispose();
 			root.classList.remove(TOWER_CLASS);
