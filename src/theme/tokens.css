@@ -22,6 +22,7 @@
 
 	/* sky by altitude: dawn at the base → night at the summit */
 	--sd-sky:          #6f8fb3;
+	--sd-sky-pale:     #9db7d6; /* the sky's colour as an accent: a project in development */
 	--sd-sky-dawn-top: #2a3a62;
 	--sd-sky-dawn-low: #f3b98a;
 	--sd-sky-night:    #101a33;

@@ -5,6 +5,10 @@
  *
  * The lit project (card, and doorway with it): one pointed at (a doorway under the pointer, or a
  * card hovered or focused) wins; otherwise the code tier's stop the scroll is at (see climb.ts).
+ * The lit card is also the open one: the list steps (`data-stepping`, ../../home/ProjectList.vue),
+ * the others closed to their name and status dot, so a project shows its details before it's
+ * opened. Until this runs every card is open, so nothing is hidden that a script didn't take
+ * charge of.
  */
 
 export interface ProjectSpec {
@@ -18,14 +22,69 @@ export function createProjects(specs: readonly ProjectSpec[], onLight: (i: numbe
 	let cardHover = -1;
 	let stopHot = -1;
 	let hot = -1;
+	function open(i: number) {
+		cards.forEach((c, k) => c?.classList.toggle('is-lit', k === i));
+	}
+	/**
+	 * A project pointed at stays lit a moment after the pointer leaves it (`LINGER` ms), so crossing
+	 * the gap between two cards, or two doorways, goes straight from one to the other rather than
+	 * through the one at the scroll's stop.
+	 */
+	const LINGER = 250;
+	let pointedAt = -Infinity;
+	let linger: number | undefined;
 	function showHot() {
-		const i = doorHover >= 0 ? doorHover : cardHover >= 0 ? cardHover : stopHot;
+		const pointed = doorHover >= 0 ? doorHover : cardHover;
+		const now = performance.now();
+		if (pointed >= 0) pointedAt = now;
+		let i = pointed >= 0 ? pointed : stopHot;
+		if (pointed < 0 && hot >= 0 && hot !== stopHot && now - pointedAt < LINGER) {
+			i = hot;
+			// with or without frames calling in, it lets go once the moment is up
+			linger ??= window.setTimeout(() => {
+				linger = undefined;
+				showHot();
+			}, LINGER - (now - pointedAt) + 1);
+		}
 		if (i === hot) return;
 		hot = i;
 		onLight(i);
-		cards.forEach((c, k) => c?.classList.toggle('is-lit', k === i));
+		open(i);
 		if (i >= 0 && i === stopHot) revealCard(i);
 	}
+
+	const list = cards.find(Boolean)?.closest<HTMLElement>('.projects') ?? null;
+	if (list) list.dataset.stepping = '';
+	/**
+	 * The list keeps the height of its tallest state (whichever card, opened, makes it longest), so
+	 * the panel holding it doesn't move as the focus or the pointer moves from card to card.
+	 */
+	function reserve() {
+		if (!list) return;
+		list.style.minBlockSize = '';
+		list.classList.add('is-measuring');
+		let tallest = 0;
+		cards.forEach((_, i) => {
+			open(i);
+			tallest = Math.max(tallest, list.getBoundingClientRect().height);
+		});
+		open(hot);
+		void list.offsetHeight;
+		list.classList.remove('is-measuring');
+		list.style.minBlockSize = `${Math.ceil(tallest)}px`;
+	}
+	reserve();
+	// the width (and with it the line breaks) changes with the window; the fonts change the metrics.
+	// Only a new width re-measures: reserving changes the height, which mustn't set it off again.
+	let width = list?.getBoundingClientRect().width ?? 0;
+	const watch = new ResizeObserver(() => {
+		const w = list?.getBoundingClientRect().width ?? 0;
+		if (Math.abs(w - width) < 0.5) return;
+		width = w;
+		reserve();
+	});
+	if (list) watch.observe(list);
+	document.fonts?.ready.then(reserve).catch(() => {});
 	/**
 	 * The collapsed mobile sheet's peek at the project in focus (`[data-stop-now]` under the code
 	 * tier's lead): a copy of its card, inert and hidden from assistive tech, as the real list
@@ -62,8 +121,9 @@ export function createProjects(specs: readonly ProjectSpec[], onLight: (i: numbe
 		if (c.top < p.top + 12) box.scrollTop -= p.top + 12 - c.top;
 		else if (c.bottom > p.bottom - 12) box.scrollTop += c.bottom - (p.bottom - 12);
 	}
+	// every card, a project in development too: pointed at, it opens to show what it is
 	const cardHandlers = cards.map((card, k) => {
-		if (!card || !specs[k].href) return null;
+		if (!card) return null;
 		const on = () => {
 			cardHover = k;
 			showHot();
@@ -91,6 +151,7 @@ export function createProjects(specs: readonly ProjectSpec[], onLight: (i: numbe
 			if (stopHot >= 0) showNow(stopHot);
 		},
 		dispose() {
+			window.clearTimeout(linger);
 			cardHandlers.forEach((h) => {
 				if (!h) return;
 				h.card.removeEventListener('pointerenter', h.on);
@@ -100,6 +161,11 @@ export function createProjects(specs: readonly ProjectSpec[], onLight: (i: numbe
 				h.card.classList.remove('is-lit');
 			});
 			stopNow?.replaceChildren();
+			watch.disconnect();
+			if (list) {
+				delete list.dataset.stepping;
+				list.style.removeProperty('min-block-size');
+			}
 		},
 	};
 }
