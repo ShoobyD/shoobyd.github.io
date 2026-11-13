@@ -9,6 +9,7 @@ import { damp } from '../util';
 import { rAt, yb } from '../dimensions';
 import { archPath, archShape, extrude, placeWall } from '../shapes';
 import { LAMP_LIT, LAMP_REST, MAX_LAMPS, createInteriorMaterial, type Hall } from './door-interior';
+import { createTapes, tapeMaterial } from './tapes';
 import type { Materials } from '../materials';
 
 export interface DoorSpec {
@@ -54,6 +55,7 @@ export function createDoors(
 	// each open door's lamp, in the same order as the lamps
 	const lampOf = specs.map((_, i) => specs.slice(0, i).filter((s) => s.href).length);
 	const hits: THREE.Object3D[] = [];
+	const tape = tapeMaterial();
 	const doors: Door[] = specs.map((spec, idx) => {
 		const a = angles[idx];
 		const r = rAt(1, y + 1.3);
@@ -66,6 +68,13 @@ export function createDoors(
 		frame.applyMatrix4(placeWall(a, r - 0.1, y));
 		frame.castShadow = true;
 		tower.add(opening, frame);
+		if (!open) {
+			// a project still being built: caution tape across its bricked doorway (./tapes.ts)
+			const bricked = specs.slice(0, idx).filter((s) => !s.href).length;
+			const tapes = createTapes(7 + idx * 31, bricked, tape);
+			tapes.applyMatrix4(placeWall(a, rWall, y));
+			tower.add(tapes);
+		}
 		let light: THREE.PointLight | null = null;
 		if (open) {
 			light = new THREE.PointLight(0xffb066, 3, 11, 2);
