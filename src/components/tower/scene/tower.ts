@@ -11,7 +11,22 @@ import type { Atmosphere } from './sky';
 
 /** Ramp height and inner edge at progress `t` (0..1) around tier `i`. */
 export const rampY = (i: number, t: number) => yb(i) + t * TH;
-export const rampIn = (i: number, t: number) => rAt(i, rampY(i, t)) - 0.05;
+
+/**
+ * Each tier's turn of the ramp hugs that tier's wall, so where one turn hands over to the next the
+ * walls step in (tier `i`'s top to tier `i + 1`'s foot). Over the last share `RAMP_BLEND` of a turn
+ * the ramp bends in across the terrace, and over the first share of the next it bends out from the
+ * wall, so the two meet halfway between the walls, level, as one unbroken ramp.
+ */
+const RAMP_BLEND = 0.1;
+const rampTop = (i: number) => rAt(i, yb(i + 1));
+const rampJoin = (i: number) => (rampTop(i) + R[i + 1]) / 2;
+export const rampIn = (i: number, t: number) => {
+	let r = rAt(i, rampY(i, t));
+	if (i < TIERS - 1) r += (rampJoin(i) - rampTop(i)) * THREE.MathUtils.smoothstep(t, 1 - RAMP_BLEND, 1);
+	if (i > 0) r += (rampJoin(i - 1) - R[i]) * (1 - THREE.MathUtils.smoothstep(t, 0, RAMP_BLEND));
+	return r - 0.05;
+};
 
 /** A closed tube swept through matching rings of points (the ramp's cross-section). */
 function sweep(rings: THREE.Vector3[][]) {
