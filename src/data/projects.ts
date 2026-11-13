@@ -59,7 +59,8 @@ export const projects: Project[] = [
 	{
 		id: 'doppler',
 		name: 'Doppler Simulator',
-		href: '/doppler-effect-simulator/',
+		// the repo, rather than the simulator itself: its README has the whole story, Radu's review too
+		href: 'https://github.com/ShoobyD/doppler-effect-simulator',
 		status: 'live',
 		description: {
 			he: 'סימולטור של אפקט דופלר, עם שינוי צליל אמיתי',
@@ -70,7 +71,8 @@ export const projects: Project[] = [
 		id: 'balloonz',
 		name: 'balloonz',
 		href: '/balloonz/',
-		status: 'live',
+		// a very old project
+		status: 'archive',
 		description: {
 			he: 'משחק פיצוץ בלונים שאפשר להטמיע בכל אתר',
 			en: 'An embeddable balloon-popping game',
