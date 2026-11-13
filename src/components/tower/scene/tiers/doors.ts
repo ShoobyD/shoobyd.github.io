@@ -50,7 +50,9 @@ export function createDoors(
 		const open = !!spec.href;
 		const mat = open ? new THREE.MeshBasicMaterial({ map: glowTex, color: new THREE.Color(1, 1, 1) }) : null;
 		const opening = new THREE.Mesh(glowGeo, mat ?? brickedMat);
-		opening.applyMatrix4(placeWall(a, r + 0.03, y));
+		// the wall leans in as it rises (its batter), so it stands furthest out at the door's foot: the
+		// flat opening goes in front of it there, or the wall's bricks show through its lower middle
+		opening.applyMatrix4(placeWall(a, rAt(1, y) + 0.03, y));
 		const frame = new THREE.Mesh(frameGeo, mats.limestone);
 		frame.applyMatrix4(placeWall(a, r - 0.1, y));
 		frame.castShadow = true;
