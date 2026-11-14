@@ -41,7 +41,7 @@ defineProps<{ items: ProjectItem[] }>();
 			>
 				<span class="project__door" aria-hidden="true" />
 				<!-- isolated, but in the page's direction (a <bdi> would take it from its first letter): a
-				     name like "Hanzi: לימוד סינית" reads right to left on the Hebrew page -->
+				     name like "Hanzi · לימוד סינית" reads right to left on the Hebrew page -->
 				<span class="project__name">{{ item.name }}</span>
 				<span class="project__more"><span class="project__desc">{{ item.description }}</span></span>
 				<!-- closed, only its dot shows: the label stays for assistive tech, the title for the pointer -->

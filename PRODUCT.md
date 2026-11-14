@@ -64,7 +64,7 @@ The site is a working developer's portfolio and a personal playground, with neit
   - Hebrew Wikipedia user `ShoobyD`
   - Fresh forum member 90538
 - **Selected projects (the code tier), each a doorway in the tower:**
-  - Hanzi: לימוד סינית (`/hanzi/`, own repo): Chinese vocabulary and characters for Hebrew speakers
+  - Hanzi · לימוד סינית (`/hanzi/`, own repo): Chinese vocabulary and characters for Hebrew speakers
   - Doppler Simulator (links to its repo, whose README has the context and Radu's review)
   - gifted-prep and the children's drawings gallery (itamar-shop): in development and closed (they may turn commercial); a bricked doorway with a sign and a gallery of screenshots, no link
   - balloonz (an embeddable balloon-popping game) and ICMP Tunnel: the archive

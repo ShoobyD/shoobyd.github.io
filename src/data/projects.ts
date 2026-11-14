@@ -102,8 +102,8 @@ export const projects: Project[] = [
 		id: 'hanzi',
 		// the app's own name (汉字, the Chinese script), as it brands itself
 		name: {
-			he: 'Hanzi: לימוד סינית',
-			en: 'Hanzi: Learn Chinese',
+			he: 'Hanzi · לימוד סינית',
+			en: 'Hanzi · Learn Chinese',
 		},
 		href: '/hanzi/',
 		status: 'live',
