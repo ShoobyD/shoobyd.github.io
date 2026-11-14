@@ -1,9 +1,15 @@
 /**
  * Projects shown on the home page's "code" tier, as doorways in the tower. Each stands on its own,
  * away from the site (its own repo, its own page), so its card and its doorway open it in a new tab.
- * A project in development has no link yet: its card and its bricked doorway only mark it.
+ * A project in development has no link yet: its bricked doorway only marks it, and its card opens
+ * a gallery of its screenshots (home/ProjectGallery.astro), if it has some.
  */
+import type { ImageMetadata } from 'astro';
 import type { Lang } from '../i18n/ui';
+import giftedHomeDesktop from '../assets/projects/gifted-prep/home-desktop.png';
+import giftedHomePhone from '../assets/projects/gifted-prep/home-phone.jpg';
+import giftedRiddle from '../assets/projects/gifted-prep/riddle-phone.png';
+import giftedSummary from '../assets/projects/gifted-prep/summary-phone.png';
 
 /** `dev`: in development and not public yet (it may turn commercial), so it has no link. */
 export type ProjectStatus = 'live' | 'archive' | 'dev';
@@ -16,6 +22,16 @@ export interface Project {
 	href?: string;
 	status: ProjectStatus;
 	description: Record<Lang, string>;
+	/** A project in development shows what it is in screenshots: original or generated content only. */
+	shots?: Shot[];
+}
+
+export interface Shot {
+	image: ImageMetadata;
+	/** What the screenshot shows, for screen readers. */
+	alt: Record<Lang, string>;
+	/** A short line under it. */
+	caption: Record<Lang, string>;
 }
 
 export const projects: Project[] = [
@@ -30,6 +46,40 @@ export const projects: Project[] = [
 			he: 'אפליקציית תרגול למבחן המחוננים, שעובדת גם בלי אינטרנט',
 			en: 'A practice app for the gifted screening test, offline too',
 		},
+		shots: [
+			{
+				image: giftedHomeDesktop,
+				alt: {
+					he: 'העמוד הראשי של האפליקציה במחשב: האלבום של איתמר, 36 מתוך 50 מדבקות, חבילת עשר השאלות של היום, ולשוניות לקריאה, חשבון, מבחנים וחברים.',
+					en: "The app's home page on a computer: Itamar's album, 36 of 50 stickers, the day's pack of ten questions, and tabs for reading, math, tests and friends.",
+				},
+				caption: { he: 'העמוד הראשי: אלבום המדבקות וחבילת השאלות של היום', en: "The home page: the sticker album and the day's pack of questions" },
+			},
+			{
+				image: giftedHomePhone,
+				alt: {
+					he: 'העמוד הראשי בטלפון: פרגון מחבר על שלושה ימים ברציפות, חבילת השאלות של היום, חזרה על טעות אחת, והמדבקות שנאספו.',
+					en: "The home page on a phone: a friend's cheer for three days in a row, the day's pack of questions, one mistake to review, and the stickers collected.",
+				},
+				caption: { he: 'בטלפון: פרגון מחבר, וחזרה על טעויות', en: "On a phone: a friend's cheer, and the mistakes to go over" },
+			},
+			{
+				image: giftedRiddle,
+				alt: {
+					he: 'חידת ציורים ברמה הקשה: עוגייה ועוגייה הן 14, עוגייה ותפוח 16, תפוח וכדור 24, וכמה הם שלושתם יחד? התשובה 31 מסומנת נכונה, עם הסבר שלב אחר שלב.',
+					en: 'A picture riddle at the hardest level: two cookies make 14, a cookie and an apple 16, an apple and a ball 24; what are all three together? The answer, 31, is marked right, with a step-by-step explanation.',
+				},
+				caption: { he: 'חידת ציורים ברמה הקשה, והסבר לתשובה', en: 'A picture riddle at the hardest level, with the answer explained' },
+			},
+			{
+				image: giftedSummary,
+				alt: {
+					he: 'סוף סבב: "משולם, איתמר!", 10 מתוך 10 נכונות, חבילת מדבקות ו־20 כוכבים, וכפתורים לעוד סבב ולאלבום.',
+					en: 'The end of a round: "Perfect, Itamar!", 10 of 10 right, a sticker pack and 20 stars, and buttons for another round and the album.',
+				},
+				caption: { he: 'סוף סבב: כוכבים, ומדבקות לאלבום', en: 'The end of a round: stars, and stickers for the album' },
+			},
+		],
 	},
 	{
 		id: 'itamar-shop',

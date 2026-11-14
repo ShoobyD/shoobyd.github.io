@@ -51,7 +51,15 @@ interface HomeCopy {
 		portraitCaption: string;
 		portraitClose: string;
 	};
-	code: { title: string; status: Record<ProjectStatus, string> };
+	/**
+	 * `gallery` belongs to a project's screenshots (home/ProjectGallery.astro): `open` is added to the
+	 * card's name for screen readers; `counter` and `dot` fill in `{n}` (and `{total}`).
+	 */
+	code: {
+		title: string;
+		status: Record<ProjectStatus, string>;
+		gallery: { open: string; prev: string; next: string; close: string; counter: string; dot: string };
+	};
 	/** `formulaLabel` names the formula, a link to the Tau Manifesto (its symbols alone say little to a screen reader). */
 	/**
 	 * The path: experience and education, newest first (the climb steps from the last, the degree, up
@@ -189,6 +197,7 @@ export const home: Record<Lang, HomeCopy> = {
 		code: {
 			title: 'פרויקטים נבחרים',
 			status: { live: 'פעיל', archive: 'ארכיון', dev: 'בפיתוח' },
+			gallery: { open: 'צילומי מסך', prev: 'התמונה הקודמת', next: 'התמונה הבאה', close: 'סגירה', counter: 'תמונה {n} מתוך {total}', dot: 'תמונה {n}' },
 		},
 		math: {
 			title: 'ניסיון והשכלה',
@@ -323,6 +332,7 @@ export const home: Record<Lang, HomeCopy> = {
 		code: {
 			title: 'Selected Projects',
 			status: { live: 'Live', archive: 'Archive', dev: 'In development' },
+			gallery: { open: 'Screenshots', prev: 'Previous image', next: 'Next image', close: 'Close', counter: 'Image {n} of {total}', dot: 'Image {n}' },
 		},
 		math: {
 			title: 'Experience & Education',

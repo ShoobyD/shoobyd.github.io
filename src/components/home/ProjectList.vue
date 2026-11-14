@@ -4,6 +4,9 @@
  * through them (../tower/scene/projects.ts sets `data-stepping`) only the one in focus is open, its
  * description and status shown; the others close to a row of their name and a dot in their status's
  * colour. Without it every card stays open.
+ *
+ * A project with screenshots (and no link: one in development) is a button that opens them in a
+ * gallery (./ProjectGallery.astro, which finds it by `data-gallery-open`).
  */
 import type { ProjectStatus } from '../../data/projects';
 
@@ -14,6 +17,8 @@ export interface ProjectItem {
 	status: ProjectStatus;
 	statusLabel: string;
 	description: string;
+	/** Set for a project with screenshots: the gallery's name, read after the card's own. */
+	galleryLabel?: string;
 }
 
 defineProps<{ items: ProjectItem[] }>();
@@ -23,12 +28,15 @@ defineProps<{ items: ProjectItem[] }>();
 	<ul class="projects">
 		<li v-for="item in items" :key="item.id">
 			<component
-				:is="item.href ? 'a' : 'div'"
+				:is="item.href ? 'a' : item.galleryLabel ? 'button' : 'div'"
 				class="project"
 				:class="`project--${item.status}`"
 				:href="item.href"
 				:target="item.href ? '_blank' : undefined"
 				:rel="item.href ? 'noopener' : undefined"
+				:type="!item.href && item.galleryLabel ? 'button' : undefined"
+				:aria-haspopup="!item.href && item.galleryLabel ? 'dialog' : undefined"
+				:data-gallery-open="!item.href && item.galleryLabel ? item.id : undefined"
 				:data-project="item.id"
 			>
 				<span class="project__door" aria-hidden="true" />
@@ -39,6 +47,7 @@ defineProps<{ items: ProjectItem[] }>();
 					<span class="project__dot" aria-hidden="true" />
 					<span class="project__label">{{ item.statusLabel }}</span>
 				</span>
+				<span v-if="!item.href && item.galleryLabel" class="sd-visually-hidden">, {{ item.galleryLabel }}</span>
 			</component>
 		</li>
 	</ul>
@@ -170,8 +179,19 @@ a.project.is-lit .project__desc {
 	color: var(--sd-text);
 }
 
+/* a card that opens screenshots is a button: it keeps the card's own look */
+button.project {
+	inline-size: 100%;
+	margin: 0;
+	font: inherit;
+	text-align: start;
+	cursor: zoom-in;
+	appearance: none;
+}
+
 /* a project in development has no light behind its bricked doorway: its stop only marks the card */
-div.project.is-lit {
+.project:not(a).is-lit,
+button.project:focus-visible {
 	background: rgb(255 240 215 / 0.06);
 	border-color: rgb(233 227 211 / 0.45);
 }

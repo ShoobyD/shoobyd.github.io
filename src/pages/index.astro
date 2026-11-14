@@ -20,6 +20,7 @@ import LinkIcon from '../theme/components/LinkIcon.vue';
 import AltitudeGauge from '../components/home/AltitudeGauge.vue';
 import BabelTitle from '../components/home/BabelTitle.vue';
 import SelfPortrait from '../components/home/SelfPortrait.astro';
+import ProjectGallery from '../components/home/ProjectGallery.astro';
 import StaticTower from '../components/home/StaticTower.astro';
 import TowerScene from '../components/tower/TowerScene.vue';
 import TowerLoader from '../components/tower/TowerLoader.astro';
@@ -44,7 +45,17 @@ const projectItems = projects.map((p) => ({
 	status: p.status,
 	statusLabel: c.code.status[p.status],
 	description: p.description[lang],
+	galleryLabel: p.shots && !p.href ? c.code.gallery.open : undefined,
 }));
+
+/** A gallery for each project in development with screenshots, opened from its card. */
+const galleries = projects
+	.filter((p) => p.shots && !p.href)
+	.map((p) => ({
+		id: p.id,
+		name: `${projectName(p, lang)}: ${c.code.gallery.open}`,
+		shots: (p.shots ?? []).map((s) => ({ image: s.image, alt: s.alt[lang], caption: s.caption[lang] })),
+	}));
 
 /** One doorway in the tower per project card, in the same order. */
 const towerDoors = projects.map((p) => ({ id: p.id, href: p.href }));
@@ -142,6 +153,7 @@ const elsewhere = [
 		     projects (the list below stays the real one) -->
 		<div class="tier-now" data-stop-now aria-hidden="true" inert></div>
 		<ProjectList items={projectItems} />
+		{galleries.map((g) => <ProjectGallery {...g} labels={c.code.gallery} />)}
 	</TierSection>
 
 	<TierSection id="math" sheetLabel={c.sheet.toggle} title={c.math.title} stops={c.math.path.length}>

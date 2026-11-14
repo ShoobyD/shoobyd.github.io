@@ -1,0 +1,274 @@
+---
+/**
+ * A project's screenshots, in a modal gallery that grows out of its card (the card is a button
+ * with `data-gallery-open` set to the project's id; see ProjectList.vue) and shrinks back into it
+ * on close: the same native <dialog> and FLIP as the self-portrait (./image-view.ts).
+ *
+ * One image at a time, with its caption: the arrows, the arrow keys, a swipe or a dot move between
+ * them, and a polite live region says which one is shown ("image 2 of 4"). A tall phone shot fits
+ * the screen's height, a wide desktop one the dialog's width. Without JavaScript the card stays a
+ * plain card, and the dialog stays shut.
+ */
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+
+interface Props {
+	/** The project's id: the card that opens it carries it as `data-gallery-open`. */
+	id: string;
+	/** The project's name: names the dialog. */
+	name: string;
+	shots: { image: ImageMetadata; alt: string; caption: string }[];
+	labels: { prev: string; next: string; close: string; counter: string; dot: string };
+}
+
+const { id, name, shots, labels } = Astro.props;
+const fill = (text: string, n: number) => text.replace('{n}', String(n)).replace('{total}', String(shots.length));
+---
+
+<dialog class="gallery" data-gallery={id} aria-label={name} data-counter={labels.counter}>
+	<div class="gallery__stage">
+		{
+			shots.map((shot, i) => (
+				<figure class="gallery__slide" data-slide hidden={i > 0}>
+					<Image
+						src={shot.image}
+						alt={shot.alt}
+						widths={[480, 960, Math.min(shot.image.width, 1920)]}
+						sizes={shot.image.width > shot.image.height ? 'min(92vw, 64rem)' : '24rem'}
+						loading="lazy"
+					/>
+					<figcaption>{shot.caption}</figcaption>
+				</figure>
+			))
+		}
+	</div>
+	<p class="sd-visually-hidden" aria-live="polite" data-count></p>
+	<div class="gallery__nav">
+		<button class="gallery__step gallery__step--prev sd-control" type="button" data-step="-1" aria-label={labels.prev}>
+			<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M8 4l6 6-6 6" /></svg>
+		</button>
+		<ol class="gallery__dots">
+			{
+				shots.map((_, i) => (
+					<li>
+						<button type="button" data-dot={i} aria-label={fill(labels.dot, i + 1)} aria-current={i === 0 ? 'true' : undefined} />
+					</li>
+				))
+			}
+		</ol>
+		<!-- the way on through them: where focus starts -->
+		<button class="gallery__step gallery__step--next sd-control" type="button" data-step="1" aria-label={labels.next} autofocus>
+			<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12 4l-6 6 6 6" /></svg>
+		</button>
+	</div>
+	<form method="dialog" class="gallery__close">
+		<button class="sd-control" type="submit">{labels.close}</button>
+	</form>
+</dialog>
+
+<script>
+	/*
+	 * The gallery grows out of the card that opened it and shrinks back into it (see image-view.ts);
+	 * it always opens on the first image.
+	 */
+	import { createImageView } from './image-view';
+
+	function setUp(view: HTMLDialogElement) {
+		const stage = view.querySelector<HTMLElement>('.gallery__stage');
+		const slides = [...view.querySelectorAll<HTMLElement>('[data-slide]')];
+		const dots = [...view.querySelectorAll<HTMLButtonElement>('[data-dot]')];
+		const count = view.querySelector<HTMLElement>('[data-count]');
+		if (!stage || !slides.length || typeof view.showModal !== 'function') return;
+		const counter = view.dataset.counter ?? '{n} / {total}';
+		let at = 0;
+		let from: HTMLElement | null = null;
+
+		function show(i: number, announce = true) {
+			at = (i + slides.length) % slides.length;
+			slides.forEach((s, k) => (s.hidden = k !== at));
+			dots.forEach((d, k) => (k === at ? d.setAttribute('aria-current', 'true') : d.removeAttribute('aria-current')));
+			if (count && announce) count.textContent = counter.replace('{n}', String(at + 1)).replace('{total}', String(slides.length));
+			// the next image starts loading as this one shows
+			slides[(at + 1) % slides.length].querySelector('img')?.setAttribute('loading', 'eager');
+		}
+
+		const image = createImageView({
+			view,
+			big: stage,
+			source: () => (from?.isConnected ? { rect: from.getBoundingClientRect() } : null),
+			extras: [...view.querySelectorAll<HTMLElement>('.gallery__nav, .gallery__close')],
+			closeForm: view.querySelector<HTMLFormElement>('.gallery__close'),
+		});
+
+		// "forward" is the reading direction: leftward in Hebrew, rightward in English
+		const rtl = () => getComputedStyle(view).direction === 'rtl';
+		view.querySelectorAll<HTMLButtonElement>('[data-step]').forEach((b) => b.addEventListener('click', () => show(at + Number(b.dataset.step))));
+		dots.forEach((d, k) => d.addEventListener('click', () => show(k)));
+		view.addEventListener('keydown', (e) => {
+			if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+			e.preventDefault();
+			show(at + ((e.key === 'ArrowLeft') === rtl() ? 1 : -1));
+		});
+		// a swipe across the image, on touch screens
+		let downX: number | null = null;
+		stage.addEventListener('pointerdown', (e) => {
+			if (e.pointerType !== 'mouse') downX = e.clientX;
+		});
+		stage.addEventListener('pointerup', (e) => {
+			if (downX === null) return;
+			const dx = e.clientX - downX;
+			downX = null;
+			if (Math.abs(dx) < 40) return;
+			show(at + ((dx > 0) === rtl() ? 1 : -1));
+		});
+		stage.addEventListener('pointercancel', () => (downX = null));
+
+		document.querySelectorAll<HTMLElement>(`[data-gallery-open="${CSS.escape(view.dataset.gallery ?? '')}"]`).forEach((card) =>
+			card.addEventListener('click', () => {
+				from = card;
+				show(0, false);
+				image.open();
+				if (count) count.textContent = '';
+			}),
+		);
+	}
+
+	document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach(setUp);
+</script>
+
+<style>
+	/* a native modal dialog over a darkened, blurred page, like the self-portrait's */
+	.gallery {
+		inline-size: min(92vw, 64rem);
+		max-block-size: 100dvh;
+		padding: 0;
+		overflow: visible;
+		color: var(--sd-text);
+		background: none;
+		border: 0;
+	}
+	.gallery::backdrop {
+		background: rgb(14 12 10 / 0.78);
+		backdrop-filter: blur(6px);
+	}
+	/* the opening and closing motion is a FLIP from the card (see the script above). The stage keeps
+	 * one height whichever image it shows, so the controls under it stay put from image to image */
+	.gallery__stage {
+		display: flex;
+		justify-content: center;
+		block-size: calc(100dvh - 9rem);
+		transform-origin: center;
+		touch-action: pan-y;
+	}
+	.gallery__slide {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		margin: 0;
+	}
+	.gallery__slide[hidden] {
+		display: none;
+	}
+	/* <Image> renders its own <img>, outside this component's style scope. Each fits both ways: a
+	 * phone shot by the screen's height (leaving room for its caption and the controls), a desktop
+	 * one by the dialog's width */
+	.gallery__slide :global(img) {
+		display: block;
+		inline-size: auto;
+		block-size: auto;
+		max-inline-size: 100%;
+		max-block-size: calc(100dvh - 12rem);
+		border-radius: 10px;
+		box-shadow: 0 24px 60px -20px rgb(0 0 0 / 0.75), 0 0 0 1px rgb(255 255 255 / 0.08);
+		animation: gallery-in 260ms var(--sd-ease);
+	}
+	@keyframes gallery-in {
+		from { opacity: 0; }
+	}
+	.gallery figcaption {
+		margin-block-start: var(--sd-space-3);
+		font-family: var(--sd-font-serif);
+		font-size: 1.1rem;
+		text-align: center;
+		text-shadow: var(--sd-shadow-text);
+	}
+
+	.gallery__nav {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: var(--sd-space-4);
+		margin-block-start: var(--sd-space-3);
+	}
+	.gallery__step {
+		display: grid;
+		place-items: center;
+		inline-size: 40px;
+		block-size: 40px;
+		padding: 0;
+		border-radius: 50%;
+	}
+	.gallery__step svg {
+		inline-size: 18px;
+		block-size: 18px;
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 2;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+	/* the arrows point the reading direction's way: drawn for Hebrew, turned for English */
+	.gallery:dir(ltr) .gallery__step svg {
+		transform: scaleX(-1);
+	}
+	.gallery__dots {
+		display: flex;
+		gap: 4px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.gallery__dots button {
+		display: grid;
+		place-items: center;
+		inline-size: 24px;
+		block-size: 24px;
+		padding: 0;
+		background: none;
+		border: 0;
+		border-radius: 50%;
+		cursor: pointer;
+	}
+	.gallery__dots button::before {
+		content: '';
+		inline-size: 8px;
+		block-size: 8px;
+		background: rgb(233 227 211 / 0.35);
+		border-radius: 50%;
+		transition: background var(--sd-dur-fast), scale var(--sd-dur-fast);
+	}
+	.gallery__dots button[aria-current]::before {
+		background: var(--sd-gold);
+		scale: 1.25;
+	}
+	.gallery__dots button:focus-visible {
+		outline: 3px solid var(--sd-focus);
+		outline-offset: 0;
+	}
+	.gallery__close {
+		display: flex;
+		justify-content: center;
+		margin-block-start: var(--sd-space-3);
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.gallery__slide :global(img) {
+			animation: none;
+		}
+	}
+	/* the page under the open dialog stays where it is */
+	:global(html:has(dialog.gallery[open])) {
+		overflow: hidden;
+	}
+</style>
+
