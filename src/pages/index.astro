@@ -58,7 +58,15 @@ const galleries = projects
 	}));
 
 /** One doorway in the tower per project card, in the same order. */
-const towerDoors = projects.map((p) => ({ id: p.id, href: p.href }));
+const towerDoors = await Promise.all(
+	projects.map(async (p) => ({
+		id: p.id,
+		href: p.href,
+		// the sign on a bricked doorway: its screenshot, sized for a texture
+		sign: p.sign ? (await getImage({ src: p.sign, width: 1024, format: 'webp' })).src : undefined,
+		gallery: !!(p.shots && !p.href),
+	})),
+);
 
 /** The self-portrait opens the base panel, and hangs again beside the strings on the making tier. */
 const towerPortrait = { src: selfPortrait.src, width: selfPortrait.width, height: selfPortrait.height };

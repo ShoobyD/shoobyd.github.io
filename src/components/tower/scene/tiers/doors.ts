@@ -2,7 +2,9 @@
  * Code tier: each project is a doorway in the wall, in the same order as the cards. An open one
  * looks into a lamplit hall inside the tier, shared by every open doorway (./door-interior.ts); its
  * lamp burns brighter, and its own warm light outside rises, while its card or the door itself is
- * hovered or in focus. A project with no public URL gets a bricked-up doorway that never lights.
+ * hovered or in focus. A project with no public URL gets a bricked-up doorway that never lights,
+ * caution tape across it (./tapes.ts), and, with a screenshot, a sign hung on it (./signs.ts): one
+ * whose project has a gallery is pointed at and clicked like a doorway, and warms when lit.
  */
 import * as THREE from 'three';
 import { damp } from '../util';
@@ -10,17 +12,25 @@ import { rAt, yb } from '../dimensions';
 import { archPath, archShape, extrude, placeWall } from '../shapes';
 import { LAMP_LIT, LAMP_REST, MAX_LAMPS, createInteriorMaterial, type Hall } from './door-interior';
 import { createTapes, tapeMaterial } from './tapes';
+import { createSign, type Sign } from './signs';
 import type { Materials } from '../materials';
 
 export interface DoorSpec {
 	id: string;
 	href?: string;
+	/** A bricked doorway's sign: its screenshot's URL. */
+	sign?: string;
+	/** Its project opens a gallery of screenshots (its sign does, when clicked). */
+	gallery?: boolean;
 }
 
 interface Door extends DoorSpec {
 	/** Its lamp in the hall (-1 for a bricked door, which never lights). */
 	lamp: number;
 	light: THREE.PointLight | null;
+	/** Its sign, if it hangs one, and where the light that warms it shines from. */
+	plaque: Sign | null;
+	plaqueLamp: THREE.Vector3 | null;
 	lit: number;
 }
 
@@ -75,6 +85,19 @@ export function createDoors(
 			tapes.applyMatrix4(placeWall(a, rWall, y));
 			tower.add(tapes);
 		}
+		let sign: Sign | null = null;
+		let plaqueLamp: THREE.Vector3 | null = null;
+		if (!open && spec.sign) {
+			sign = createSign(spec.sign, mats, brick.anisotropy, idx);
+			const at = placeWall(a, rWall, y);
+			sign.group.applyMatrix4(at);
+			plaqueLamp = new THREE.Vector3(0, 1.9, 2.2).applyMatrix4(at);
+			tower.add(sign.group);
+			if (spec.gallery) {
+				sign.hit.userData.door = idx;
+				hits.push(sign.hit);
+			}
+		}
 		let light: THREE.PointLight | null = null;
 		if (open) {
 			light = new THREE.PointLight(0xffb066, 3, 11, 2);
@@ -83,11 +106,15 @@ export function createDoors(
 			opening.userData.door = frame.userData.door = idx;
 			hits.push(opening, frame);
 		}
-		return { ...spec, lamp: open && lampOf[idx] < MAX_LAMPS ? lampOf[idx] : -1, light, lit: 0 };
+		return { ...spec, lamp: open && lampOf[idx] < MAX_LAMPS ? lampOf[idx] : -1, light, plaque: sign, plaqueLamp, lit: 0 };
 	});
 
 	let hot = -1;
 	const ray = new THREE.Raycaster();
+	// one warm light for the signs, moved to whichever is lit (only one project is lit at a time):
+	// it lights the screenshot, its frame and the bricks round it, as a lit doorway's own does
+	const signLight = new THREE.PointLight(0xffb066, 0, 6, 2);
+	if (doors.some((d) => d.plaque)) tower.add(signLight);
 
 	return {
 		doors,
@@ -100,8 +127,36 @@ export function createDoors(
 		setHot(i: number) {
 			hot = i;
 		},
+		/**
+		 * Door `i`'s sign on screen, in CSS pixels, for the gallery to grow out of: its own size (from
+		 * its edges, not the box round it as it leans) about its centre, and its lean in degrees
+		 * (clockwise, as CSS turns). Null without a sign.
+		 */
+		signRect(i: number, camera: THREE.Camera) {
+			const sign = doors[i]?.plaque;
+			if (!sign) return null;
+			const [a, b, , d] = sign.corners().map((p) => {
+				p.project(camera);
+				return new THREE.Vector2(((p.x + 1) / 2) * window.innerWidth, ((1 - p.y) / 2) * window.innerHeight);
+			});
+			const across = b.clone().sub(a), down = d.clone().sub(a);
+			const centre = a.clone().add(across.clone().multiplyScalar(0.5)).add(down.clone().multiplyScalar(0.5));
+			const w = across.length(), h = down.length();
+			return { rect: new DOMRect(centre.x - w / 2, centre.y - h / 2, w, h), tilt: THREE.MathUtils.radToDeg(Math.atan2(across.y, across.x)) };
+		},
+		/** Hides door `i`'s sign while its gallery is open (it has left the door), or shows it again. */
+		hideSign(i: number, hidden: boolean) {
+			const sign = doors[i]?.plaque;
+			if (sign) sign.group.visible = !hidden;
+		},
 		update(dt: number, time: number) {
+			let brightest: Door | null = null;
 			doors.forEach((d, i) => {
+				if (d.plaque) {
+					d.lit += ((hot === i ? 1 : 0) - d.lit) * damp(8, dt);
+					d.plaque.update(time, d.lit);
+					if (!brightest || d.lit > brightest.lit) brightest = d;
+				}
 				if (d.lamp < 0 || !d.light) return;
 				d.lit += ((hot === i ? 1 : 0) - d.lit) * damp(8, dt);
 				const pulse = Math.sin(time * 2 + i) * 0.08;
@@ -109,6 +164,11 @@ export function createDoors(
 				// lit, the door's lamp in the hall burns brighter, and lights the hall around it
 				hall.power[d.lamp] = LAMP_REST + d.lit * (LAMP_LIT - LAMP_REST) + pulse * 2 * (0.4 + d.lit);
 			});
+			const lit = brightest as Door | null;
+			if (lit?.plaqueLamp) {
+				signLight.position.copy(lit.plaqueLamp);
+				signLight.intensity = lit.lit * 2.5;
+			}
 		},
 	};
 }

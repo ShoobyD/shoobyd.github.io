@@ -10,6 +10,7 @@ import giftedHomeDesktop from '../assets/projects/gifted-prep/home-desktop.png';
 import giftedHomePhone from '../assets/projects/gifted-prep/home-phone.jpg';
 import giftedRiddle from '../assets/projects/gifted-prep/riddle-phone.png';
 import giftedSummary from '../assets/projects/gifted-prep/summary-phone.png';
+import shopHomeDesktop from '../assets/projects/itamar-shop/home-desktop.png';
 
 /** `dev`: in development and not public yet (it may turn commercial), so it has no link. */
 export type ProjectStatus = 'live' | 'archive' | 'dev';
@@ -24,6 +25,8 @@ export interface Project {
 	description: Record<Lang, string>;
 	/** A project in development shows what it is in screenshots: original or generated content only. */
 	shots?: Shot[];
+	/** A project in development: the desktop screenshot on the sign hung on its bricked doorway. */
+	sign?: ImageMetadata;
 }
 
 export interface Shot {
@@ -46,6 +49,7 @@ export const projects: Project[] = [
 			he: 'אפליקציית תרגול למבחן המחוננים, שעובדת גם בלי אינטרנט',
 			en: 'A practice app for the gifted screening test, offline too',
 		},
+		sign: giftedHomeDesktop,
 		shots: [
 			{
 				image: giftedHomeDesktop,
@@ -92,6 +96,7 @@ export const projects: Project[] = [
 			he: 'חנות שבה הילד מעלה, מתמחר ומסמן מה נמכר',
 			en: "A shop where the child uploads, prices and marks what's sold",
 		},
+		sign: shopHomeDesktop,
 	},
 	{
 		id: 'chinese-vocabulary',

@@ -2,7 +2,12 @@
 /**
  * A project's screenshots, in a modal gallery that grows out of its card (the card is a button
  * with `data-gallery-open` set to the project's id; see ProjectList.vue) and shrinks back into it
- * on close: the same native <dialog> and FLIP as the self-portrait (./image-view.ts).
+ * on close: the same native <dialog> and FLIP as the self-portrait (./image-view.ts). The sign on
+ * its bricked doorway in the tower opens it too (`tower:gallery`). While that sign is in view, the
+ * gallery grows out of it and shrinks back into it instead, whichever opened it: it asks the tower
+ * where the sign is (`tower:sign-rect`, answered at once, or not at all without the live tower or
+ * with the sign out of view), and tells it while it is open (`gallery:shown`), so the sign leaves
+ * its door meanwhile, as the self-portrait leaves its mat.
  *
  * One image at a time, with its caption: the arrows, the arrow keys, a swipe or a dot move between
  * them, and a polite live region says which one is shown ("image 2 of 4"). A tall phone shot fits
@@ -68,8 +73,8 @@ const fill = (text: string, n: number) => text.replace('{n}', String(n)).replace
 
 <script>
 	/*
-	 * The gallery grows out of the card that opened it and shrinks back into it (see image-view.ts);
-	 * it always opens on the first image.
+	 * The gallery grows out of the sign on its door in the tower when that is in view, else out of
+	 * its card, and shrinks back into the same (see image-view.ts); it always opens on the first image.
 	 */
 	import { createImageView } from './image-view';
 
@@ -82,6 +87,14 @@ const fill = (text: string, n: number) => text.replace('{n}', String(n)).replace
 		const counter = view.dataset.counter ?? '{n} / {total}';
 		let at = 0;
 		let from: HTMLElement | null = null;
+		const id = view.dataset.gallery ?? '';
+		/** The sign on its door, where it is on screen right now (and its lean), if it is in view. */
+		function sign() {
+			const ask: { id: string; rect: DOMRect | null; tilt: number } = { id, rect: null, tilt: 0 };
+			window.dispatchEvent(new CustomEvent('tower:sign-rect', { detail: ask }));
+			return ask.rect ? { rect: ask.rect, tilt: ask.tilt } : null;
+		}
+		const tell = (open: boolean) => window.dispatchEvent(new CustomEvent('gallery:shown', { detail: { id, open } }));
 
 		function show(i: number, announce = true) {
 			at = (i + slides.length) % slides.length;
@@ -95,7 +108,7 @@ const fill = (text: string, n: number) => text.replace('{n}', String(n)).replace
 		const image = createImageView({
 			view,
 			big: stage,
-			source: () => (from?.isConnected ? { rect: from.getBoundingClientRect() } : null),
+			source: () => sign() ?? (from?.isConnected ? { rect: from.getBoundingClientRect() } : null),
 			extras: [...view.querySelectorAll<HTMLElement>('.gallery__nav, .gallery__close')],
 			closeForm: view.querySelector<HTMLFormElement>('.gallery__close'),
 		});
@@ -123,17 +136,30 @@ const fill = (text: string, n: number) => text.replace('{n}', String(n)).replace
 		});
 		stage.addEventListener('pointercancel', () => (downX = null));
 
-		document.querySelectorAll<HTMLElement>(`[data-gallery-open="${CSS.escape(view.dataset.gallery ?? '')}"]`).forEach((card) =>
-			card.addEventListener('click', () => {
-				from = card;
-				show(0, false);
-				image.open();
-				if (count) count.textContent = '';
-			}),
-		);
+		function openFrom(card: HTMLElement | null) {
+			from = card;
+			show(0, false);
+			image.open();
+			tell(true);
+			if (count) count.textContent = '';
+		}
+		view.addEventListener('close', () => tell(false));
+		document.querySelectorAll<HTMLElement>(`[data-gallery-open="${CSS.escape(id)}"]`).forEach((card) => card.addEventListener('click', () => openFrom(card)));
+		// from the tower, a click on the sign: the card stays where it would shrink to without it
+		window.addEventListener('tower:gallery', (e) => {
+			if ((e as CustomEvent<{ id: string }>).detail?.id !== id) return;
+			openFrom(document.querySelector<HTMLElement>(`.projects [data-gallery-open="${CSS.escape(id)}"]`));
+		});
 	}
 
 	document.querySelectorAll<HTMLDialogElement>('dialog[data-gallery]').forEach(setUp);
+	// each gallery's first image loads once the page is idle, so it is there as the gallery grows
+	// out of its card or its sign (the rest load as they come up)
+	const preload = () =>
+		document.querySelectorAll<HTMLImageElement>('dialog[data-gallery] [data-slide]:first-child img').forEach((img) => img.setAttribute('loading', 'eager'));
+	const whenIdle = () => ('requestIdleCallback' in window ? requestIdleCallback(preload, { timeout: 4000 }) : setTimeout(preload, 2000));
+	if (document.readyState === 'complete') whenIdle();
+	else window.addEventListener('load', whenIdle, { once: true });
 </script>
 
 <style>

@@ -204,8 +204,10 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 		strings.resetTracking();
 	}
 	// clicking a doorway opens its project (in a new tab, like its card: each project stands on its
-	// own, away from the site), and clicking the unfinished top starts the game (the
-	// game UI listens for `tower:play`); the pick happens at click time so taps work too
+	// own, away from the site), clicking a bricked doorway's sign opens its project's screenshots
+	// (the gallery listens for `tower:gallery`, and grows out of the sign), and clicking the
+	// unfinished top starts the game (the game UI listens for `tower:play`); the pick happens at
+	// click time so taps work too
 	function onClick(e: MouseEvent) {
 		if ((nearest !== 1 && nearest !== LAST_TIER) || !climb || pointerInUi(e.target) || director) return;
 		const ndc = new THREE.Vector2((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
@@ -214,12 +216,33 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 			return;
 		}
 		const i = doors.pick(ndc, camera);
-		const href = i >= 0 ? opts.doors[i].href : undefined;
+		if (i < 0) return;
+		const { href, gallery, id } = opts.doors[i];
 		if (href) window.open(href, '_blank', 'noopener');
+		else if (gallery) window.dispatchEvent(new CustomEvent('tower:gallery', { detail: { id } }));
+	}
+	// the gallery asks where a sign is right now, to grow out of it and shrink back into it: only
+	// while the code tier is in view and the sign is on screen (else it uses the card)
+	function onSignRect(e: Event) {
+		const ask = (e as CustomEvent<{ id: string; rect: DOMRect | null; tilt: number }>).detail;
+		if (!ask || nearest !== 1 || !climb || director) return;
+		const at = doors.signRect(opts.doors.findIndex((d) => d.id === ask.id), camera);
+		if (!at) return;
+		const r = at.rect;
+		if (r.right < 0 || r.left > window.innerWidth || r.bottom < 0 || r.top > window.innerHeight) return;
+		ask.rect = r;
+		ask.tilt = at.tilt;
+	}
+	// and while it is open, the sign has left its door
+	function onGalleryShown(e: Event) {
+		const { id, open } = (e as CustomEvent<{ id: string; open: boolean }>).detail ?? {};
+		doors.hideSign(opts.doors.findIndex((d) => d.id === id), !!open);
 	}
 	window.addEventListener('pointermove', onPointerMove, { passive: true });
 	window.addEventListener('pointerdown', onPointerDown, { passive: true });
 	window.addEventListener('click', onClick);
+	window.addEventListener('tower:sign-rect', onSignRect);
+	window.addEventListener('gallery:shown', onGalleryShown);
 
 	// ---------- activation: the scene takes the climb over where the visitor is ----------
 	// Until the first frames are on screen the camera reads the page's progress; then whatever
@@ -449,6 +472,8 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 			window.removeEventListener('pointermove', onPointerMove);
 			window.removeEventListener('pointerdown', onPointerDown);
 			window.removeEventListener('click', onClick);
+			window.removeEventListener('tower:sign-rect', onSignRect);
+			window.removeEventListener('gallery:shown', onGalleryShown);
 			window.removeEventListener('resize', onResize);
 			layoutWatch.disconnect();
 			opts.canvas.removeEventListener('webglcontextlost', onContextLost);
