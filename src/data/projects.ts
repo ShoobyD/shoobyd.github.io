@@ -99,16 +99,17 @@ export const projects: Project[] = [
 		sign: shopHomeDesktop,
 	},
 	{
-		id: 'chinese-vocabulary',
+		id: 'hanzi',
+		// the app's own name (汉字, the Chinese script), as it brands itself
 		name: {
-			he: 'לימוד סינית',
-			en: 'Chinese Vocabulary',
+			he: 'Hanzi: לימוד סינית',
+			en: 'Hanzi: Learn Chinese',
 		},
-		href: '/chinese-vocabulary/',
+		href: '/hanzi/',
 		status: 'live',
 		description: {
-			he: 'אוצר מילים בסינית לדוברי עברית: כרטיסיות ובחנים',
-			en: 'Chinese vocabulary for Hebrew speakers: flashcards and quizzes',
+			he: 'אוצר מילים וכתב סיני לדוברי עברית, בכרטיסיות ובחנים',
+			en: 'Chinese vocabulary and characters for Hebrew speakers, in flashcards and quizzes',
 		},
 	},
 	{

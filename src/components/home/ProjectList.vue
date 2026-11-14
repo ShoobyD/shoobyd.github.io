@@ -40,7 +40,9 @@ defineProps<{ items: ProjectItem[] }>();
 				:data-project="item.id"
 			>
 				<span class="project__door" aria-hidden="true" />
-				<bdi class="project__name">{{ item.name }}</bdi>
+				<!-- isolated, but in the page's direction (a <bdi> would take it from its first letter): a
+				     name like "Hanzi: לימוד סינית" reads right to left on the Hebrew page -->
+				<span class="project__name">{{ item.name }}</span>
 				<span class="project__more"><span class="project__desc">{{ item.description }}</span></span>
 				<!-- closed, only its dot shows: the label stays for assistive tech, the title for the pointer -->
 				<span class="project__status" :title="item.statusLabel">
@@ -95,6 +97,7 @@ defineProps<{ items: ProjectItem[] }>();
 }
 
 .project__name {
+	unicode-bidi: isolate;
 	font-family: var(--sd-font-display);
 	font-size: 1.22rem;
 	line-height: 1.15;
