@@ -12,6 +12,7 @@ colors:
   lamplight-wash: "color-mix(in srgb, #f2c37e 10%, transparent)"
   lamplight-edge: "color-mix(in srgb, #f2c37e 65%, transparent)"
   flemish-sky: "#6f8fb3"
+  pale-sky: "#9db7d6"
   dawn-zenith: "#2a3a62"
   dawn-horizon: "#f3b98a"
   summit-night: "#101a33"
@@ -111,7 +112,17 @@ components:
     textColor: "{colors.lamplight-gold}"
     typography: "{typography.label}"
     rounded: "{rounded.pill}"
-    padding: "4px 10px"
+    padding: "4px 10px 4px 8px"
+  project-status-dev:
+    textColor: "{colors.pale-sky}"
+  project-status-archive:
+    textColor: "{colors.limestone-dim}"
+  gallery-step:
+    backgroundColor: "{colors.control-glass}"
+    textColor: "{colors.limestone-cornice}"
+    rounded: "{rounded.pill}"
+    width: "40px"
+    height: "40px"
   path-mark:
     backgroundColor: "{colors.lamplight-gold}"
     rounded: "3px 3px 1px 1px"
@@ -173,10 +184,11 @@ The palette is the tower's materials under a sky that shifts with altitude, with
 
 ### Secondary
 - **Sun-baked Mudbrick** (#c98b4a): the tower's own brick. It appears in the brand mark's tiers, the loader's bricks, the lower brick in the game icon and the scrollbar thumb (pale at 28% until the panel is scrolled or hovered).
-- **Fired Mudbrick** (#a9713a): the darker course. It is the bricked-up doorway of a closed project and the bottom edge of the loader's bricks.
+- **Fired Mudbrick** (#a9713a): the darker course. It is the bricked-up doorway of a project in development and the bottom edge of the loader's bricks.
 
 ### Tertiary
 - **Flemish Sky** (#6f8fb3): the field (`--sd-field`) and the day stop of the sky.
+- **Pale Sky** (#9db7d6, `--sd-sky-pale`): the status of a project in development, its dot and its pill. It is the sky's own colour, not a second accent: it marks a state, the way gold marks what is alive, and appears nowhere else.
 - **Dawn Zenith** (#2a3a62), **Dawn Horizon** (#f3b98a), **Summit Night** (#101a33): the sky stops. The base sky gradient runs dawn zenith, Flemish sky, dawn horizon. The page's climb gradient runs from the dawn zenith through day, golden dusk and violet to summit night. The summit tier adds a field of sparse warm-white stars, but only when the live tower isn't painting its own sky.
 
 ### Neutral
@@ -190,6 +202,8 @@ The palette is the tower's materials under a sky that shifts with altitude, with
 
 ### Named Rules
 **The Lamplight Rule.** Gold appears only where something is alive: a link, the lit doorway and its card, focus, the current tier, a live status, a contact you can reach. Never use gold as decoration on still content.
+
+**The Status Colour Rule.** Each project status has one colour, the same in its closed dot and its open pill: live in Lamplight Gold, in development in Pale Sky, archived in Limestone Dim. The colour carries the status at a glance; the label stays in the markup (and a tooltip) for anyone who can't rely on colour.
 
 **The Sky Owns the Field Rule.** The background is always the sky, or the tower and its sky. No flat page colour sits behind the content, and no panel is opaque.
 
@@ -206,8 +220,8 @@ The palette is the tower's materials under a sky that shifts with altitude, with
 ### Hierarchy
 - **Display** (400, clamp 2.6rem to 4.9rem, 1.04): the name at the base, the page's single h1. In the base panel its size follows the panel width (`min(display size, 17cqi)`, no wrapping), so it always stays on one line.
 - **Headline** (400, clamp 2rem to 3.05rem, 1.04): each tier's title (h2), balanced wrapping.
-- **Title** (400, clamp 1.3rem to 1.5rem, 1.04): h3. At similar sizes, Suez One also sets the project names (1.22rem), contact values (1.08rem), the header name (1.32rem), the handle (1.35rem, 0.12em tracking, gold) and the gauge's altitude readout.
-- **Carved serif** (400, 1.05rem): asides under a thin rule. It also sets quotes (1.32rem, 1.45 leading), the formula (clamp 1.8rem to 2.4rem, gold) and the portrait caption.
+- **Title** (400, clamp 1.3rem to 1.5rem, 1.04): h3. At similar sizes, Suez One also sets the project names (1.22rem, 1.32rem on the open card), contact values (1.08rem), the header name (1.32rem), the handle (1.35rem, 0.12em tracking, gold) and the gauge's altitude readout.
+- **Carved serif** (400, 1.05rem): asides under a thin rule. It also sets quotes (1.32rem, 1.45 leading), the formula (clamp 1.8rem to 2.4rem, gold), the portrait caption and the gallery's captions (1.1rem).
 - **Lead** (400, 1.16rem, 1.6, max 68ch): the first paragraph under a tier title (1.02rem on phones).
 - **Body** (400, 1.0625rem / 17px, 1.6): running text, with pretty wrapping.
 - **Label** (700, 0.85rem, 0.04em tracking): contact labels, project status (0.78rem), and the "גם ב:" lead. Labels never take uppercase transforms (the script is Hebrew).
@@ -243,8 +257,9 @@ Depth is atmospheric: translucent, blurred glass over a lit scene, plus one deep
 
 ### Shadow Vocabulary
 - **Panel lift** (`box-shadow: 0 30px 80px -30px rgb(10 8 6 / 0.65), inset 0 1px 0 rgb(255 240 215 / 0.12)`): the arch panel only. A long offset drop plus a hairline of warm light along its top edge.
-- **Legibility glow** (`text-shadow: 0 1px 2px rgb(20 16 12 / 0.85), 0 0 10px rgb(20 16 12 / 0.7)`): text set directly over the scene, such as the header name and tagline, the gauge readout and labels, the loader line and the portrait caption.
+- **Legibility glow** (`text-shadow: 0 1px 2px rgb(20 16 12 / 0.85), 0 0 10px rgb(20 16 12 / 0.7)`): text set directly over the scene, such as the header name and tagline, the gauge readout and labels, the loader line, and the portrait's and the gallery's captions.
 - **Mat shadow** (`box-shadow: 0 14px 30px -12px rgb(10 8 6 / 0.7), inset 0 0 0 1px rgb(45 42 38 / 0.15)`; lifted on hover/focus to `0 24px 40px -14px rgb(10 8 6 / 0.75)`): the self-portrait's limestone mat, a physical object hung askew.
+- **Screenshot lift** (`box-shadow: 0 24px 60px -20px rgb(0 0 0 / 0.75), 0 0 0 1px rgb(255 255 255 / 0.08)`, 10px radius): a screenshot enlarged in the gallery, over its backdrop.
 - **Glass blur** (`backdrop-filter: blur(16px) saturate(1.15)` on panels, `blur(10px)` on controls): this is what makes the glass read as glass over the moving tower.
 
 ### Named Rules
@@ -273,10 +288,12 @@ Dark glass that warms to gold on hover.
 
 ### Cards / Containers
 - **Arch panel:** see Shapes. Fill is a top-to-bottom gradient from Smoked Glass to Smoked Glass Deep, with a Cornice Line border and the panel-lift shadow. Padding is 4.4rem at the top (under the arch), 2.1rem inline and 2rem at the bottom. Each tier's content has one title, then a body that scrolls.
-- **Project doorway card:** a three-column grid (door, name over description, status pill). At rest it has a 3% warm wash and a limestone border at 14%. **Lit** (hover, focus, or the climb's stop on that project, which is also when its doorway in the tower is hovered): a 12% gold wash, 60% gold border, a 2px lift, and the door glows (radial white-gold to amber). The description takes full Limestone Cornice. A closed project's door is bricked up in fired mudbrick and never glows; at its stop only the border brightens.
+- **Project doorway card:** a three-column grid (door, name over description, status pill with a dot). At rest it has a 3% warm wash and a limestone border at 14%. **Lit** (hover, focus, or the climb's stop on that project, which is also when its doorway or sign in the tower is pointed at): a 12% gold wash, 60% gold border, a 2px lift, and the door glows (radial white-gold to amber). The description takes full Limestone Cornice. A project in development has a door bricked up in fired mudbrick that never glows; lit, only its border brightens. **Stepping** (once the climb runs the list): only the lit card is open. The others close to one row: a 20 × 26px door, the name, and their status as an 8px dot in its colour (with a faint ring), the description folded away. The open card grows its door to 30 × 40px and its name to 1.32rem, slides its description open (0fr to 1fr, fading in) and opens its dot into the pill. Every part moves together on one gentle ease in and out (460ms, `cubic-bezier(0.45, 0, 0.2, 1)`), and nothing changes its place in the grid. A card or doorway pointed at opens at once and lingers 250ms after the pointer leaves, so crossing between two goes straight from one to the other. A card reached from the keyboard takes the scroll to its stop. The list keeps the height of its tallest state; without the script every card stays open. A project in development with screenshots is a button (a zoom pointer) that opens its gallery.
 - **Path (timeline):** the experience tier's stages, newest first, down a 2px rail at the inline-start (limestone at 16%). Each stage has a 12px arched mark, today's in Lamplight Gold. A stage is its years (gold 700 at 0.8rem), its role in Suez One at 1.1rem with the place after it in Limestone Dim (kept whole, never broken at a maqaf), and one or two detail lines (0.93rem, Limestone Dim). **Stepping** (the climb's stops, degree first): the stage in focus opens its details (a grid row sliding from 0fr to 1fr), its role grows to 1.22rem and its mark turns gold at 1.2 scale. The others close to years and role at 50%. The stages already passed keep a muted gold mark and their piece of rail in gold, so the rail fills from the degree up to the focus. The list keeps the height of its tallest state, so the panel never moves between stops. With reduced motion only the fade remains. Without the script every stage stays open. In the live tower the armillary sphere builds up with it: off below the tier, its core lit with the degree and a ring gilded for each later stage, outward to today's; the part in focus flashes as the focus comes to it, either way, and the camera takes the sphere from a side of its own at each stop.
 - **Contact row:** a label (gold icon and gold 700 label) and the value in Suez One, space-between, wrapping the value whole under the label if it can't fit. 4% warm wash, 14% limestone border, 8px radius, warming to gold on hover/focus.
 - **Craft list:** gold 26px line icons beside 1.06rem text, separated by limestone hairlines at 10%.
+
+- **Project gallery:** a project's screenshots in a native modal over a darkened (78%), blurred backdrop, one at a time with a carved-serif caption, at most `min(92vw, 64rem)` wide. A phone shot fits the screen's height and a desktop one the width; the stage keeps one height, so the controls under it stay put. Under it: round 40px steps (pill controls) on either side of a row of 8px dots (the one shown in Lamplight Gold at 1.25 scale), then a close pill. The arrow keys and a swipe move in the reading direction; focus starts on "next"; a live region says "תמונה 2 מתוך 4". It grows out of the project's sign on its door when that is in view, at the sign's own lean (the sign leaves its door meanwhile), else out of its card, and shrinks back into the same.
 
 ### Inputs / Fields
 - **Style:** the game leaderboard's name field is a pill, at least 44px tall, with a 6% warm wash and a Cornice Line Strong border.
@@ -294,6 +311,9 @@ The global ring is a 2px solid Hot Lamplight outline with a 3px offset and the 6
 ### The Self-Portrait (signature)
 Baruch's pen drawing of himself facing a blue error screen, on a limestone mat (10px padding, 3px radius), hung askew at -1.4°. On hover/focus it straightens and lifts. It opens in a native modal over a darkened (72%), blurred backdrop, with a FLIP motion from the small drawing and a carved-serif caption. It is 15rem wide in the base panel and 11rem on phones.
 
+### Project Signs (in the tower)
+A project in development keeps its bricked doorway, with caution tape across it (yellow and black bands, each doorway strung its own way), and a sign hangs over the tape: a desktop screenshot of the project in a limestone frame, on two ink cords from a nail in the doorframe's keystone. It is wider than the doorway, covering part of the doorframe, and hung by hand, not by a ruler: each sign is a little larger or smaller, higher or lower, leans 2-4° to its own side and turns a touch off the wall, then sways slowly. When its project is lit, a warm halo spreads from its edges, its frame warms, its screenshot takes a warm tint and a warm light falls on the bricks round it. The sign of a project with a gallery is pointed at and clicked like a doorway, and opens it.
+
 ### The Babel Title (signature)
 The summit heading scrambles through several scripts before it settles. It stays on one line while it scrambles, so the panel below doesn't jump.
 
@@ -307,6 +327,7 @@ A sky-gradient screen where five bricks are laid base-first, with a limestone ca
 - **Do** keep the tower unmirrored in LTR: the ramp climbs clockwise and the doorway order is fixed. Only the page layout follows `dir`.
 - **Do** keep the page the climb in every mode: the same spans, panels and sheets over either the live tower or the still picture. With reduced motion, fade instead of drift; with Save-Data, fetch no pictures.
 - **Do** spend Lamplight Gold only on what is alive: links, the lit card and door, focus, the current tier, live status, reachable contacts.
+- **Do** give each project status its one colour, in the closed dot and the open pill alike (gold, pale sky, limestone dim), and keep its label in the markup.
 - **Do** set secondary text over glass in Limestone Dim (at least 4.5:1 on every tier), and switch it to full Limestone Cornice on a warmed (lit, hovered, focused) surface.
 - **Do** keep the base name on one line by sizing it from the panel (`min(var(--sd-text-h1), 17cqi)`), and size one-line rows like "גם ב:" from a single em-based font size.
 - **Do** isolate only the English word in a Hebrew line (`<bdi dir="ltr">ShoobyD</bdi>`), with the line itself in the page's direction.
