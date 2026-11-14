@@ -25,6 +25,8 @@ export interface PageClimbOptions {
 
 /** The code tier, whose stops step from project to project. */
 const CODE_TIER = 1;
+/** How near its park (in tiers) a panel is fully in view (see `updatePanels` in ./climb.ts). */
+const FULL_VIEW = 0.14;
 
 export function createPageClimb(o: PageClimbOptions) {
 	const climb = createClimb(o.sections, o.panels);
@@ -60,9 +62,18 @@ export function createPageClimb(o: PageClimbOptions) {
 		 * game takes the camera) the code tier's stops light nothing.
 		 */
 		light(door: number, paused = false) {
-			// on the code tier the scroll steps from project to project, lighting each in turn
+			// on the code tier the scroll steps from project to project, lighting each in turn. Each
+			// project in the middle is lit from halfway after the stop before it to halfway to the next;
+			// the first and the last have no such half outside the tier's stops, so the first lights up
+			// already as its panel comes fully into view, and the last stays lit until its panel starts
+			// to fade (FULL_VIEW): about the same while as the others, and in step with the camera
 			const stop = climb.stop;
-			projects.update(door, stop && stop.tier === CODE_TIER && !paused ? Math.round(stop.at) : -1);
+			const p = climb.progress;
+			let at = -1;
+			if (paused) at = -1;
+			else if (stop) at = stop.tier === CODE_TIER ? Math.round(stop.at) : -1;
+			else if (Math.abs(p - CODE_TIER) < FULL_VIEW) at = p < CODE_TIER ? 0 : o.projects.length - 1;
+			projects.update(door, at);
 		},
 		/**
 		 * Each frame: the panels and sheets at `progress` (fractional tier), faded in by `enter`
