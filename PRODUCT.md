@@ -20,7 +20,7 @@ The two audiences carry equal weight:
 
 ## Product Purpose
 
-The personal home of Baruch Mustakis, a.k.a. **ShoobyD**: who he is, what he has made, and how to contact him. It is also the hub for his other projects. Those live in their own GitHub repos and are served on the same origin under `https://shoobyd.github.io/<repo>/` (e.g. `/sudoku/`, `/chinese-vocabulary/`).
+The personal home of Baruch Mustakis, a.k.a. **ShoobyD**: who he is, what he has made, and how to contact him. It is also the hub for his other projects. Those live in their own GitHub repos and are served on the same origin under `https://shoobyd.github.io/<repo>/` (e.g. `/sudoku/`, `/hanzi/`).
 
 Success means three things:
 - A professional visitor quickly understands his profile and finds the CV or contact details.
@@ -63,20 +63,16 @@ The site is a working developer's portfolio and a personal playground, with neit
   - DeviantArt `shoobyd`
   - Hebrew Wikipedia user `ShoobyD`
   - Fresh forum member 90538
-- **Projects linked today:**
-  - Sudoku Solver (`/sudoku/`, own repo)
-  - balloonz (embeddable popping-balloons game)
-  - ICMP Tunneling
-  - a book-download system (closed to the public)
-  - Fresh forum add-ons, counters and skins
-  - a Latin course taught on Fresh
-  - the "ציירו אותי" Facebook group
-  - Calvin & Hobbes (old)
+- **Selected projects (the code tier), each a doorway in the tower:**
+  - Hanzi: לימוד סינית (`/hanzi/`, own repo): Chinese vocabulary and characters for Hebrew speakers
+  - Doppler Simulator (links to its repo, whose README has the context and Radu's review)
+  - gifted-prep and the children's drawings gallery (itamar-shop): in development and closed (they may turn commercial); a bricked doorway with a sign and a gallery of screenshots, no link
+  - balloonz (an embeddable balloon-popping game) and ICMP Tunnel: the archive
+- **Live but off the tier:** Sudoku Solver (`/sudoku/`), the Fresh forum add-ons, counters and skins (`/fresh/`), and Calvin & Hobbes (`/calhobb/`, old). The book-download system is left out.
+- **Linked elsewhere on the site:** a Latin course taught on Fresh, and the "ציירו אותי" Facebook group.
 - **Other repos deployed to Pages but not yet linked:**
   - chefdepot-catalog
-  - chinese-vocabulary
   - dialog
-  - doppler-effect-simulator
   - droploader
   - dynamic-download-links
   - pinterest-widgets
