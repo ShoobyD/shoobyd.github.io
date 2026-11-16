@@ -30,6 +30,9 @@ const OUT = path.join(ROOT, 'public/og', `${LANG}.jpg`);
 
 /** The size networks show a large card at. */
 const W = 1200, H = 630;
+/** The scene renders this much wider, and the extra is cropped off the tower's side, so the tower
+ * stands further toward the inline-end and leaves the words their own sky. */
+const SHIFT = 70;
 /** The intro dolly takes 3.6 s from the scene's start; this leaves it landed and settled. */
 const SETTLE_MS = 5500;
 /** JPEG: the 3D render as a PNG is about 1 MB; at this quality it is a fraction of that. */
@@ -38,9 +41,13 @@ const QUALITY = 88;
 const t = ui[LANG];
 const words = { name: t['brand.tagline'], role: t['share.role'], domain: 'shoobyd.github.io' };
 
-// the legibility glow of the site's text over the scene; the domain, smaller and gold over the
-// bright clouds, gets a deeper one
-const GLOW = '0 1px 2px rgb(20 16 12 / 0.85), 0 0 18px rgb(20 16 12 / 0.6)';
+// the words' shadow over the bright clouds, no scrim behind them: a sharp edge, a tight dark rim
+// that parts the light letters from the light cloud, and two soft halos that dim only the sky
+// right around each word. The role line, thinner, gets a denser one; the domain, gold, its own.
+const GLOW =
+	'0 1px 2px rgb(20 16 12 / 0.95), 0 0 6px rgb(20 16 12 / 0.65), 0 0 24px rgb(20 16 12 / 0.6), 0 0 48px rgb(20 16 12 / 0.55)';
+const GLOW_ROLE =
+	'0 1px 2px rgb(20 16 12 / 1), 0 0 4px rgb(20 16 12 / 0.8), 0 0 10px rgb(20 16 12 / 0.7), 0 0 26px rgb(20 16 12 / 0.65), 0 0 50px rgb(20 16 12 / 0.55)';
 const GLOW_DEEP = '0 1px 3px rgb(20 16 12 / 0.95), 0 0 12px rgb(20 16 12 / 0.85), 0 0 30px rgb(20 16 12 / 0.6)';
 
 const browser = await puppeteer.launch({
@@ -50,7 +57,7 @@ const browser = await puppeteer.launch({
 });
 try {
 	const page = await browser.newPage();
-	await page.setViewport({ width: W, height: H });
+	await page.setViewport({ width: W + SHIFT, height: H });
 	await page.goto(URL, { waitUntil: 'networkidle0' });
 	await page.waitForFunction(
 		() => document.documentElement.classList.contains('webgl') && !document.documentElement.classList.contains('sd-tower-loading'),
@@ -59,29 +66,29 @@ try {
 	await new Promise((r) => setTimeout(r, SETTLE_MS));
 
 	await page.evaluate(
-		({ words, GLOW, GLOW_DEEP }) => {
+		({ words, W, GLOW, GLOW_ROLE, GLOW_DEEP }) => {
 			const mark = document.querySelector('.sd-header__brand svg')?.cloneNode(true);
 			const hide = document.createElement('style');
 			hide.textContent =
 				'.sd-header,[data-tier-panel],.gauge,.sd-footer,.sd-skip-link,astro-dev-toolbar{visibility:hidden!important}';
 			document.head.append(hide);
 
-			// the words, where the panel stands: the inline-start, in the page's direction
+			// the words, where the panel stands: the inline-start of the card (the part kept), in the
+			// page's direction
 			const box = document.createElement('div');
 			box.dir = document.documentElement.dir;
-			box.style.cssText =
-				'position:fixed;inset:0;z-index:99999;pointer-events:none;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding-inline-start:84px;color:#e9e3d3';
+			box.style.cssText = `position:fixed;inset-block:0;inset-inline-start:0;inline-size:${W}px;z-index:99999;pointer-events:none;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding-inline-start:84px;color:#e9e3d3`;
 			const name = document.createElement('div');
 			name.textContent = words.name;
-			name.style.cssText = `font:400 82px/1.04 var(--sd-font-display);text-shadow:${GLOW}`;
+			name.style.cssText = `font:400 104px/1.04 var(--sd-font-display);text-shadow:${GLOW}`;
 			const role = document.createElement('div');
 			role.textContent = words.role;
-			role.style.cssText = `margin-top:18px;font:600 28px/1.35 var(--sd-font-text);white-space:nowrap;text-shadow:${GLOW}`;
+			role.style.cssText = `margin-top:18px;font:700 30px/1.35 var(--sd-font-text);white-space:nowrap;text-shadow:${GLOW_ROLE}`;
 			const domain = document.createElement('div');
-			domain.style.cssText = `margin-top:34px;display:flex;align-items:center;gap:12px;font:700 26px var(--sd-font-text);color:#ffd89a;text-shadow:${GLOW_DEEP}`;
+			domain.style.cssText = `margin-top:30px;display:flex;align-items:center;gap:12px;font:700 31px var(--sd-font-text);color:#ffd89a;text-shadow:${GLOW_DEEP}`;
 			if (mark instanceof SVGElement) {
-				mark.setAttribute('width', '36');
-				mark.setAttribute('height', '36');
+				mark.setAttribute('width', '41');
+				mark.setAttribute('height', '41');
 				mark.style.filter = 'drop-shadow(0 1px 3px rgb(20 16 12 / 0.9))';
 				domain.append(mark);
 			}
@@ -91,13 +98,15 @@ try {
 			box.append(name, role, domain);
 			document.body.append(box);
 		},
-		{ words, GLOW, GLOW_DEEP },
+		{ words, W, GLOW, GLOW_ROLE, GLOW_DEEP },
 	);
 	await page.evaluate(() => document.fonts.ready);
 	await new Promise((r) => setTimeout(r, 400));
 
 	fs.mkdirSync(path.dirname(OUT), { recursive: true });
-	await page.screenshot({ path: OUT, type: 'jpeg', quality: QUALITY });
+	// keep the inline-start W of the wider render: in RTL that is the right of the page
+	const rtl = await page.evaluate(() => document.documentElement.dir === 'rtl');
+	await page.screenshot({ path: OUT, type: 'jpeg', quality: QUALITY, clip: { x: rtl ? SHIFT : 0, y: 0, width: W, height: H } });
 	console.log(`${path.relative(ROOT, OUT)}: ${W}×${H}, ${Math.round(fs.statSync(OUT).size / 1024)} KB`);
 } finally {
 	await browser.close();
