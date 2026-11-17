@@ -262,6 +262,8 @@ export function createSheet(panels: HTMLElement[], startTier: number) {
 	measure();
 
 	return {
+		/** Measures the peeks and the room under the header again (the text changed language in place). */
+		measure,
 		/**
 		 * How far (px) to lift the tower so it sits in the middle of the room between the header and
 		 * the top of tier `i`'s sheet, wherever that is right now (open, collapsed, mid-drag or

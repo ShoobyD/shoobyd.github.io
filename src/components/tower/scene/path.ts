@@ -109,6 +109,15 @@ export function createPath(list: HTMLElement) {
 	document.fonts?.ready.then(() => { reserve(); reserveNow(); }).catch(() => {});
 
 	return {
+		/**
+		 * The stages' text changed language in place: the list's reserved height, and the peek's copy
+		 * of the stage in focus (with its own reserved height), are taken again.
+		 */
+		relang() {
+			reserve();
+			reserveNow();
+			if (focus >= 0) showNow(focus, false);
+		},
 		/** The stop the climb is at on this tier, 0 (the degree) .. last (today). */
 		update(stop: number) {
 			const i = last - Math.min(last, Math.max(0, stop));

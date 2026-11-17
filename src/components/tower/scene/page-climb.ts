@@ -9,6 +9,7 @@ import { createClimb } from './climb';
 import { createSheet } from './sheet';
 import { createProjects, type ProjectSpec } from './projects';
 import { createPath } from './path';
+import { LANG_EVENT } from '../../../i18n/lang-event';
 
 export interface PageClimbOptions {
 	sections: HTMLElement[];
@@ -46,6 +47,15 @@ export function createPageClimb(o: PageClimbOptions) {
 	const root = document.documentElement;
 	root.dataset.climb = 'live';
 	root.classList.remove('sd-js-failed');
+	// the text changed language in place: what measured or copied it does so again (the sections'
+	// heights don't depend on it, so the climb stays where it is)
+	const onLang = () => {
+		projects.relang();
+		path?.relang();
+		sheet.measure();
+		climb.measure();
+	};
+	window.addEventListener(LANG_EVENT, onLang);
 
 	return {
 		climb,
@@ -95,6 +105,7 @@ export function createPageClimb(o: PageClimbOptions) {
 			}
 		},
 		dispose() {
+			window.removeEventListener(LANG_EVENT, onLang);
 			climb.dispose();
 			sheet.dispose();
 			projects.dispose();

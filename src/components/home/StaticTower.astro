@@ -38,6 +38,7 @@ const layout = { foci: still.foci, axis: still.axis, size: [still.width, still.h
 
 <script>
 	import { isTowerActive, progressAt, sectionHolds, sectionTops } from '../tower/mode';
+	import { LANG_EVENT } from '../../i18n/lang-event';
 
 	interface Layout {
 		foci: number[];
@@ -200,6 +201,7 @@ const layout = { foci: still.foci, axis: still.axis, size: [still.width, still.h
 			const b = box!.getBoundingClientRect();
 			const rtl = getComputedStyle(box!).direction === 'rtl';
 			const imgX = b.left + (rtl ? b.width - w0 : 0), imgY = b.top;
+			drawnFrom = imgX;
 			const layer = groundLayer!.getBoundingClientRect();
 			const gw = TILES * tileW;
 			const groundX = layer.left + (rtl ? layer.width - gw : 0), groundY = layer.top;
@@ -212,6 +214,8 @@ const layout = { foci: still.foci, axis: still.axis, size: [still.width, still.h
 			houses.style.opacity = housesAt(f.s).toFixed(3);
 		}
 		let groundSize = { tileW: 0, tileH: 0 };
+		/** Where on screen the tower's box put its untransformed left edge, when it was last drawn. */
+		let drawnFrom = NaN;
 
 		/** Reduced motion: the view of the nearest tier, held still. */
 		let shownTier = -1;
@@ -300,6 +304,16 @@ const layout = { foci: still.foci, axis: still.axis, size: [still.width, still.h
 			schedule();
 		};
 		window.addEventListener('resize', replace);
+		// the language switched in place, and with it the direction: the box the tower is drawn in moves
+		// to the other side. The tower starts from where it is on screen and glides to its new aim, as
+		// the live one does (held still with reduced motion: placed at once)
+		window.addEventListener(LANG_EVENT, () => {
+			if (still.matches || !Number.isFinite(drawnFrom)) return replace();
+			const b = box.getBoundingClientRect();
+			const from = b.left + (getComputedStyle(box).direction === 'rtl' ? b.width - img.offsetWidth : 0);
+			now.x += drawnFrom - from;
+			schedule();
+		});
 		still.addEventListener('change', replace);
 		// the layout changes as the climb starts, and when the live tower comes or goes: place it again then
 		new ResizeObserver(replace).observe(document.body);

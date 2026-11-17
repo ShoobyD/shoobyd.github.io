@@ -100,9 +100,9 @@ export function createProjects(
 	 */
 	const stopNow = cards.find(Boolean)?.closest('[data-tier-panel]')?.querySelector<HTMLElement>('[data-stop-now]') ?? null;
 	let nowShown = -1;
-	function showNow(i: number) {
+	function showNow(i: number, again = false) {
 		const card = cards[i];
-		if (!stopNow || !card || i === nowShown) return;
+		if (!stopNow || !card || (i === nowShown && !again)) return;
 		nowShown = i;
 		const copy = card.cloneNode(true) as HTMLElement;
 		copy.removeAttribute('data-project');
@@ -154,6 +154,14 @@ export function createProjects(
 	});
 
 	return {
+		/**
+		 * The cards' text changed language in place: the list's reserved height and the peek's copy of
+		 * the card in focus are taken again.
+		 */
+		relang() {
+			reserve();
+			if (nowShown >= 0) showNow(nowShown, true);
+		},
 		/**
 		 * Each frame: the doorway under the pointer (-1 for none, or without the live tower) and the
 		 * code tier's stop the scroll is at (-1 when the climb isn't holding there).

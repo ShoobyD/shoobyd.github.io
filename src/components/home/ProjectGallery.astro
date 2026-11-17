@@ -84,7 +84,8 @@ const fill = (text: string, n: number) => text.replace('{n}', String(n)).replace
 		const dots = [...view.querySelectorAll<HTMLButtonElement>('[data-dot]')];
 		const count = view.querySelector<HTMLElement>('[data-count]');
 		if (!stage || !slides.length || typeof view.showModal !== 'function') return;
-		const counter = view.dataset.counter ?? '{n} / {total}';
+		// read when used: a language switch in place changes it
+		const counter = () => view.dataset.counter ?? '{n} / {total}';
 		let at = 0;
 		let from: HTMLElement | null = null;
 		const id = view.dataset.gallery ?? '';
@@ -100,7 +101,7 @@ const fill = (text: string, n: number) => text.replace('{n}', String(n)).replace
 			at = (i + slides.length) % slides.length;
 			slides.forEach((s, k) => (s.hidden = k !== at));
 			dots.forEach((d, k) => (k === at ? d.setAttribute('aria-current', 'true') : d.removeAttribute('aria-current')));
-			if (count && announce) count.textContent = counter.replace('{n}', String(at + 1)).replace('{total}', String(slides.length));
+			if (count && announce) count.textContent = counter().replace('{n}', String(at + 1)).replace('{total}', String(slides.length));
 			// the next image starts loading as this one shows
 			slides[(at + 1) % slides.length].querySelector('img')?.setAttribute('loading', 'eager');
 		}
