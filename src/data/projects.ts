@@ -45,7 +45,7 @@ export const projects: Project[] = [
 	{
 		id: 'gifted-prep',
 		name: {
-			he: 'מחוננים – תרגול',
+			he: 'מחוננים',
 			en: 'Gifted Prep',
 		},
 		status: 'dev',
