@@ -277,6 +277,10 @@ const elsewhere = [
 		font-size: min(var(--sd-text-h1), 17cqi);
 		white-space: nowrap;
 	}
+	/* "Baruch Mustakis" is wider (8.2 em to the Hebrew's 5.7): 11.6cqi fits it */
+	:root[lang='en'] #tier-base h1.tier__title {
+		font-size: min(var(--sd-text-h1), 11.6cqi);
+	}
 	/* an open bottom sheet (narrow screens) runs under the altitude gauge: the gauge dims and
 	 * steps aside for it until the sheet collapses */
 	html.sd-sheet-open [data-tower-chrome] {
@@ -642,6 +646,10 @@ const elsewhere = [
 	}
 	.elsewhere > * {
 		--f: clamp(0.75rem, 4cqi, 0.95rem);
+	}
+	/* the English row is longer (28 em of `--f` to the Hebrew's 24.6): 3.5cqi fits it */
+	:root[lang='en'] .elsewhere > * {
+		--f: clamp(0.75rem, 3.5cqi, 0.95rem);
 	}
 	/* wide screens have the room: a little more air between the contacts and the profile pills */
 	@media (min-width: 47.5rem) {
