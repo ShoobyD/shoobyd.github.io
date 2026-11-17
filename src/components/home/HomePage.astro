@@ -41,8 +41,20 @@ interface Props {
 const { lang } = Astro.props;
 const c = home[lang];
 
+/**
+ * The islands that show text (the gauge, the summit title, game mode) take it for both languages
+ * and show the page's: a language switch in place changes their text without mounting them again.
+ */
+const bothLangs = <T,>(pick: (l: Lang) => T): Record<Lang, T> => ({ he: pick('he'), en: pick('en') });
+
 // the gauge's labels are a poem of the climb; each link also carries its tier's plain title
-const gaugeTiers = tierIds.map((id) => ({ id, label: c.gauge.tiers[id], name: c[id].title, altitude: tierAltitude[id] }));
+const gaugeCopies = bothLangs((l) => ({
+	label: home[l].gauge.label,
+	unit: home[l].gauge.unit,
+	tiers: tierIds.map((id) => ({ id, label: home[l].gauge.tiers[id], name: home[l][id].title, altitude: tierAltitude[id] })),
+}));
+const babelCopies = bothLangs((l) => ({ text: home[l].summit.title, sequence: home[l].summit.babel }));
+const gameCopies = bothLangs((l) => home[l].game);
 
 const projectItems = projects.map((p) => ({
 	id: p.id,
@@ -135,13 +147,13 @@ const elsewhere = [
 	<TowerLoader label={c.loader} />
 	<!-- instead of the page without JavaScript, or when it failed to load -->
 	<NoJsMessage title={c.noJs.title} text={c.noJs.text} />
-	<TowerScene client:only="vue" tiers={[...tierIds]} doors={towerDoors} portrait={towerPortrait} game={c.game} />
+	<TowerScene client:only="vue" tiers={[...tierIds]} doors={towerDoors} portrait={towerPortrait} lang={lang} game={gameCopies} />
 	<!-- touch screens: a cue over the tower's unfinished top at the summit (placed by the tower; a tap on
 	     the top starts the game, and the header's game button stays the way in for keys and readers) -->
 	<div class="summit-cue" data-summit-cue aria-hidden="true"><span class="summit-cue__pill">{c.game.cue}</span></div>
 	<!-- the still tower (when there is no live 3D one): before the tiers, so their panels sit over it -->
 	<StaticTower />
-	<AltitudeGauge client:idle label={c.gauge.label} unit={c.gauge.unit} tiers={gaugeTiers} />
+	<AltitudeGauge client:idle lang={lang} copies={gaugeCopies} />
 
 	<TierSection id="base" sheetLabel={c.sheet.toggle} title={c.base.title} level={1}>
 		<!-- in the page's direction, under the title; only the name itself is isolated as English -->
@@ -223,7 +235,7 @@ const elsewhere = [
 	<TierSection id="summit" sheetLabel={c.sheet.toggle} title={c.summit.title} tone="night">
 		<!-- the slot sits on a Fragment: on the island itself, `slot` would reach the client as a prop
 		     and fall through onto its root, which the server render never had (a hydration mismatch) -->
-		<Fragment slot="title"><BabelTitle client:visible text={c.summit.title} sequence={c.summit.babel} /></Fragment>
+		<Fragment slot="title"><BabelTitle client:visible lang={lang} copies={babelCopies} /></Fragment>
 		<p class="wink">{c.summit.wink}</p>
 		<ContactList items={contacts} />
 		<CvViewer

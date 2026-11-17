@@ -14,7 +14,7 @@
  * While playing, the root carries `html.tower-game`: the page stops scrolling, the panels, gauge
  * and footer are `inert` (and faded), and click / tap / Space / Enter drop a brick, Esc leaves.
  */
-import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import ArchPanel from '../../theme/components/ArchPanel.vue';
 import GameBoard from './GameBoard.vue';
 import { countBricks, type GameCopy } from '../../i18n/home';
@@ -68,6 +68,9 @@ function syncToggles() {
 		if (label) label.textContent = active.value ? props.copy.exit : props.copy.enter;
 	}
 }
+
+// the header button's label is written here, so it follows a language switch from here too
+watch(() => props.copy, syncToggles);
 
 function setBehind(off: boolean) {
 	document.querySelectorAll<HTMLElement>(BEHIND).forEach((el) => {

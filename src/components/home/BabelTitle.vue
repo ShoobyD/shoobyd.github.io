@@ -7,15 +7,29 @@
  * Pure DOM, so it works with or without the 3D tower. Screen readers only ever get `text` (the
  * visible, scrambling copy is aria-hidden). With reduced motion the languages simply swap,
  * without the scrambling letters, and the joke plays only on hover or click.
+ *
+ * It takes its copy for both languages and shows the page's (it follows `<html lang>`, so a language
+ * switch in place changes it too, once a running joke has settled).
  */
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { usePageLang } from '../../i18n/page-lang';
+import type { Lang } from '../../i18n/ui';
 
-const props = defineProps<{
+export interface BabelCopy {
 	/** The real heading. */
 	text: string;
 	/** The languages it passes through before settling back on `text`. */
 	sequence: string[];
+}
+
+const props = defineProps<{
+	/** The page's language when it was rendered. */
+	lang: Lang;
+	copies: Record<Lang, BabelCopy>;
 }>();
+
+const pageLang = usePageLang(props.lang);
+const copy = computed(() => props.copies[pageLang.value]);
 
 /** Letter pools of the scripts the heading gets confused with. */
 const POOLS = ['אבגדהוזחטיכלמנסעפצקרשת', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'ΑΒΓΔΘΛΞΠΣΦΨΩ', '語言塔天通巴別亂說話', 'АБВГДЖЗИЛПФЦЧШЯ', 'ابتثجحخدرزسشص'];
@@ -23,7 +37,7 @@ const STEP_MS = 430;
 const STILL_STEP_MS = 380;
 
 const root = ref<HTMLElement | null>(null);
-const shown = ref(props.text);
+const shown = ref(copy.value.text);
 
 let busy = false;
 let still = false;
@@ -68,9 +82,15 @@ function scrambleTo(target: string, ms: number) {
 async function babel() {
 	if (busy) return;
 	busy = true;
-	for (const word of [...props.sequence, props.text]) await scrambleTo(word, STEP_MS);
+	for (const word of [...copy.value.sequence, copy.value.text]) await scrambleTo(word, STEP_MS);
+	// the language may have changed while it played
+	shown.value = copy.value.text;
 	busy = false;
 }
+
+watch(copy, (c) => {
+	if (!busy) shown.value = c.text;
+});
 
 onMounted(() => {
 	still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -105,7 +125,7 @@ onBeforeUnmount(() => {
 
 <template>
 	<span ref="root" class="babel">
-		<span class="sd-visually-hidden">{{ text }}</span>
+		<span class="sd-visually-hidden">{{ copy.text }}</span>
 		<span class="babel__shown" dir="auto" aria-hidden="true">{{ shown }}</span>
 	</span>
 </template>

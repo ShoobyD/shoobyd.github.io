@@ -11,11 +11,13 @@
  *
  * Debug: `?no3d` keeps the still climb, `?noshadow` renders without shadows.
  */
-import { markRaw, nextTick, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue';
+import { computed, markRaw, nextTick, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue';
 import { endLoading } from './mode';
 import { createStillClimb, type StillClimb } from './still-climb';
 import TowerGame from './TowerGame.vue';
 import type { GameCopy } from '../../i18n/home';
+import { usePageLang } from '../../i18n/page-lang';
+import type { Lang } from '../../i18n/ui';
 import type { DoorSpec, PortraitSpec, TowerHandle } from './scene';
 
 const props = defineProps<{
@@ -25,9 +27,17 @@ const props = defineProps<{
 	doors: DoorSpec[];
 	/** The self-portrait hung beside the strings on the making tier. */
 	portrait: PortraitSpec;
-	/** Game mode's copy (HUD, game-over card, toast, toggle labels). */
-	game: GameCopy;
+	/** The page's language when it was rendered. */
+	lang: Lang;
+	/**
+	 * Game mode's copy (HUD, game-over card, toast, toggle labels), for both languages: the game
+	 * shows the page's, and follows a language switch in place.
+	 */
+	game: Record<Lang, GameCopy>;
 }>();
+
+const pageLang = usePageLang(props.lang);
+const gameCopy = computed(() => props.game[pageLang.value]);
 
 const canvas = ref<HTMLCanvasElement | null>(null);
 /** Bumped after a teardown so a restart gets a fresh canvas (and a fresh GL context). */
@@ -169,7 +179,7 @@ onBeforeUnmount(() => {
 	<canvas :key="generation" ref="canvas" class="tower-canvas" aria-hidden="true" />
 	<div class="tower-veil tower-veil--vignette" aria-hidden="true" />
 	<div class="tower-veil tower-veil--grain" aria-hidden="true" />
-	<TowerGame v-if="live" ref="gameUi" :tower="live" :copy="game" />
+	<TowerGame v-if="live" ref="gameUi" :tower="live" :copy="gameCopy" />
 </template>
 
 <style scoped>

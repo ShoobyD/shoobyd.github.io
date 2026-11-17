@@ -6,9 +6,14 @@
  *
  * The labels are evocative rather than plain (the base, the code, the path…), so each link also
  * carries its tier's title: in its accessible name, after the label it shows, and as a tooltip.
+ *
+ * It takes its copy for both languages and shows the page's (it follows `<html lang>`, so a language
+ * switch in place changes it too); the tiers' ids and altitudes are the same in both.
  */
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { progressAt, sectionHolds, sectionTops } from '../tower/mode';
+import { usePageLang } from '../../i18n/page-lang';
+import type { Lang } from '../../i18n/ui';
 
 export interface GaugeTier {
 	id: string;
@@ -18,13 +23,23 @@ export interface GaugeTier {
 	altitude: number;
 }
 
-const props = defineProps<{
+export interface GaugeCopy {
 	label: string;
 	unit: string;
 	tiers: GaugeTier[];
+}
+
+const props = defineProps<{
+	/** The page's language when it was rendered. */
+	lang: Lang;
+	copies: Record<Lang, GaugeCopy>;
 }>();
 
-const current = ref(props.tiers[0]?.id ?? '');
+const pageLang = usePageLang(props.lang);
+const copy = computed(() => props.copies[pageLang.value]);
+const tiers = computed(() => copy.value.tiers);
+
+const current = ref(tiers.value[0]?.id ?? '');
 const altitude = ref(0);
 
 let frame = 0;
@@ -38,10 +53,11 @@ let layout: ResizeObserver | null = null;
 function measure() {
 	frame = 0;
 	const progress = progressAt(sectionTops(sections), window.scrollY, sectionHolds(sections));
-	const i = Math.min(Math.floor(progress), props.tiers.length - 2);
+	const list = tiers.value;
+	const i = Math.min(Math.floor(progress), list.length - 2);
 	const t = progress - i;
-	current.value = props.tiers[Math.round(progress)].id;
-	altitude.value = Math.round(props.tiers[i].altitude + (props.tiers[i + 1].altitude - props.tiers[i].altitude) * t);
+	current.value = list[Math.round(progress)].id;
+	altitude.value = Math.round(list[i].altitude + (list[i + 1].altitude - list[i].altitude) * t);
 }
 
 function schedule() {
@@ -49,10 +65,10 @@ function schedule() {
 }
 
 onMounted(() => {
-	sections = props.tiers
+	sections = tiers.value
 		.map((tier) => document.getElementById(`tier-${tier.id}`))
 		.filter((el): el is HTMLElement => !!el);
-	if (sections.length !== props.tiers.length) return;
+	if (sections.length !== tiers.value.length) return;
 	measure();
 	window.addEventListener('scroll', schedule, { passive: true });
 	window.addEventListener('resize', schedule);
@@ -70,10 +86,10 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-	<nav class="gauge" :aria-label="label" data-tower-chrome>
+	<nav class="gauge" :aria-label="copy.label" data-tower-chrome>
 		<p class="gauge__altitude" aria-hidden="true">
 			<b>{{ altitude }}</b>
-			<span>{{ unit }}</span>
+			<span>{{ copy.unit }}</span>
 		</p>
 		<ol class="gauge__tiers">
 			<li v-for="tier in tiers" :key="tier.id">
