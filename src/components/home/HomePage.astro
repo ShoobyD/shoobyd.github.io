@@ -77,11 +77,13 @@ const towerDoors = await Promise.all(
 /** The self-portrait opens the base panel, and hangs again beside the strings on the making tier. */
 const towerPortrait = { src: selfPortrait.src, width: selfPortrait.width, height: selfPortrait.height };
 
-const [latinBefore, latinAfter = ''] = c.languages.latin.split('{link}');
+// the course is in Hebrew: the English line marks it where its `{he}` token stands
+const [latinBefore, latinRest = ''] = c.languages.latin.split('{link}');
+const [latinMid, latinAfter] = latinRest.split('{he}');
 
 const crafts = [
 	{ icon: 'guitar' as const, text: c.making.guitar },
-	{ icon: 'drawing' as const, text: c.making.drawing, link: { label: c.making.drawingLink, href: links.drawMeGroup } },
+	{ icon: 'drawing' as const, text: c.making.drawing, link: { label: c.making.drawingLink, href: links.drawMeGroup, hebrewNote: c.hebrewOnly.note } },
 	{ icon: 'dance' as const, text: c.making.dance },
 	{ icon: 'cooking' as const, text: c.making.cooking },
 	{ icon: 'diy' as const, text: c.making.diy },
@@ -115,7 +117,7 @@ const person = {
 const elsewhere = [
 	{ id: 'facebook' as const, label: c.summit.elsewhere.facebook, href: links.facebook },
 	{ id: 'deviantart' as const, label: c.summit.elsewhere.deviantart, href: links.deviantart },
-	{ id: 'wikipedia' as const, label: c.summit.elsewhere.wikipedia, href: links.wikipedia },
+	{ id: 'wikipedia' as const, label: c.summit.elsewhere.wikipedia, href: links.wikipedia, hebrew: true },
 ];
 ---
 
@@ -208,7 +210,7 @@ const elsewhere = [
 			{c.languages.topics.map((topic) => <li>{topic}</li>)}
 		</ul>
 		<p class="lead">
-			{latinBefore}<a href={links.latinCourse} rel="noopener" target="_blank">{c.languages.latinLink}</a>{latinAfter}
+			{latinBefore}<a href={links.latinCourse} hreflang="he" rel="noopener" target="_blank">{c.languages.latinLink}</a>{latinMid}{latinAfter !== undefined && <small class="in-hebrew">{c.hebrewOnly.note}</small>}{latinAfter}
 		</p>
 	</TierSection>
 
@@ -235,7 +237,17 @@ const elsewhere = [
 			<span class="elsewhere__lead" id="elsewhere-lead">{c.summit.alsoOn}</span>
 			<ul class="chips chips--links" aria-labelledby="elsewhere-lead">
 				{elsewhere.map((profile) => (
-					<li><a href={profile.href} rel="noopener" target="_blank"><LinkIcon name={profile.id} size={16} /><bdi>{profile.label}</bdi></a></li>
+					<li>
+						<a href={profile.href} hreflang={profile.hebrew ? 'he' : undefined} rel="noopener" target="_blank">
+							<LinkIcon name={profile.id} size={16} /><bdi>{profile.label}</bdi>
+							{profile.hebrew && c.hebrewOnly.tag && (
+								<>
+									<small class="in-hebrew-tag" aria-hidden="true">{c.hebrewOnly.tag}</small>
+									<span class="sd-visually-hidden">{c.hebrewOnly.note}</span>
+								</>
+							)}
+						</a>
+					</li>
 				))}
 			</ul>
 		</div>
@@ -647,9 +659,10 @@ const elsewhere = [
 	.elsewhere > * {
 		--f: clamp(0.75rem, 4cqi, 0.95rem);
 	}
-	/* the English row is longer (28 em of `--f` to the Hebrew's 24.6): 3.5cqi fits it */
+	/* the English row is longer (29.5 em of `--f` to the Hebrew's 24.6, with Wikipedia's "HE"
+	 * tag): 3.3cqi fits it */
 	:root[lang='en'] .elsewhere > * {
-		--f: clamp(0.75rem, 3.5cqi, 0.95rem);
+		--f: clamp(0.75rem, 3.3cqi, 0.95rem);
 	}
 	/* wide screens have the room: a little more air between the contacts and the profile pills */
 	@media (min-width: 47.5rem) {
@@ -693,6 +706,19 @@ const elsewhere = [
 	.chips--links li:has(a:hover, a:focus-visible) {
 		border-color: var(--sd-gold-edge);
 		background: var(--sd-gold-wash);
+	}
+
+	/* a link to a page in Hebrew only, marked on the English page: a dim note after the text, and a
+	 * small tag in a profile pill, where the note would not fit */
+	.in-hebrew {
+		font-size: 0.8em;
+		color: var(--sd-text-dim);
+	}
+	.in-hebrew-tag {
+		font-size: 0.68em;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		color: var(--sd-text-dim);
 	}
 
 	/* the brick glyph on game mode's controls: a course laid, the next one coming down */

@@ -317,7 +317,9 @@ onBeforeUnmount(() => {
 	text-shadow: 0 4px 30px rgb(10 8 6 / 0.6), var(--sd-shadow-text);
 }
 
+/* in capitals by CSS, not in the copy: a screen reader reads "Bricks" as a word */
 .game-hud__label {
+	text-transform: uppercase;
 	font-weight: 700;
 	font-size: 0.85rem;
 	letter-spacing: 0.1em;

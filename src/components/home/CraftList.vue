@@ -1,7 +1,8 @@
 <script setup lang="ts">
 /**
  * The hobbies & pursuits tier (id `making`): hobbies, then pursuits, each with an authored line icon.
- * An item's text may contain one `{link}` token, rendered as a link to `href`.
+ * An item's text may contain one `{link}` token, rendered as a link to `href`, and after it a `{he}`
+ * token, where the English page marks a link to a page in Hebrew only (`hebrewNote`).
  */
 import { computed } from 'vue';
 
@@ -10,15 +11,16 @@ export type CraftIcon = 'guitar' | 'drawing' | 'dance' | 'cooking' | 'diy' | 'vo
 export interface CraftItem {
 	icon: CraftIcon;
 	text: string;
-	link?: { label: string; href: string };
+	link?: { label: string; href: string; hebrewNote?: string };
 }
 
 const props = defineProps<{ items: CraftItem[] }>();
 
 const rows = computed(() =>
 	props.items.map((item) => {
-		const [before, after = ''] = item.text.split('{link}');
-		return { ...item, before, after };
+		const [before, rest = ''] = item.text.split('{link}');
+		const [mid, after = ''] = rest.split('{he}');
+		return { ...item, before, mid, after, note: rest.includes('{he}') ? item.link?.hebrewNote : undefined };
 	}),
 );
 </script>
@@ -62,7 +64,7 @@ const rows = computed(() =>
 				</template>
 			</svg>
 			<span>
-				{{ row.before }}<a v-if="row.link" :href="row.link.href" rel="noopener" target="_blank">{{ row.link.label }}</a>{{ row.after }}
+				{{ row.before }}<a v-if="row.link" :href="row.link.href" :hreflang="row.link.hebrewNote !== undefined ? 'he' : undefined" rel="noopener" target="_blank">{{ row.link.label }}</a>{{ row.mid }}<small v-if="row.note" class="in-hebrew">{{ row.note }}</small>{{ row.after }}
 			</span>
 		</li>
 	</ul>
@@ -88,6 +90,11 @@ const rows = computed(() =>
 
 .crafts li:last-child {
 	border-block-end: 0;
+}
+
+.in-hebrew {
+	font-size: 0.8em;
+	color: var(--sd-text-dim);
 }
 
 .crafts svg {

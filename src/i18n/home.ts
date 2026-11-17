@@ -31,6 +31,12 @@ export interface PathStage {
 interface HomeCopy {
 	/** Shown on the full-screen loader while the 3D tower is being prepared. */
 	loader: string;
+	/**
+	 * A link to a page that is in Hebrew only, marked on the English page: `note` where a text has a
+	 * `{he}` token (after its `{link}`), `tag` on a profile pill, where a note would not fit. Empty
+	 * in Hebrew, which needs no mark (and has no `{he}` tokens).
+	 */
+	hebrewOnly: { note: string; tag: string };
 	gauge: { label: string; unit: string; tiers: Record<TierId, string> };
 	/** The handle that opens and closes a tier panel on narrow screens (its state is aria-expanded). */
 	sheet: { toggle: string };
@@ -174,6 +180,7 @@ export interface BoardCopy {
 export const home: Record<Lang, HomeCopy> = {
 	he: {
 		loader: 'מניחים לבנים…',
+		hebrewOnly: { note: '', tag: '' },
 		gauge: {
 			label: 'קומות המגדל',
 			unit: 'אמות',
@@ -254,7 +261,7 @@ export const home: Record<Lang, HomeCopy> = {
 			title: 'בואו נדבר',
 			wink: 'הפסגה עדיין בבנייה. זהירות: מעל גובה מסוים השפות מתחילות להתבלבל.',
 			playHint: 'לחצו על ראש המגדל כדי לעזור בבנייה.',
-			babel: ['Loquamur', '我们聊聊吧', 'Ας μιλήσουμε', "Let's talk"],
+			babel: ['Loquamur', '我们聊聊吧', 'Ας μιλήσουμε', "Let's Talk"],
 			contacts: { linkedin: 'לינקדאין', email: 'אימייל', github: 'גיטהאב', cv: 'קורות־חיים' },
 			alsoOn: 'גם ב:',
 			elsewhere: { facebook: 'פייסבוק', deviantart: 'DeviantArt', wikipedia: 'ויקיפדיה' },
@@ -309,15 +316,16 @@ export const home: Record<Lang, HomeCopy> = {
 	},
 	en: {
 		loader: 'Laying bricks…',
+		hebrewOnly: { note: '(in Hebrew)', tag: 'HE' },
 		gauge: {
 			label: 'Tower tiers',
 			unit: 'cubits',
-			tiers: { base: 'The Base', code: 'The Code', math: 'The Path', languages: 'The Curiosity', making: 'The Heart', summit: 'The Summit' },
+			tiers: { base: 'The Base', code: 'The Code', math: 'The Path', languages: 'The Wonder', making: 'The Heart', summit: 'The Summit' },
 		},
 		sheet: { toggle: 'Tier content' },
 		noJs: {
 			title: 'This site needs JavaScript',
-			text: 'The tower is built right here in your browser, floor by floor, and for that it needs JavaScript. Turn it on and reload the page.',
+			text: 'The tower is built right here in your browser, tier by tier, and for that it needs JavaScript. Turn it on and reload the page.',
 		},
 		base: {
 			title: 'Baruch Mustakis',
@@ -338,7 +346,7 @@ export const home: Record<Lang, HomeCopy> = {
 			title: 'Experience & Education',
 			path: [
 				{
-					years: '2018–today',
+					years: '2018–present',
 					role: 'Senior Frontend Engineer',
 					org: 'Pic-Time',
 					details: ['Leading development of a SaaS platform for photographers.', 'Architecture, shared infrastructure and core systems.'],
@@ -347,18 +355,18 @@ export const home: Record<Lang, HomeCopy> = {
 					years: '2015–2018',
 					role: 'Development and Training Team Lead',
 					org: 'EqualWeb',
-					details: ['Building a web accessibility product from scratch, used by leading companies, government offices and municipalities.'],
+					details: ['Built a web accessibility product from scratch, embedded by leading companies, government ministries and local authorities.'],
 				},
 				{
 					years: 'until 2015',
 					role: 'Teaching',
-					details: ['Private lessons in mathematics and physics, from high school to university.', 'Teaching programming to children and teenagers.'],
+					details: ['Private tutoring in math and physics, from high school through university.', 'Teaching programming to children and teenagers.'],
 				},
 				{
 					years: '2006–2008',
 					role: 'B.Sc. in Pure Mathematics, with honors',
 					org: 'Bar-Ilan University',
-					details: ['Completion studies in computer science (2011–2012).'],
+					details: ['Supplementary studies in computer science (2011–2012).'],
 				},
 			],
 			formulaLabel: "Euler's identity, the tau version: The Tau Manifesto",
@@ -369,23 +377,23 @@ export const home: Record<Lang, HomeCopy> = {
 			quote: 'And the whole earth was of one language, and of one speech.',
 			cite: 'Genesis 11:1',
 			topics: ['Linguistics', 'Biblical studies', 'Mythology', 'History', 'Philosophy', 'Mathematics', 'Physics', 'Astronomy'],
-			latin: 'And Latin, too: a {link} given on the Fresh forum.',
+			latin: 'And Latin, too: a {link} I taught on Fresh, an Israeli forum {he}.',
 			latinLink: 'course',
 		},
 		making: {
-			title: 'Hobbies & pursuits',
+			title: 'Hobbies & Pursuits',
 			guitar: 'Music, mostly guitar',
-			drawing: 'Drawing & illustration, and founder of the {link} Facebook group',
-			drawingLink: '“ציירו אותי” (Draw Me)',
-			dance: 'Dance, and taking part in the “Media Noche Salsa” community',
+			drawing: 'Drawing & illustration, and founder of the {link} Facebook group {he}',
+			drawingLink: '“Draw Me”',
+			dance: 'Dancing, as part of the “Media Noche Salsa” community',
 			cooking: 'Cooking',
 			diy: 'Building, woodwork & DIY',
-			volunteering: 'Volunteering with “Yedidim” and food-rescue organizations',
+			volunteering: 'Volunteering with Yedidim (roadside assistance) and food-rescue groups',
 			stringsHint: 'Sweep the pointer across the strings by the tower.',
 			stringsHintTouch: 'Swipe sideways across the strings by the tower.',
 		},
 		summit: {
-			title: "Let's talk",
+			title: "Let's Talk",
 			wink: 'The summit is still under construction. Careful: above a certain altitude, languages start to get confused.',
 			playHint: 'Click the top of the tower to help build it.',
 			babel: ['Loquamur', '我们聊聊吧', 'Ας μιλήσουμε', 'בואו נדבר'],
@@ -398,7 +406,7 @@ export const home: Record<Lang, HomeCopy> = {
 			enter: 'Game mode',
 			exit: 'Back to the climb',
 			cue: 'Tap to add a tier',
-			bricks: 'BRICKS',
+			bricks: 'Bricks',
 			best: 'Best',
 			hint: 'Click, tap or press Space to drop a brick · Esc to leave',
 			hintTouch: 'Tap to drop a brick',
@@ -407,7 +415,7 @@ export const home: Record<Lang, HomeCopy> = {
 			overText: 'You laid {bricks} before everything got confused.',
 			overNone: 'The very first brick confused everything.',
 			brickCount: { one: 'one brick', many: '{n} bricks' },
-			again: 'Again',
+			again: 'Play again',
 			secretTitle: 'SD-08 · Secret unlocked',
 			secretBody: "Eight bricks, and nobody's language got scrambled yet. The original Babel never got this far.",
 			announceStart: 'Game mode. A brick slides over the summit; Space or Enter drops it, Escape leaves.',
@@ -448,6 +456,7 @@ export const links = {
 	latinCourse: 'https://www.fresh.co.il/vBulletin/showthread.php?t=485276&referrerid=90538',
 	/** Pi is wrong: the formula on the education tier is Euler's identity with tau. */
 	tauManifesto: 'https://www.tauday.com/tau-manifesto',
+	/** In Hebrew, like the course above and the Wikipedia page below: see `hebrewOnly`. */
 	drawMeGroup: 'https://www.facebook.com/groups/tzayruoti/',
 	linkedin: 'https://www.linkedin.com/in/ShoobyD/',
 	email: 'mailto:bmusty@gmail.com',

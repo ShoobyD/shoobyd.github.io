@@ -51,7 +51,7 @@ export const ui = {
 		'share.imageAlt':   'A Tower of Babel still under construction, in a dawn sky over a village, and beside it: Baruch Mustakis, senior frontend engineer.',
 		'brand.name':       'ShoobyD',
 		'brand.tagline':    'Baruch Mustakis',
-		'nav.home':         'Home page',
+		'nav.home':         'Home',
 		'nav.skip':         'Skip to content',
 		'lang.label':       'עב',
 		'lang.aria':        'לעברית',

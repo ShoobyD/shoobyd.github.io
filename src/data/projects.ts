@@ -51,7 +51,7 @@ export const projects: Project[] = [
 		status: 'dev',
 		description: {
 			he: 'אפליקציית תרגול למבחן המחוננים, שעובדת גם בלי אינטרנט',
-			en: 'A practice app for the gifted screening test, offline too',
+			en: "A practice app for Israel's gifted-program screening test, offline too",
 		},
 		sign: giftedHomeDesktop,
 		shots: [
@@ -112,7 +112,7 @@ export const projects: Project[] = [
 		status: 'dev',
 		description: {
 			he: 'חנות שבה הילד מעלה, מתמחר ומסמן מה נמכר',
-			en: "A shop where the child uploads, prices and marks what's sold",
+			en: 'A shop where a kid hangs up drawings, prices them and marks what’s sold',
 		},
 		sign: shopGallery,
 		// the drawings in these are generated, not Itamar's; the story runs from the visitor's side
