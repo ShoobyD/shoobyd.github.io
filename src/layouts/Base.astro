@@ -29,11 +29,11 @@ const pageDescription = description ?? t('site.description');
 const canonical = new URL(Astro.url.pathname, Astro.site);
 
 /**
- * The image a shared link shows (rendered by scripts/render-share-image.mjs, 1200×630), per
- * language; a language without its own image yet shows the default language's.
+ * The image a shared link shows (rendered by scripts/render-share-image.mjs, 1200×630), one per
+ * language, with the words in it.
  */
-const shareImages: Partial<Record<Lang, string>> = { he: '/og/he.jpg' };
-const shareImage = new URL(shareImages[lang] ?? shareImages.he!, Astro.site);
+const shareImages: Record<Lang, string> = { he: '/og/he.jpg', en: '/og/en.jpg' };
+const shareImage = new URL(shareImages[lang], Astro.site);
 const shareImageAlt = t('share.imageAlt');
 const alternateHref = alternatePath ? getRelativeLocaleUrl(other, alternatePath) : undefined;
 

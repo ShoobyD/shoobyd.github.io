@@ -35,6 +35,9 @@ const W = 1200, H = 630;
 const SHIFT = 70;
 /** The intro dolly takes 3.6 s from the scene's start; this leaves it landed and settled. */
 const SETTLE_MS = 5500;
+/** English runs wider than Hebrew (the name alone is ~1.45 times as wide): its name and its role
+ * line each stand on two lines (the role split at its " · "), so they keep clear of the tower. */
+const STACKED = LANG === 'en';
 /** JPEG: the 3D render as a PNG is about 1 MB; at this quality it is a fraction of that. */
 const QUALITY = 88;
 
@@ -66,7 +69,13 @@ try {
 	await new Promise((r) => setTimeout(r, SETTLE_MS));
 
 	await page.evaluate(
-		({ words, W, GLOW, GLOW_ROLE, GLOW_DEEP }) => {
+		({ words, W, GLOW, GLOW_ROLE, GLOW_DEEP, STACKED }) => {
+			/** Fills an element with lines: the text split at `sep` when stacked, one line otherwise. */
+			const lines = (el, text, sep) =>
+				(STACKED ? text.split(sep) : [text]).forEach((line, i) => {
+					if (i) el.append(document.createElement('br'));
+					el.append(line);
+				});
 			const mark = document.querySelector('.sd-header__brand svg')?.cloneNode(true);
 			const hide = document.createElement('style');
 			hide.textContent =
@@ -79,10 +88,10 @@ try {
 			box.dir = document.documentElement.dir;
 			box.style.cssText = `position:fixed;inset-block:0;inset-inline-start:0;inline-size:${W}px;z-index:99999;pointer-events:none;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding-inline-start:84px;color:#e9e3d3`;
 			const name = document.createElement('div');
-			name.textContent = words.name;
+			lines(name, words.name, ' ');
 			name.style.cssText = `font:400 104px/1.04 var(--sd-font-display);text-shadow:${GLOW}`;
 			const role = document.createElement('div');
-			role.textContent = words.role;
+			lines(role, words.role, ' · ');
 			role.style.cssText = `margin-top:18px;font:700 30px/1.35 var(--sd-font-text);white-space:nowrap;text-shadow:${GLOW_ROLE}`;
 			const domain = document.createElement('div');
 			domain.style.cssText = `margin-top:30px;display:flex;align-items:center;gap:12px;font:700 31px var(--sd-font-text);color:#ffd89a;text-shadow:${GLOW_DEEP}`;
@@ -98,7 +107,7 @@ try {
 			box.append(name, role, domain);
 			document.body.append(box);
 		},
-		{ words, W, GLOW, GLOW_ROLE, GLOW_DEEP },
+		{ words, W, GLOW, GLOW_ROLE, GLOW_DEEP, STACKED },
 	);
 	await page.evaluate(() => document.fonts.ready);
 	await new Promise((r) => setTimeout(r, 400));
