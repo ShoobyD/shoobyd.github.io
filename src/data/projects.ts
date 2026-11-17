@@ -131,10 +131,10 @@ export const projects: Project[] = [
 			{
 				image: shopCrop,
 				alt: {
-					he: 'צילום ציור בטלפון: "מצאתי את הדף!", ארבע הפינות של הדף מזוהות בצילום, ואפשר לגרור כל אחת למקומה.',
-					en: 'A drawing photographed on a phone: "I found the paper!", the paper\'s four corners found in the photo, each one draggable into place.',
+					he: 'צילום ציור בטלפון: "מצאתי את הדף!". האפליקציה זיהתה בעצמה את ארבע הפינות של הדף בצילום, כדי לחתוך וליישר אותו, ואם פינה לא במקום, גוררים אותה.',
+					en: 'A drawing photographed on a phone: "I found the paper!". The app found the paper\'s four corners in the photo on its own, to crop and straighten it; a corner out of place can be dragged.',
 				},
-				caption: { he: 'מוצאים את הדף בצילום ומיישרים אותו', en: 'Finding the paper in the photo and straightening it' },
+				caption: { he: 'הדף מזוהה בצילום אוטומטית, נחתך ומיושר', en: 'The paper is found in the photo automatically, cropped and straightened' },
 			},
 			{
 				image: shopPrice,
