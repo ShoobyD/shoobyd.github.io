@@ -45,7 +45,7 @@ const versions = alternateHref
 const ogLocales: Record<Lang, string> = { he: 'he_IL', en: 'en_US' };
 
 const langSwitch = alternateHref
-	? { href: alternateHref, label: t('lang.label'), ariaLabel: t('lang.aria'), hreflang: other }
+	? { href: alternateHref, label: t('lang.label'), hint: t('lang.aria'), hreflang: other }
 	: undefined;
 ---
 

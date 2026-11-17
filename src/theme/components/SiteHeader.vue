@@ -3,13 +3,16 @@
  * Site header: brand on the inline-start, actions on the inline-end.
  * Content-agnostic: every string and URL comes in as a prop, so sibling repos can
  * render it with their own copy. Pages add extra actions through the `actions` slot.
+ *
+ * Each link's accessible name starts with the text it shows (so a voice command that says what is
+ * on screen reaches it), followed by what it does, for screen readers only.
  */
 import BrandMark from './BrandMark.vue';
 
 export interface LangSwitch {
 	href: string;
-	label: string;     // e.g. "EN"
-	ariaLabel: string; // e.g. "Switch to English"
+	label: string; // e.g. "EN"
+	hint: string;  // e.g. "Switch to English" (read after the label)
 	hreflang: string;  // e.g. "en"
 }
 
@@ -17,6 +20,7 @@ defineProps<{
 	homeHref: string;
 	brandName: string;
 	brandTagline: string;
+	/** What the brand link does (e.g. "Home"), read after its name. */
 	homeLabel: string;
 	langSwitch?: LangSwitch;
 }>();
@@ -24,12 +28,13 @@ defineProps<{
 
 <template>
 	<header class="sd-header">
-		<a class="sd-header__brand" :href="homeHref" :aria-label="homeLabel">
+		<a class="sd-header__brand" :href="homeHref">
 			<BrandMark />
 			<span>
 				<b class="sd-header__name">{{ brandName }}</b>
 				<small class="sd-header__tagline">{{ brandTagline }}</small>
 			</span>
+			<span class="sd-visually-hidden">{{ homeLabel }}</span>
 		</a>
 		<div class="sd-header__actions">
 			<slot name="actions" />
@@ -39,8 +44,7 @@ defineProps<{
 				:href="langSwitch.href"
 				:hreflang="langSwitch.hreflang"
 				:lang="langSwitch.hreflang"
-				:aria-label="langSwitch.ariaLabel"
-			>{{ langSwitch.label }}</a>
+			>{{ langSwitch.label }}<span class="sd-visually-hidden">{{ langSwitch.hint }}</span></a>
 		</div>
 	</header>
 </template>
