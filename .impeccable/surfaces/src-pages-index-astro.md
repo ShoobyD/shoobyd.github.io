@@ -2,7 +2,7 @@
 version: 1
 slug: "src-pages-index-astro"
 primary_target: "src/pages/index.astro"
-related_targets: ["src/pages/contact/index.astro"]
+related_targets: ["src/components/home/HomePage.astro"]
 ---
 
 # Home `/`: surface brief

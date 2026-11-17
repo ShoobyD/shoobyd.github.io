@@ -3,7 +3,7 @@
  * it: one stage in focus at a time, opened with its details, the others compact. The focus climbs
  * as the tower does, from the last stage (the degree) at the tier's first stop up to the first
  * (today) at its last; the stages it has passed stay marked, so the gold rail fills up to it.
- * Pure DOM, like ./projects.ts; the CSS lives with the markup (pages/index.astro).
+ * Pure DOM, like ./projects.ts; the CSS lives with the markup (components/home/HomePage.astro).
  *
  * Until this runs the path is the static timeline, every stage open (`data-stepping` switches the
  * styles over), so nothing is ever hidden that a script didn't take charge of.

@@ -1,0 +1,734 @@
+---
+/**
+ * Home: the spiral Tower of Babel (direction contract: .impeccable/surfaces/src-pages-index-astro.md).
+ * The readable content layer is every tier as real HTML on the climbing sky. The page is the
+ * climb (fixed panels, bottom sheets on phones) over the tower: the live 3D one (TowerScene, see
+ * src/components/tower/), or, without WebGL, with reduced motion or Save-Data, the still picture
+ * (StaticTower), over these same panels. Without JavaScript a message takes its place
+ * (NoJsMessage).
+ * Game mode's ways in: the header toggle, rendered here, and a click or tap on the tower's
+ * unfinished top (the scene sends `tower:play`), with a cue over it on touch screens; the island
+ * (TowerGame.vue) wires them, and they exist only while the 3D tower is live.
+ * One component for both languages: src/pages/index.astro (Hebrew, at /) and
+ * src/pages/en/index.astro (English, at /en/) render it with their `lang`.
+ */
+import Base from '../../layouts/Base.astro';
+import TierSection from './TierSection.vue';
+import ProjectList from './ProjectList.vue';
+import CraftList from './CraftList.vue';
+import ContactList from './ContactList.vue';
+import CvViewer from './CvViewer.astro';
+import LinkIcon from '../../theme/components/LinkIcon.vue';
+import AltitudeGauge from './AltitudeGauge.vue';
+import BabelTitle from './BabelTitle.vue';
+import SelfPortrait from './SelfPortrait.astro';
+import ProjectGallery from './ProjectGallery.astro';
+import StaticTower from './StaticTower.astro';
+import TowerScene from '../tower/TowerScene.vue';
+import TowerLoader from '../tower/TowerLoader.astro';
+import TowerLoaderBoot from '../tower/TowerLoaderBoot.astro';
+import NoJsMessage from './NoJsMessage.astro';
+import selfPortrait from '../../assets/images/self-portrait-bsod.jpg';
+import { projects, projectName } from '../../data/projects';
+import { home, links, tierAltitude, tierIds } from '../../i18n/home';
+import { otherLang, useTranslations, type Lang } from '../../i18n/ui';
+import { getImage } from 'astro:assets';
+
+interface Props {
+	lang: Lang;
+}
+
+const { lang } = Astro.props;
+const c = home[lang];
+
+// the gauge's labels are a poem of the climb; each link also carries its tier's plain title
+const gaugeTiers = tierIds.map((id) => ({ id, label: c.gauge.tiers[id], name: c[id].title, altitude: tierAltitude[id] }));
+
+const projectItems = projects.map((p) => ({
+	id: p.id,
+	name: projectName(p, lang),
+	href: p.href,
+	status: p.status,
+	statusLabel: c.code.status[p.status],
+	description: p.description[lang],
+	galleryLabel: p.shots && !p.href ? c.code.gallery.open : undefined,
+}));
+
+/** A gallery for each project in development with screenshots, opened from its card. */
+const galleries = projects
+	.filter((p) => p.shots && !p.href)
+	.map((p) => ({
+		id: p.id,
+		name: `${projectName(p, lang)}: ${c.code.gallery.open}`,
+		shots: (p.shots ?? []).map((s) => ({ image: s.image, alt: s.alt[lang], caption: s.caption[lang] })),
+	}));
+
+/** One doorway in the tower per project card, in the same order. */
+const towerDoors = await Promise.all(
+	projects.map(async (p) => ({
+		id: p.id,
+		href: p.href,
+		// the sign on a bricked doorway: its screenshot, sized for a texture
+		sign: p.sign ? (await getImage({ src: p.sign, width: 1024, format: 'webp' })).src : undefined,
+		gallery: !!(p.shots && !p.href),
+	})),
+);
+
+/** The self-portrait opens the base panel, and hangs again beside the strings on the making tier. */
+const towerPortrait = { src: selfPortrait.src, width: selfPortrait.width, height: selfPortrait.height };
+
+const [latinBefore, latinAfter = ''] = c.languages.latin.split('{link}');
+
+const crafts = [
+	{ icon: 'guitar' as const, text: c.making.guitar },
+	{ icon: 'drawing' as const, text: c.making.drawing, link: { label: c.making.drawingLink, href: links.drawMeGroup } },
+	{ icon: 'dance' as const, text: c.making.dance },
+	{ icon: 'cooking' as const, text: c.making.cooking },
+	{ icon: 'diy' as const, text: c.making.diy },
+	{ icon: 'volunteering' as const, text: c.making.volunteering },
+];
+
+const contacts = [
+	{ id: 'linkedin', icon: 'linkedin' as const, label: c.summit.contacts.linkedin, value: 'in/ShoobyD', href: links.linkedin, external: true },
+	{ id: 'email', icon: 'email' as const, label: c.summit.contacts.email, value: 'bmusty@gmail.com', href: links.email },
+	{ id: 'github', icon: 'github' as const, label: c.summit.contacts.github, value: 'ShoobyD', href: links.github, external: true },
+	{ id: 'cv', icon: 'cv' as const, label: c.summit.contacts.cv, value: 'PDF', href: links.cv, external: true, opens: 'cv' },
+];
+
+/**
+ * Who the page is about, for search engines (JSON-LD, schema.org): it ties the site to the public
+ * profiles, so a search for the name finds them together. The image is the self-portrait.
+ */
+const portraitImage = await getImage({ src: selfPortrait, width: 800, format: 'jpg' });
+const person = {
+	'@context': 'https://schema.org',
+	'@type': 'Person',
+	name: c.base.title,
+	alternateName: [home[otherLang(lang)].base.title, 'ShoobyD'],
+	jobTitle: useTranslations(lang)('person.jobTitle'),
+	url: new URL(lang === 'he' ? '/' : `/${lang}/`, Astro.site).href,
+	image: new URL(portraitImage.src, Astro.site).href,
+	sameAs: [links.linkedin, links.github, links.facebook, links.deviantart, links.wikipedia],
+};
+
+/** Other profiles, a lighter row under the main contacts. */
+const elsewhere = [
+	{ id: 'facebook' as const, label: c.summit.elsewhere.facebook, href: links.facebook },
+	{ id: 'deviantart' as const, label: c.summit.elsewhere.deviantart, href: links.deviantart },
+	{ id: 'wikipedia' as const, label: c.summit.elsewhere.wikipedia, href: links.wikipedia },
+];
+---
+
+<Base lang={lang}>
+	<TowerLoaderBoot slot="head" />
+	<script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(person)} />
+	<button slot="header-actions" class="sd-control game-control" type="button" aria-pressed="false" data-tower-game="toggle">
+		<svg viewBox="0 0 20 20" aria-hidden="true">
+			<rect class="brick-icon__low" x="2" y="12" width="16" height="5" rx="1" />
+			<rect class="brick-icon__high" x="5" y="4" width="11" height="5" rx="1" />
+			<path class="brick-icon__drop" d="M10 9.5v1.6" />
+		</svg>
+		<span data-tower-game-label>{c.game.enter}</span>
+	</button>
+	<TowerLoader label={c.loader} />
+	<!-- instead of the page without JavaScript, or when it failed to load -->
+	<NoJsMessage title={c.noJs.title} text={c.noJs.text} />
+	<TowerScene client:only="vue" tiers={[...tierIds]} doors={towerDoors} portrait={towerPortrait} game={c.game} />
+	<!-- touch screens: a cue over the tower's unfinished top at the summit (placed by the tower; a tap on
+	     the top starts the game, and the header's game button stays the way in for keys and readers) -->
+	<div class="summit-cue" data-summit-cue aria-hidden="true"><span class="summit-cue__pill">{c.game.cue}</span></div>
+	<!-- the still tower (when there is no live 3D one): before the tiers, so their panels sit over it -->
+	<StaticTower />
+	<AltitudeGauge client:idle label={c.gauge.label} unit={c.gauge.unit} tiers={gaugeTiers} />
+
+	<TierSection id="base" sheetLabel={c.sheet.toggle} title={c.base.title} level={1}>
+		<!-- in the page's direction, under the title; only the name itself is isolated as English -->
+		<p class="handle"><bdi lang="en" dir="ltr">ShoobyD</bdi></p>
+		<p class="lead">{c.base.lead} <span class="lead__more">{c.base.leadMore}</span></p>
+		<SelfPortrait
+			image={selfPortrait}
+			alt={c.base.portraitAlt}
+			openLabel={c.base.portraitOpen}
+			caption={c.base.portraitCaption}
+			closeLabel={c.base.portraitClose}
+		/>
+		<p class="hint">
+			<svg viewBox="0 0 20 20" aria-hidden="true">
+				<rect x="6" y="2" width="8" height="13" rx="4" fill="none" stroke="currentColor" stroke-width="1.5" />
+				<path d="M10 5v3M7 17.5l3 1.5 3-1.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+			</svg>
+			<span>{c.base.hint}</span>
+		</p>
+	</TierSection>
+
+	<TierSection id="code" sheetLabel={c.sheet.toggle} title={c.code.title} stops={projectItems.length}>
+		<!-- the collapsed mobile sheet's peek at the project in focus, under the title as the list is
+		     when open: a copy of its card, filled in by the tower as the scroll steps through the
+		     projects (the list below stays the real one) -->
+		<div class="tier-now" data-stop-now aria-hidden="true" inert></div>
+		<ProjectList items={projectItems} />
+		{galleries.map((g) => <ProjectGallery {...g} labels={c.code.gallery} />)}
+	</TierSection>
+
+	<TierSection id="math" sheetLabel={c.sheet.toggle} title={c.math.title} stops={c.math.path.length}>
+		<!-- the collapsed mobile sheet's peek at the stage in focus, like the projects tier's: a compact
+		     copy, filled in as the scroll steps through the path (the list below stays the real one) -->
+		<div class="tier-now" data-stop-now aria-hidden="true" inert></div>
+		<!-- the path, newest first: a rail down the inline-start with a mark per stage, today's lit; the
+		     climb steps through it, one stage in focus at a time (../components/tower/scene/path.ts) -->
+		<ol class="path">
+			{c.math.path.map((stage) => (
+				<li class="path__stage">
+					<span class="path__years">{stage.years}</span>
+					<span class="path__role">
+						{stage.role}
+						{stage.org && <span class="path__org">· <bdi>{stage.org}</bdi></span>}
+					</span>
+					<div class="path__more">
+						<ul class="path__details">
+							{stage.details.map((detail) => <li>{detail}</li>)}
+						</ul>
+					</div>
+				</li>
+			))}
+		</ol>
+		<!-- Euler's identity with tau, since pi is wrong: a link to the manifesto that says so -->
+		<p class="formula" dir="ltr">
+			<a href={links.tauManifesto} rel="noopener" target="_blank" aria-label={c.math.formulaLabel} title={c.math.formulaLabel}>e<sup>iτ</sup> = 1 + 0i</a>
+		</p>
+		<p class="aside">{c.math.aside}</p>
+	</TierSection>
+
+	<TierSection id="languages" sheetLabel={c.sheet.toggle} title={c.languages.title}>
+		<blockquote>
+			<p>{c.languages.quote}</p>
+			<cite>{c.languages.cite}</cite>
+		</blockquote>
+		<ul class="chips">
+			{c.languages.topics.map((topic) => <li>{topic}</li>)}
+		</ul>
+		<p class="lead">
+			{latinBefore}<a href={links.latinCourse} rel="noopener" target="_blank">{c.languages.latinLink}</a>{latinAfter}
+		</p>
+	</TierSection>
+
+	<TierSection id="making" sheetLabel={c.sheet.toggle} title={c.making.title}>
+		<CraftList items={crafts} />
+		<p class="aside tower-hint">{c.making.stringsHint}</p>
+		<p class="aside tower-hint-touch">{c.making.stringsHintTouch}</p>
+	</TierSection>
+
+	<TierSection id="summit" sheetLabel={c.sheet.toggle} title={c.summit.title} tone="night">
+		<!-- the slot sits on a Fragment: on the island itself, `slot` would reach the client as a prop
+		     and fall through onto its root, which the server render never had (a hydration mismatch) -->
+		<Fragment slot="title"><BabelTitle client:visible text={c.summit.title} sequence={c.summit.babel} /></Fragment>
+		<p class="wink">{c.summit.wink}</p>
+		<ContactList items={contacts} />
+		<CvViewer
+			src={links.cv}
+			title={c.summit.cvView.title}
+			downloadLabel={c.summit.cvView.download}
+			closeLabel={c.summit.cvView.close}
+			fileName="Baruch-Mustakis-CV.pdf"
+		/>
+		<div class="elsewhere">
+			<span class="elsewhere__lead" id="elsewhere-lead">{c.summit.alsoOn}</span>
+			<ul class="chips chips--links" aria-labelledby="elsewhere-lead">
+				{elsewhere.map((profile) => (
+					<li><a href={profile.href} rel="noopener" target="_blank"><LinkIcon name={profile.id} size={16} /><bdi>{profile.label}</bdi></a></li>
+				))}
+			</ul>
+		</div>
+		<p class="aside tower-hint">{c.summit.playHint}</p>
+	</TierSection>
+</Base>
+
+<style is:global>
+	/* ---------- the climb (see ../components/tower/mode.ts) ----------
+	 * The page is the climb: the sky darkens from dawn at the base to night at the summit. The
+	 * climb does its own smoothing, so jumps (gauge links, keys) are instant; the header stays put
+	 * over it; and the footer is lifted above the fixed tower behind it. (`:root` keeps these level
+	 * with the components' own scoped rules, which they override.) */
+	body {
+		background: var(--sd-sky-climb);
+		background-attachment: scroll;
+	}
+	:root {
+		scroll-behavior: auto;
+		scrollbar-width: none;
+	}
+	:root::-webkit-scrollbar { display: none; }
+	:root .sd-header {
+		position: fixed;
+		inset-block-start: 0;
+		inset-inline: 0;
+	}
+	:root .sd-footer { position: relative; }
+	/* the climb's chrome (the altitude gauge) fades when it steps aside */
+	:root [data-tower-chrome] {
+		transition: opacity var(--sd-dur) var(--sd-ease), visibility 0s;
+	}
+	/* the name at the base keeps to one line: its size follows the panel's width (17cqi fits it
+	 * with a little to spare), up to the usual h1 size where there is room */
+	#tier-base [data-tier-panel] {
+		container-type: inline-size;
+	}
+	#tier-base h1.tier__title {
+		font-size: min(var(--sd-text-h1), 17cqi);
+		white-space: nowrap;
+	}
+	/* an open bottom sheet (narrow screens) runs under the altitude gauge: the gauge dims and
+	 * steps aside for it until the sheet collapses */
+	html.sd-sheet-open [data-tower-chrome] {
+		opacity: 0.2;
+		pointer-events: none;
+	}
+
+	/* ---------- the live 3D tower (html.webgl, set by TowerScene) ----------
+	 * The painted sky takes over from the CSS stars. Fingers: the browser takes vertical swipes
+	 * (the climb) and pinch-zoom, and leaves sideways swipes to the scene, where they strum the
+	 * guitar strings on the making tier. */
+	html.webgl body {
+		touch-action: pan-y pinch-zoom;
+	}
+	html.webgl .tier--night { background-image: none; }
+
+	/* game mode's controls exist only with the live tower: not over the still picture (reduced
+	 * motion, no WebGL, Save-Data), not without JavaScript, and not under the loader (display: none
+	 * also keeps them out of the tab order) */
+	html:not(.webgl) [data-tower-game],
+	html.sd-tower-loading [data-tower-game] { display: none; }
+
+	/* ---------- game mode (html.tower-game, set by TowerGame.vue) ----------
+	 * The page holds still (scroll and touch gestures belong to the game; a tap drops a brick),
+	 * and the gauge fades out with the panels (the scene fades those). Everything behind the game
+	 * is also `inert`, so focus cannot land there. */
+	html.webgl.tower-game { overflow: hidden; }
+	html.webgl.tower-game body { touch-action: none; }
+	html.webgl.tower-game [data-tower-chrome] {
+		opacity: 0;
+		visibility: hidden;
+		transition: opacity var(--sd-dur) var(--sd-ease), visibility 0s linear var(--sd-dur);
+	}
+
+	/* hints that only make sense with the tower on screen: `.tower-hint` for a pointer that can
+	 * hover, `.tower-hint-touch` for fingers */
+	.tower-hint,
+	.tower-hint-touch { display: none; }
+	@media (hover: hover) {
+		html.webgl .tower-hint { display: revert; }
+	}
+	@media (hover: none) {
+		html.webgl .tower-hint-touch { display: revert; }
+	}
+
+	/* fingers at the summit: a cue over the tower's unfinished top. The scene moves this zero-size
+	 * anchor onto the top (from the viewport's inline-start corner) and turns it on with `is-on`;
+	 * the pill centres itself on it and bobs a little, with a thin line down to the top */
+	.summit-cue {
+		display: none;
+		position: fixed;
+		z-index: 5;
+		inset-block-start: 0;
+		inset-inline-start: 0;
+		inline-size: 0;
+		block-size: 0;
+		pointer-events: none;
+		opacity: 0;
+		transition: opacity var(--sd-dur) var(--sd-ease);
+	}
+	@media (hover: none) {
+		html.webgl .summit-cue { display: block; }
+	}
+	.summit-cue.is-on { opacity: 1; }
+	.summit-cue__pill {
+		position: absolute;
+		inset-block-end: 16px;
+		inset-inline: -20rem;
+		margin-inline: auto;
+		inline-size: max-content;
+		padding-block: 6px;
+		padding-inline: 12px;
+		font-size: 0.82rem;
+		font-weight: 600;
+		color: var(--sd-gold);
+		background: rgb(20 18 16 / 0.72);
+		border: 1px solid color-mix(in srgb, var(--sd-gold) 55%, transparent);
+		border-radius: var(--sd-pill);
+		animation: cue-bob 2.4s ease-in-out infinite;
+	}
+	.summit-cue__pill::after {
+		content: "";
+		position: absolute;
+		inset-block-start: 100%;
+		inset-inline: 0;
+		margin-inline: auto;
+		inline-size: 1px;
+		block-size: 14px;
+		background: color-mix(in srgb, var(--sd-gold) 55%, transparent);
+	}
+	@keyframes cue-bob {
+		50% { translate: 0 -5px; }
+	}
+
+	/* the summit's stars, sown with two offset dot fields */
+	.tier--night {
+		background-image:
+			radial-gradient(1.5px 1.5px at 20% 30%, rgb(255 248 230 / 0.9), transparent),
+			radial-gradient(1px 1px at 70% 20%, rgb(255 248 230 / 0.7), transparent),
+			radial-gradient(1.2px 1.2px at 40% 70%, rgb(255 248 230 / 0.6), transparent),
+			radial-gradient(1px 1px at 85% 60%, rgb(255 248 230 / 0.8), transparent),
+			radial-gradient(1.5px 1.5px at 55% 45%, rgb(255 248 230 / 0.5), transparent);
+		background-size: 240px 240px, 310px 310px, 190px 190px, 270px 270px, 350px 350px;
+	}
+</style>
+
+<style>
+	.handle {
+		margin-block: 0 var(--sd-space-4);
+		font-family: var(--sd-font-display);
+		font-size: 1.35rem;
+		color: var(--sd-gold);
+		letter-spacing: 0.12em;
+		text-align: start;
+	}
+	.lead {
+		max-inline-size: var(--sd-measure);
+		font-size: var(--sd-text-lg);
+	}
+	/* the base line's punchline stays whole: if it doesn't fit after the first sentence it moves to
+	 * a line of its own (and the dash never opens a line) */
+	.lead__more {
+		white-space: nowrap;
+	}
+	.dim {
+		color: var(--sd-text-dim);
+	}
+	.hint {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		margin-block-start: var(--sd-space-5);
+		font-size: var(--sd-text-sm);
+		color: var(--sd-text-dim);
+	}
+	.hint svg {
+		flex: none;
+		inline-size: 20px;
+		block-size: 20px;
+		animation: nudge 2.2s var(--sd-ease) infinite;
+	}
+	@keyframes nudge {
+		0%, 100% { transform: translateY(0); }
+		50% { transform: translateY(5px); }
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.hint svg { animation: none; }
+	}
+
+	/* the path (experience and education): a mark per stage down the inline-start, in the shape of
+	 * the gauge's, joined by a rail; as the static timeline every stage is open and today's mark lit
+	 * gold (the only one still going) */
+	.path,
+	.path-now {
+		position: relative;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.path__stage {
+		position: relative;
+		padding-inline-start: 26px;
+	}
+	.path__stage + .path__stage {
+		margin-block-start: var(--sd-space-3);
+	}
+	.path__stage::before {
+		content: "";
+		position: absolute;
+		z-index: 1;
+		inset-inline-start: 0;
+		inset-block-start: 5px;
+		inline-size: 12px;
+		block-size: 12px;
+		background: #4a443d;
+		border: 2px solid rgb(30 27 24 / 0.7);
+		border-radius: 3px 3px 1px 1px;
+	}
+	.path__stage:first-child::before {
+		background: var(--sd-gold);
+	}
+	/* the rail: each stage's piece runs from its mark down to the next one's */
+	.path__stage:not(:last-child)::after {
+		content: "";
+		position: absolute;
+		inset-inline-start: 5px;
+		inset-block-start: 11px;
+		inline-size: 2px;
+		block-size: calc(100% + var(--sd-space-3));
+		background: rgb(233 227 211 / 0.16);
+	}
+	.path__years {
+		display: block;
+		font-size: 0.8rem;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		color: var(--sd-gold);
+	}
+	.path__role {
+		display: block;
+		font-family: var(--sd-font-display);
+		font-size: 1.1rem;
+		line-height: 1.3;
+	}
+	/* the place keeps to one piece (בר־אילן mustn't break at its maqaf) */
+	.path__org {
+		margin-inline-start: 0.35em;
+		font-family: var(--sd-font-text);
+		font-size: 0.95rem;
+		color: var(--sd-text-dim);
+		white-space: nowrap;
+	}
+	/* the details open and close as a grid row (0fr to 1fr), so they slide rather than jump */
+	.path__more {
+		display: grid;
+		grid-template-rows: 1fr;
+	}
+	.path__details {
+		min-block-size: 0;
+		overflow: hidden;
+		margin: 0;
+		padding: 2px 0 0;
+		list-style: none;
+		font-size: 0.93rem;
+		line-height: 1.45;
+		color: var(--sd-text-dim);
+	}
+
+	/* stepping (path.ts sets data-stepping): the stage in focus opens, a little larger and fully lit,
+	 * the others close to their years and role and fade; the stages the focus has climbed past keep
+	 * their marks and their piece of rail in gold, so the rail fills from the degree up to the focus */
+	.path[data-stepping] .path__stage {
+		opacity: 0.5;
+		transition: opacity 320ms var(--sd-ease);
+	}
+	.path[data-stepping] .path__stage.is-on {
+		opacity: 1;
+	}
+	.path[data-stepping] .path__stage::before {
+		background: #4a443d;
+		transition: background 320ms var(--sd-ease), scale 320ms var(--sd-ease);
+	}
+	.path[data-stepping] .path__stage.is-past::before {
+		background: color-mix(in srgb, var(--sd-gold) 55%, #4a443d);
+	}
+	.path[data-stepping] .path__stage.is-on::before {
+		background: var(--sd-gold);
+		scale: 1.2;
+	}
+	.path[data-stepping] .path__stage::after {
+		transition: background 320ms var(--sd-ease);
+	}
+	.path[data-stepping] .path__stage:is(.is-on, .is-past)::after {
+		background: color-mix(in srgb, var(--sd-gold) 70%, transparent);
+	}
+	.path[data-stepping] .path__role {
+		transition: font-size 320ms var(--sd-ease);
+	}
+	.path[data-stepping] .path__stage.is-on .path__role {
+		font-size: 1.22rem;
+	}
+	.path[data-stepping] .path__more {
+		grid-template-rows: 0fr;
+		transition: grid-template-rows 420ms var(--sd-ease);
+	}
+	.path[data-stepping] .path__stage.is-on .path__more {
+		grid-template-rows: 1fr;
+	}
+	.path[data-stepping] .path__stage.is-on .path__details {
+		color: var(--sd-text);
+	}
+	/* while path.ts measures its states, and with reduced motion, nothing slides or grows: the stage in
+	 * focus just fades in */
+	.path.is-measuring,
+	.path.is-measuring * {
+		transition: none !important;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.path[data-stepping] .path__more,
+		.path[data-stepping] .path__role,
+		.path[data-stepping] .path__stage::before {
+			transition: none;
+		}
+	}
+
+	.formula {
+		margin-block: var(--sd-space-5) 0;
+		font-family: var(--sd-font-serif);
+		font-size: clamp(1.8rem, 1.4rem + 1.4vw, 2.4rem);
+		color: var(--sd-gold);
+		letter-spacing: 0.03em;
+		text-align: center;
+	}
+	/* the formula is the link: gold already, it warms and glows under the pointer rather than underlined */
+	.formula a {
+		color: inherit;
+		text-decoration: none;
+		transition: color var(--sd-dur-fast), text-shadow var(--sd-dur-fast);
+	}
+	.formula a:hover,
+	.formula a:focus-visible {
+		color: var(--sd-gold-hot);
+		text-shadow: 0 0 18px color-mix(in srgb, var(--sd-gold) 55%, transparent);
+	}
+	.aside {
+		margin-block-start: var(--sd-space-4);
+		padding-block-start: var(--sd-space-3);
+		border-block-start: 1px solid var(--sd-line);
+		font-family: var(--sd-font-serif);
+		font-size: 1.05rem;
+		color: var(--sd-text-dim);
+	}
+
+	blockquote {
+		margin-block: 0 var(--sd-space-4);
+		margin-inline: 0;
+		padding-inline-start: var(--sd-space-4);
+		border-inline-start: 1px solid var(--sd-gold);
+	}
+	blockquote p {
+		font-family: var(--sd-font-serif);
+		font-size: 1.32rem;
+		line-height: 1.45;
+	}
+	blockquote cite {
+		display: block;
+		margin-block-start: var(--sd-space-1);
+		font-style: normal;
+		font-size: 0.85rem;
+		color: var(--sd-gold);
+	}
+	.chips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-block: 0 var(--sd-space-4);
+		padding: 0;
+		list-style: none;
+	}
+	.chips li {
+		padding-block: 5px;
+		padding-inline: 13px;
+		background: rgb(233 227 211 / 0.09);
+		border: 1px solid rgb(233 227 211 / 0.18);
+		border-radius: var(--sd-pill);
+		font-size: 0.95rem;
+		font-weight: 600;
+	}
+
+	/* the summit's other profiles: the same pills, as links that warm to gold like the contacts.
+	 * The lead and the pills keep to one line: the whole row is sized from one font size (`--f`,
+	 * everything in it in em of it), which shrinks with the row's width where it would not fit
+	 * (phones; 4cqi fills the Hebrew row with a little to spare), and is the pills' usual size
+	 * wherever it does. It shrinks no further than 12px: a row narrower still (a narrow panel on a
+	 * small window, the smallest phones) wraps instead. */
+	.elsewhere {
+		container-type: inline-size;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		row-gap: var(--sd-space-2);
+		margin-block: var(--sd-space-3) var(--sd-space-4);
+	}
+	.elsewhere > * {
+		--f: clamp(0.75rem, 4cqi, 0.95rem);
+	}
+	/* wide screens have the room: a little more air between the contacts and the profile pills */
+	@media (min-width: 47.5rem) {
+		.elsewhere { margin-block-start: var(--sd-space-5); }
+	}
+	.elsewhere__lead {
+		font-size: calc(var(--f) * 0.895);
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		color: var(--sd-gold);
+		margin-inline-end: 0.882em;
+		white-space: nowrap;
+	}
+	.chips--links {
+		gap: 0.526em;
+		margin: 0;
+		font-size: var(--f);
+	}
+	.chips--links li {
+		padding: 0;
+		font-size: inherit;
+	}
+	.chips--links .sd-link-icon {
+		inline-size: 1.053em;
+		block-size: 1.053em;
+	}
+	.chips--links a {
+		display: flex;
+		align-items: center;
+		gap: 0.46em;
+		padding-block: 0.329em;
+		padding-inline: 0.855em;
+		white-space: nowrap;
+		border-radius: inherit;
+		text-decoration: none;
+		transition: background var(--sd-dur-fast), color var(--sd-dur-fast);
+	}
+	.chips--links .sd-link-icon {
+		color: var(--sd-gold);
+	}
+	.chips--links li:has(a:hover, a:focus-visible) {
+		border-color: var(--sd-gold-edge);
+		background: var(--sd-gold-wash);
+	}
+
+	/* the brick glyph on game mode's controls: a course laid, the next one coming down */
+	.game-control svg {
+		flex: none;
+		inline-size: 18px;
+		block-size: 18px;
+	}
+	.brick-icon__low { fill: var(--sd-ochre); }
+	.brick-icon__high { fill: var(--sd-limestone); }
+	.brick-icon__drop {
+		fill: none;
+		stroke: var(--sd-limestone);
+		stroke-width: 1.6;
+		stroke-linecap: round;
+	}
+
+	.wink {
+		margin-block-end: var(--sd-space-4);
+		font-size: 0.98rem;
+		color: var(--sd-text-dim);
+	}
+
+	@media (max-width: 47.5rem) {
+		.handle { font-size: 1.1rem; }
+		.lead { font-size: 1.02rem; }
+		blockquote p { font-size: 1.12rem; }
+	}
+
+	/* the project (or the stage) in focus, under the projects (or the path's) tier's title: only in the collapsed mobile sheet (open,
+	 * the list itself is in view) */
+	.tier-now { display: none; }
+	@media (max-width: 47.5rem) {
+		:global([data-tier-panel].is-sheet-collapsed) .tier-now {
+			display: block;
+			/* below, enough room that the real list starts past the end of the peek */
+			margin-block: var(--sd-space-4) var(--sd-space-6);
+		}
+	}
+	.tier-now.is-new {
+		animation: now-in 0.35s var(--sd-ease);
+	}
+	@keyframes now-in {
+		from { opacity: 0; translate: 0 6px; }
+	}
+</style>
+

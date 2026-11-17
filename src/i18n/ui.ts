@@ -62,6 +62,16 @@ export const ui = {
 
 export type UiKey = keyof (typeof ui)['he'];
 
+/**
+ * Both languages have every key: a key missing from one fails the type check here, rather than
+ * quietly falling back to Hebrew on the English page.
+ */
+type Missing<A, B> = Exclude<keyof A, keyof B>;
+type Assert<T extends true> = T;
+export type UiKeysMatch = Assert<
+	[Missing<(typeof ui)['he'], (typeof ui)['en']>, Missing<(typeof ui)['en'], (typeof ui)['he']>] extends [never, never] ? true : false
+>;
+
 export type TemplateVars = Record<string, string | number>;
 
 /** Fills `{name}` placeholders in a template from `vars`; unknown placeholders are left as-is. */
