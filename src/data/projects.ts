@@ -90,6 +90,20 @@ export const projects: Project[] = [
 		],
 	},
 	{
+		id: 'hanzi',
+		// the app's own name (汉字, the Chinese script), as it brands itself
+		name: {
+			he: 'Hanzi · לימוד סינית',
+			en: 'Hanzi · Learn Chinese',
+		},
+		href: '/hanzi/',
+		status: 'live',
+		description: {
+			he: 'אוצר מילים וכתב סיני לדוברי עברית, בכרטיסיות ובחנים',
+			en: 'Chinese vocabulary and characters for Hebrew speakers, in flashcards and quizzes',
+		},
+	},
+	{
 		id: 'itamar-shop',
 		name: {
 			he: 'גלריית ציורים לילדים',
@@ -145,20 +159,6 @@ export const projects: Project[] = [
 				caption: { he: 'קובעים מחיר, עם פלוס ומינוס גדולים', en: 'Setting the price, with big plus and minus' },
 			},
 		],
-	},
-	{
-		id: 'hanzi',
-		// the app's own name (汉字, the Chinese script), as it brands itself
-		name: {
-			he: 'Hanzi · לימוד סינית',
-			en: 'Hanzi · Learn Chinese',
-		},
-		href: '/hanzi/',
-		status: 'live',
-		description: {
-			he: 'אוצר מילים וכתב סיני לדוברי עברית, בכרטיסיות ובחנים',
-			en: 'Chinese vocabulary and characters for Hebrew speakers, in flashcards and quizzes',
-		},
 	},
 	{
 		id: 'doppler',
