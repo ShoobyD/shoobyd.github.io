@@ -329,8 +329,9 @@ A sky-gradient screen where five bricks are laid base-first, with a limestone ca
 - **Do** spend Lamplight Gold only on what is alive: links, the lit card and door, focus, the current tier, live status, reachable contacts.
 - **Do** give each project status its one colour, in the closed dot and the open pill alike (gold, pale sky, limestone dim), and keep its label in the markup.
 - **Do** set secondary text over glass in Limestone Dim (at least 4.5:1 on every tier), and switch it to full Limestone Cornice on a warmed (lit, hovered, focused) surface.
-- **Do** keep the base name on one line by sizing it from the panel (`min(var(--sd-text-h1), 17cqi)`), and size one-line rows like "גם ב:" from a single em-based font size.
+- **Do** keep the base name on one line by sizing it from the panel (`min(var(--sd-text-h1), 17cqi)`; 11.6cqi for the wider "Baruch Mustakis"), and size one-line rows like "גם ב:" from a single em-based font size, its factor set per language.
 - **Do** isolate only the English word in a Hebrew line (`<bdi dir="ltr">ShoobyD</bdi>`), with the line itself in the page's direction.
+- **Do** mark a link to a page in Hebrew only on the English page: a dim "(in Hebrew)" after the text, or a small "HE" tag inside a pill.
 - **Do** keep 6px of room around a scrolling panel body so focus rings are never clipped, and draw the portrait's ring on its mat.
 - **Do** give text set straight over the scene the legibility glow; put the gauge's tier labels on dark pills.
 - **Do** show game-mode controls only while the live tower is running.

@@ -39,12 +39,12 @@ The site is a working developer's portfolio and a personal playground, with neit
 
 ## Capabilities and Constraints
 
-- **Language & direction:** Hebrew (RTL) today. The site will become bilingual (he/en) in a later phase. Everything built now must be direction-agnostic: logical CSS properties only, `lang`/`dir` set per page, UI strings kept in a dictionary, and a font coverage requirement for both Hebrew and Latin.
+- **Language & direction:** bilingual: Hebrew (RTL) at `/`, the default, and English (LTR) at `/en/`, paired by the header's language switch, hreflang links (Hebrew is the x-default) and the sitemap. Everything built must stay direction-agnostic: logical CSS properties only, `lang`/`dir` set per page, UI strings kept in a dictionary (each language must have every key), and a font coverage requirement for both Hebrew and Latin. Links to pages in Hebrew only are marked "(in Hebrew)" on the English page.
 - **Static only:** no server code. PHP files in legacy folders do not run on Pages.
 - **Separable shell:** keep the design tokens and the shell components (header, nav, footer) in an isolated folder with no dependencies on the rest of the site, so they can later be published for sibling repos.
 - **Legacy pages stay byte-for-byte unchanged** until the content phase: `public/balloonz/`, `public/calhobb/`, `public/fresh/`, `public/icmptunnel/` and their shared `public/assets/` (jQuery, `main.css`, `menu.js`).
 - **Order of work:** (1) platform (done), (2) modern redesign of the shell, home `/` and `/contact/`, (3) content update: cleaning out old pages, adding the missing projects, refreshing the about text and CV. Content changes are out of scope until phase 3.
-- **Undecided:** the final project list and which legacy pages survive, the English copy, and whether sibling repos use a runtime theme or an npm package.
+- **Undecided:** the final project list and which legacy pages survive, and whether sibling repos use a runtime theme or an npm package.
 
 ## Brand Commitments
 

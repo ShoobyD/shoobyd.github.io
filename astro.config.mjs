@@ -1,12 +1,21 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import vue from '@astrojs/vue';
+import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://shoobyd.github.io',
 	trailingSlash: 'always',
-	integrations: [vue()],
+	integrations: [
+		vue(),
+		// sitemap-index.xml (robots.txt points to it): every page with its other-language twin, by the
+		// same hreflang codes as the pages' heads. The redirects stay out: they aren't pages.
+		sitemap({
+			i18n: { defaultLocale: 'he', locales: { he: 'he', en: 'en' } },
+			filter: (page) => !['/contact/', '/icmptunnel/'].some((path) => page.endsWith(path)),
+		}),
+	],
 	redirects: {
 		// the old contact page: contact now lives at the tower's summit
 		'/contact/': '/#tier-summit',

@@ -121,7 +121,7 @@ const elsewhere = [
 ];
 ---
 
-<Base lang={lang}>
+<Base lang={lang} alternatePath="/">
 	<TowerLoaderBoot slot="head" />
 	<script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(person)} />
 	<button slot="header-actions" class="sd-control game-control" type="button" aria-pressed="false" data-tower-game="toggle">
@@ -726,6 +726,38 @@ const elsewhere = [
 		flex: none;
 		inline-size: 18px;
 		block-size: 18px;
+	}
+	/* the narrowest phones: beside the brand and the language switch the label has no room (it
+	 * would wrap, or push the header off the screen), so the button keeps only its glyph, a round
+	 * pill like the switch; the label stays its accessible name. English needs a little more room:
+	 * its game-mode label, "Back to the climb", wraps below about 410px */
+	@media (max-width: 24rem) {
+		.game-control {
+			padding-inline: 0;
+			inline-size: 52px;
+		}
+		.game-control [data-tower-game-label] {
+			position: absolute;
+			inline-size: 1px;
+			block-size: 1px;
+			overflow: hidden;
+			clip-path: inset(50%);
+			white-space: nowrap;
+		}
+	}
+	@media (max-width: 25.75rem) {
+		:root[lang='en'] .game-control {
+			padding-inline: 0;
+			inline-size: 52px;
+		}
+		:root[lang='en'] .game-control [data-tower-game-label] {
+			position: absolute;
+			inline-size: 1px;
+			block-size: 1px;
+			overflow: hidden;
+			clip-path: inset(50%);
+			white-space: nowrap;
+		}
 	}
 	.brick-icon__low { fill: var(--sd-ochre); }
 	.brick-icon__high { fill: var(--sd-limestone); }

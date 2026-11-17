@@ -1,8 +1,7 @@
 /**
  * UI strings and language helpers.
- * Hebrew is the default locale (served at `/`); English will live under `/en/`.
- * English strings are filled in so the layout can already be checked in LTR,
- * even though no English pages are published yet.
+ * Hebrew is the default locale (served at `/`), English lives under `/en/`; the header's switch
+ * and the hreflang links pair each page with its twin (layouts/Base.astro, `alternatePath`).
  */
 
 export const languages = {

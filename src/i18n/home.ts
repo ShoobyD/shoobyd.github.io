@@ -1,7 +1,6 @@
 /**
  * Home page copy, one entry per tier of the tower (base → summit).
- * Hebrew is published; English is filled in so the page can be checked in LTR
- * and is ready for the bilingual phase.
+ * Both languages are published: Hebrew at `/`, English at `/en/` (components/home/HomePage.astro).
  */
 import type { Lang } from './ui';
 import type { ProjectStatus } from '../data/projects';
