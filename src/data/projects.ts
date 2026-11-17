@@ -10,7 +10,11 @@ import giftedHomeDesktop from '../assets/projects/gifted-prep/home-desktop.png';
 import giftedHomePhone from '../assets/projects/gifted-prep/home-phone.jpg';
 import giftedRiddle from '../assets/projects/gifted-prep/riddle-phone.png';
 import giftedSummary from '../assets/projects/gifted-prep/summary-phone.png';
-import shopHomeDesktop from '../assets/projects/itamar-shop/home-desktop.png';
+import shopGallery from '../assets/projects/itamar-shop/gallery-desktop.jpg';
+import shopDrawing from '../assets/projects/itamar-shop/drawing-desktop.jpg';
+import shopHome from '../assets/projects/itamar-shop/home-phone.jpg';
+import shopCrop from '../assets/projects/itamar-shop/crop-phone.jpg';
+import shopPrice from '../assets/projects/itamar-shop/price-phone.jpg';
 
 /** `dev`: in development and not public yet (it may turn commercial), so it has no link. */
 export type ProjectStatus = 'live' | 'archive' | 'dev';
@@ -96,7 +100,51 @@ export const projects: Project[] = [
 			he: 'חנות שבה הילד מעלה, מתמחר ומסמן מה נמכר',
 			en: "A shop where the child uploads, prices and marks what's sold",
 		},
-		sign: shopHomeDesktop,
+		sign: shopGallery,
+		// the drawings in these are generated, not Itamar's; the story runs from the visitor's side
+		// (the wall, a drawing) to the kid's (his home, hanging a new drawing)
+		shots: [
+			{
+				image: shopGallery,
+				alt: {
+					he: 'קיר התערוכה במחשב: שמונה ציורים תלויים בסלוטייפ על קיר אבן, עם פתקי מחיר, סימוני "מבצע!" ו"נמכר!" בכתב יד, ושורת סינון לפי תגיות.',
+					en: 'The exhibition wall on a computer: eight drawings taped to a stone wall, with price notes, hand-drawn "Sale!" and "Sold!" marks, and a row of tag filters.',
+				},
+				caption: { he: 'קיר התערוכה: הציורים תלויים על אבן, עם פתקי מחיר', en: 'The exhibition wall: drawings taped to stone, with price notes' },
+			},
+			{
+				image: shopDrawing,
+				alt: {
+					he: 'עמוד של ציור, "טס לירח": הציור בגדול עם פתק "מבצע!", ולצידו פתק עם המחיר 35 במקום 50, סיפור הציור, התגיות וכפתור "אני רוצה את זה!" לוואטסאפ.',
+					en: 'A drawing\'s page, "Flying to the Moon": the drawing large with a "Sale!" note, and beside it a note with the price, 35 instead of 50, its story, its tags and an "I want this!" WhatsApp button.',
+				},
+				caption: { he: 'עמוד ציור: הפתק, וכפתור ההודעה בוואטסאפ', en: "A drawing's page: its note, and the WhatsApp message button" },
+			},
+			{
+				image: shopHome,
+				alt: {
+					he: 'האזור של איתמר בטלפון: "היי איתמר! מה עושים היום?", ושלושה פתקים: לתלות ציור חדש, הקיר שלי ותגיות.',
+					en: 'Itamar\'s area on a phone: "Hi Itamar! What are we doing today?", and three notes: hang a new drawing, my wall, and tags.',
+				},
+				caption: { he: 'האזור של הילד: מה עושים היום?', en: "The kid's area: what are we doing today?" },
+			},
+			{
+				image: shopCrop,
+				alt: {
+					he: 'צילום ציור בטלפון: "מצאתי את הדף!", ארבע הפינות של הדף מזוהות בצילום, ואפשר לגרור כל אחת למקומה.',
+					en: 'A drawing photographed on a phone: "I found the paper!", the paper\'s four corners found in the photo, each one draggable into place.',
+				},
+				caption: { he: 'מוצאים את הדף בצילום ומיישרים אותו', en: 'Finding the paper in the photo and straightening it' },
+			},
+			{
+				image: shopPrice,
+				alt: {
+					he: 'שלב המחיר בטלפון: "כמה הוא עולה?", 50 שקלים עם כפתורי פלוס ומינוס גדולים, ומתג "מבצע!".',
+					en: 'The price step on a phone: "How much is it?", 50 shekels with big plus and minus buttons, and a "Sale!" switch.',
+				},
+				caption: { he: 'קובעים מחיר, עם פלוס ומינוס גדולים', en: 'Setting the price, with big plus and minus' },
+			},
+		],
 	},
 	{
 		id: 'hanzi',
