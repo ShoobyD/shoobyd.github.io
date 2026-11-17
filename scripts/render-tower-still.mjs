@@ -10,7 +10,8 @@
  * It drives the live 3D scene in Chrome against the dev server. To turn every point of interest to
  * the front, this browser alone gets a rewritten scene/dimensions.ts in which all the camera parks
  * share one angle (the doors, sphere, letters, strings, portrait and cranes are all placed by their
- * tier's park angle); the site's own code is untouched. Drawn on a green screen (no sky, clouds or
+ * tier's park angle); and to show every tier whole, rewritten tiers (see REWRITES). The site's own
+ * code is untouched. Drawn on a green screen (no sky, clouds or
  * fog) and keyed out. Same camera, same pixels: everything lines up by the rows and columns it
  * shares in the frame.
  *
@@ -60,15 +61,31 @@ const ROOFS = 0.02, BAND_DOWN = 0.16;
  */
 const SEAM = 0.08;
 
+/**
+ * What this browser's copy of the scene changes, by module: every park turned to the front, and each
+ * tier shown whole at once, as no single place on the climb shows them: the sphere with every ring
+ * gilded (none in focus), and the letters and the strings at their full glow (on the climb they
+ * brighten only as it nears their tier).
+ */
+const REWRITES = {
+	'dimensions.ts': (js) => js.replace(/th: [\d.]+,/g, `th: ${FRONT},`),
+	'tiers/armillary.ts': (js) => js.replace(/function update\(time, dt, level, inView\) \{/, '$&\n\t\tlevel = 3;\n\t\tinView = false;'),
+	'tiers/glyphs.ts': (js) => js.replace(/const near = 1 - sstep\([^;]+\);/, 'const near = 1;'),
+	'tiers/strings.ts': (js) => js.replace(/const near = 1 - sstep\([^;]+\);/, 'const near = 1;'),
+};
+
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const browser = await puppeteer.launch({ executablePath: CHROME, headless: 'new', args: ['--use-angle=d3d11', '--enable-gpu', '--ignore-gpu-blocklist'] });
 try {
 	const page = await browser.newPage();
 	await page.setRequestInterception(true);
 	page.on('request', async (req) => {
-		if (!req.url().includes('/src/components/tower/scene/dimensions.ts')) return req.continue();
+		const rewrite = Object.entries(REWRITES).find(([file]) => req.url().includes(`/src/components/tower/scene/${file}`));
+		if (!rewrite) return req.continue();
 		const js = await (await fetch(req.url())).text();
-		req.respond({ status: 200, contentType: 'application/javascript', body: js.replace(/th: [\d.]+,/g, `th: ${FRONT},`) });
+		const body = rewrite[1](js);
+		if (body === js) throw new Error(`nothing to rewrite in ${rewrite[0]}`);
+		req.respond({ status: 200, contentType: 'application/javascript', body });
 	});
 	await page.setViewport({ width: W, height: H, deviceScaleFactor: DPR });
 	await page.goto(URL, { waitUntil: 'networkidle0' });
