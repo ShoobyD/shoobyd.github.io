@@ -1,12 +1,22 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="he">
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 		<meta name="author" content="Baruch Mustakis, aka ShoobyD" />
-		<meta name="description" content="דף שגיאה 404" />
+		<meta name="description" content="דף שגיאה 404 · Error 404 page" />
+		<meta name="robots" content="noindex" />
 		<meta name="keywords" content="ברוך מוסטקיס baruch mustakis שובידי ShoobyD שגיאה error 404 super mario bros nintendo" />
 		<!-- revised: 21/06/2014 (scheme: dd/mm/yyyy) -->
-		<title>whoops.. page not found</title>
+		<title>אופס.. הדף לא נמצא</title>
+		<!-- one page for both languages: GitHub Pages serves it for any missing address, so an address
+		     under /en/ turns it English (its title, and the home link back to /en/) -->
+		<script>
+			const english = location.pathname === '/en' || location.pathname.startsWith( '/en/' );
+			if ( english ) {
+				document.documentElement.lang = 'en';
+				document.title = 'Whoops.. page not found';
+			}
+		</script>
 		<style>
 			body {
 				height:      100%;
@@ -70,12 +80,17 @@
 		<div id="container">
 			<div id="gba">
 				<img src="/assets/404/gba.png" alt="Gameboy Advanced" /><br />
-				<a href="/" title="לעמוד הראשי" id="homeLink">
+				<a href="/" title="לעמוד הבית" id="homeLink">
 					<img src="/assets/404/shoobyd.png" alt="ShoobyD" />
 				</a>
-				<div id="credit">Original Mario background by <a href="http://blog.nihilogic.dk/" onclick="window.open(this.href); return false;">Nihilogic.dk</a></div>
+				<div id="credit" lang="en">Original Mario background by <a href="http://blog.nihilogic.dk/" onclick="window.open(this.href); return false;">Nihilogic.dk</a></div>
 				<script>
-					const btnImg = document.querySelector( '#homeLink img' );
+					const homeLink = document.getElementById( 'homeLink' );
+					if ( english ) {
+						homeLink.href  = '/en/';
+						homeLink.title = 'Home';
+					}
+					const btnImg = homeLink.querySelector( 'img' );
 					btnImg.addEventListener( 'mouseover', function() { btnImg.src = '/assets/404/shoobyd_red.png' } )
 					btnImg.addEventListener( 'mouseout',  function() { btnImg.src = '/assets/404/shoobyd.png'     } )
 				</script>
