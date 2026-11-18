@@ -25,6 +25,24 @@ export function rigAt(p: number, out: Park): Park {
 	return out;
 }
 
+/**
+ * Narrow screens: the view is tall and narrow, so the camera stands farther back (NARROW_DIST times
+ * the park's distance), except where it looks at the details on the tower: from the code tier (the
+ * doorways) up through the making tier (the strings and the portrait), past the armillary sphere and
+ * the letters, it comes in to NARROW_CLOSE, easing in over the last half tier up to the code tier and
+ * out over the first half tier past the making tier. The base and the summit keep the wide view.
+ */
+const NARROW_DIST = 1.38;
+const NARROW_CLOSE = 0.95;
+const CLOSE_FROM = 1;
+const CLOSE_TO = 4;
+
+/** The distance factor on narrow screens at progress `p`. */
+function narrowDist(p: number) {
+	const outside = Math.max(0, CLOSE_FROM - p, p - CLOSE_TO);
+	return lerp(NARROW_CLOSE, NARROW_DIST, sstep(0, 0.5, outside));
+}
+
 const UP = new THREE.Vector3(0, 1, 0);
 const _axis = new THREE.Vector3();
 const _q = new THREE.Quaternion();
@@ -81,7 +99,7 @@ export function createCameraRig(camera: THREE.PerspectiveCamera) {
 			const away = 1 - s.intro;
 			const sway = s.pointer.x * 0.04 + Math.sin(s.time * 0.15) * 0.012;
 			th = park.th + away * -0.7 + sway + (s.pan ?? 0);
-			const dist = park.dist * (s.narrow ? 1.38 : 1) + away * 48;
+			const dist = park.dist * (s.narrow ? narrowDist(s.progress) : 1) + away * 48;
 			const y = park.y + away * 10 - s.pointer.y * 0.7;
 			pos.set(Math.cos(th) * dist, y, Math.sin(th) * dist);
 			look.set(0, park.look + away * 4, 0);
