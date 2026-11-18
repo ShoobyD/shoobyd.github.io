@@ -8,6 +8,12 @@ import * as THREE from 'three';
 import { damp, lerp, sstep } from './util';
 import { LAST_TIER, PARK, type OrbitView, type Park } from './dimensions';
 
+/**
+ * How far the camera has come from one park to the next, `t` (0..1) of the way there: mostly eased so
+ * it settles at each park, with some linear drift so it never stalls.
+ */
+export const parkEase = (t: number) => lerp(t, sstep(0, 1, t), 0.7);
+
 /** Interpolated park for progress `p`. */
 export function rigAt(p: number, out: Park): Park {
 	let i = Math.floor(p), t = p - i;
@@ -15,8 +21,7 @@ export function rigAt(p: number, out: Park): Park {
 		i = LAST_TIER - 1;
 		t = 1;
 	}
-	// mostly eased so the camera settles at each park, with some linear drift so it never stalls
-	const te = lerp(t, sstep(0, 1, t), 0.7);
+	const te = parkEase(t);
 	const A = PARK[i], B = PARK[i + 1];
 	out.th = lerp(A.th, B.th, te);
 	out.dist = lerp(A.dist, B.dist, te) + Math.sin(t * Math.PI) * 6;

@@ -20,7 +20,7 @@ import { createTower } from './tower';
 import { createFigures } from './figures';
 import { createSummit } from './summit';
 import { createClouds } from './clouds';
-import { createCameraRig, orbitShot } from './camera-path';
+import { createCameraRig, orbitShot, parkEase } from './camera-path';
 import type { Climb } from './climb';
 import type { FreeLook } from './free-look';
 import type { Sheet } from './sheet';
@@ -326,7 +326,11 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 			to = Math.min(count - 1, k + sstep(0.2, 0.8, stop.at - k));
 		} else to = smooth < 1 ? 0 : count - 1;
 		doorAt += (to - doorAt) * damp(4, dt);
-		const near = 1 - sstep(0, 0.45, Math.abs(smooth - 1));
+		// the turn comes and goes with the climb's own move between the parks (parkEase), so the two add
+		// up to one steady turn: arriving, toward the first door as the camera comes in; leaving, away
+		// from the last as it goes on (faded on a curve of its own, it outran the climb and swung back)
+		const d = smooth - 1;
+		const near = d <= -1 || d >= 1 ? 0 : d < 0 ? parkEase(1 + d) : 1 - parkEase(d);
 		return near * (doorAt - (count - 1) / 2) * DOOR_STEP * DOOR_PAN;
 	}
 
