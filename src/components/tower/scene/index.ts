@@ -316,6 +316,30 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 	 * leaving upward it sets off from the last; the turn fades out as the climb moves away.
 	 */
 	let doorAt = 0;
+	/**
+	 * How long (in tiers) the camera rests at a door on either side of its stop: the walk's own rest
+	 * (`sstep(0.2, 0.8)` in `doorPan`: 0.2 of a stop each side), a stop being a third of a tier (half
+	 * a viewport against a tier's 1.5, ../mode.ts).
+	 */
+	const DOOR_REST = 0.2 / 3;
+	/**
+	 * The climb as the camera takes it around the code tier: one turn from the base, along the doors
+	 * and on, resting at the first door and the last only as long as at the others (DOOR_REST). The
+	 * climb up from the base eases to that rest at the first door, and the way on to the path tier
+	 * eases out of it at the last; their projects light and go dark as the camera comes and goes
+	 * (FULL_VIEW, ./page-climb.ts), not while it stands. Elsewhere the camera follows the climb as it is.
+	 */
+	function cameraAt(p: number) {
+		const h = DOOR_REST;
+		// eases into a stop: from 0 to 1 starting at the climb's pace, ending at rest
+		const arrive = (u: number) => u + u * u - u * u * u;
+		if (p <= 0 || p >= 2) return p;
+		if (p < 1 - h) return arrive(p / (1 - h));
+		if (p <= 1 + h) return 1;
+		return 2 - arrive((2 - p) / (1 - h));
+	}
+	/** The climb as the camera takes it, this frame (see `cameraAt`). */
+	let camAt = 0;
 	function doorPan(dt: number) {
 		const count = opts.doors.length;
 		if (count < 2) return 0;
@@ -329,7 +353,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 		// the turn comes and goes with the climb's own move between the parks (parkEase), so the two add
 		// up to one steady turn: arriving, toward the first door as the camera comes in; leaving, away
 		// from the last as it goes on (faded on a curve of its own, it outran the climb and swung back)
-		const d = smooth - 1;
+		const d = camAt - 1;
 		const near = d <= -1 || d >= 1 ? 0 : d < 0 ? parkEase(1 + d) : 1 - parkEase(d);
 		return near * (doorAt - (count - 1) / 2) * DOOR_STEP * DOOR_PAN;
 	}
@@ -380,7 +404,8 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 		pointer.sy += (pointer.y - pointer.sy) * damp(2, dt);
 		const landed = !intro.play ? 1 : climb ? easeOut(clamp((now - intro.from) / 3600, 0, 1)) : 0;
 		const side = root.dir === 'ltr' ? -1 : 1;
-		rig.update({ dt, time, progress: smooth, intro: landed, pointer: { x: pointer.sx, y: pointer.sy }, side, narrow, pan: doorPan(dt) });
+		camAt = cameraAt(smooth);
+		rig.update({ dt, time, progress: camAt, intro: landed, pointer: { x: pointer.sx, y: pointer.sy }, side, narrow, pan: doorPan(dt) });
 
 		// a director (game mode) can take the camera over; the climb shot is blended toward its own
 		shot.pos.copy(rig.pos);
