@@ -18,3 +18,10 @@ database_name = "tower-leaderboard"
 database_id = "c24e624a-0129-4862-9bba-01407b558cd2"
 migrations_dir = "migrations"
 
+# keep the Worker's logs (Workers Logs: the dashboard's Observability, a few days back): every
+# request with its status and duration, and the errors it logs (`leaderboard:` in src/index.ts),
+# so a while the board was unavailable can be looked into afterwards
+[observability]
+enabled = true
+head_sampling_rate = 1
+
