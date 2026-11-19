@@ -81,7 +81,6 @@
 	--sd-space-5: 1.5rem;
 	--sd-space-6: 2rem;
 	--sd-space-7: 3rem;
-	--sd-space-8: 4.5rem;
 	--sd-gutter:  clamp(16px, 4vw, 56px);
 
 	/* ---------- shape: arches, not rounded rectangles ---------- */

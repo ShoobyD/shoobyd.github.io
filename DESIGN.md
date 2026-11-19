@@ -79,7 +79,6 @@ spacing:
   space-5: "1.5rem"
   space-6: "2rem"
   space-7: "3rem"
-  space-8: "4.5rem"
   gutter: "clamp(16px, 4vw, 56px)"
 components:
   control:
@@ -243,7 +242,7 @@ The page is always the climb. Each tier is a tall scroll span: 1.5 viewports (`1
 - **Very narrow (30rem and below):** panel padding tightens (3.6rem / 1.4rem) and the arch becomes `50% 3.6rem`.
 - **Header:** fixed over the climb, brand at the inline-start and actions (game mode, language) at the inline-end, with `var(--sd-gutter)` inline padding.
 - **Without JavaScript or if loading fails:** a full-screen message replaces the page. The whole tower stands on its plain under the dawn sky, with an arch panel saying "האתר צריך JavaScript".
-- **Spacing rhythm:** an 8-step scale from 0.25rem to 4.5rem. Tight internal gaps (4-14px) sit inside cards and rows; `space-4`/`space-5` separate blocks inside a panel.
+- **Spacing rhythm:** a 7-step scale from 0.25rem to 3rem. Tight internal gaps (4-14px) sit inside cards and rows; `space-4`/`space-5` separate blocks inside a panel.
 
 **The Logical Direction Rule.** Use only logical properties (`inline-start/end`, `block-start/end`); there are no physical left/right rules. `lang` and `dir` are set per page, and all strings live in the dictionary (`src/i18n/home.ts`). The page layout mirrors with `dir`.
 
