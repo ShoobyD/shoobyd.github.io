@@ -18,11 +18,11 @@ const BLEND_TIME = 1.5;
 /** Sky altitude (0 dawn .. 1 night) while playing: golden dusk, warm enough to see the bricks. */
 const GAME_ALTITUDE = 0.8;
 
-export function createGameDirector(scene: THREE.Scene, stack: Stack, onRest: () => void) {
-	// added once and left in place (dark when idle), so the scene's light count never changes
-	const light = new THREE.PointLight(0xffd6a8, 0, 40, 1.4);
-	scene.add(light);
-
+/**
+ * `light` is the scene's work-light (`TowerHandle.workLight`): it is there from the start, dark, so
+ * the scene's light count never changes; the director only moves it and turns it up and down.
+ */
+export function createGameDirector(light: THREE.PointLight, stack: Stack, onRest: () => void) {
 	const pos = new THREE.Vector3();
 	const look = new THREE.Vector3();
 	const shot = { pos, look, blend: 0, altitude: GAME_ALTITUDE };
@@ -58,8 +58,8 @@ export function createGameDirector(scene: THREE.Scene, stack: Stack, onRest: () 
 			return shot;
 		},
 		dispose() {
-			scene.remove(light);
-			light.dispose();
+			// the light stays with the scene, dark
+			light.intensity = 0;
 		},
 	};
 	return director;

@@ -50,7 +50,7 @@ function writeBest(n: number) {
 export function createGame(tower: TowerHandle, events: GameEvents) {
 	const stack = createStack(tower.tower, tower.plinthTop, tower.brick);
 	let attached = false;
-	const director = createGameDirector(tower.scene, stack, () => {
+	const director = createGameDirector(tower.workLight, stack, () => {
 		attached = false;
 		tower.setDirector(null);
 	});

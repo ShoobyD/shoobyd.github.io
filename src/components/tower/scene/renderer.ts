@@ -13,6 +13,14 @@ export interface Stage {
 	composer: EffectComposer;
 	maxAnisotropy: number;
 	setSize(w: number, h: number): void;
+	/**
+	 * Compiles the scene's programs ahead of the first frame, in parallel where the driver allows
+	 * (three.js's `compileAsync`), as `render` will use them: drawn into the composer's buffer, where
+	 * tone mapping and the colour space are left to the output pass. Those are other programs than
+	 * the screen's, so compiled for the screen they'd all be compiled again, one by one, on the first
+	 * frame.
+	 */
+	compile(): Promise<void>;
 	render(dt: number): void;
 	dispose(): void;
 }
@@ -45,6 +53,15 @@ export function createRenderer(
 		setSize(w, h) {
 			renderer.setSize(w, h, false);
 			composer.setSize(w, h);
+		},
+		async compile() {
+			const target = renderer.getRenderTarget();
+			renderer.setRenderTarget(composer.readBuffer);
+			try {
+				await renderer.compileAsync(scene, camera);
+			} finally {
+				renderer.setRenderTarget(target);
+			}
 		},
 		render(dt) {
 			composer.render(dt);

@@ -72,6 +72,8 @@ export interface TowerHandle {
 	/** The top of the summit plinth, where a game would lay its first brick. */
 	plinthTop: number;
 	brick: THREE.Texture;
+	/** Game mode's work-light: in the scene from the start, dark (intensity 0) until a game lights it. */
+	workLight: THREE.PointLight;
 	goTier(i: number): void;
 	setDirector(d: Director | null): void;
 	dispose(): void;
@@ -136,6 +138,10 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 		throw err;
 	}
 	const { brick, sky, landscape, built, doors, figures, summit, armillary, glyphs, strings, clouds } = world;
+	// game mode's work-light (game/director.ts), here from the start and dark until a game lights
+	// it: a light added later changes every lit material's program, and they'd all compile again
+	const workLight = new THREE.PointLight(0xffd6a8, 0, 40, 1.4);
+	scene.add(workLight);
 	const rig = createCameraRig(camera);
 
 	// ---------- page wiring ----------
@@ -486,6 +492,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 		tower,
 		plinthTop: PLINTH_TOP,
 		brick,
+		workLight,
 		goTier: (i) => climb?.goTier(i),
 		setDirector(d) {
 			director = d;
@@ -518,7 +525,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 
 	// compile every program up front (in parallel where the driver allows), then start the loop
 	try {
-		await stage.renderer.compileAsync(scene, camera);
+		await stage.compile();
 	} catch {
 		// compileAsync is an optimisation; the first render compiles anything left
 	}
