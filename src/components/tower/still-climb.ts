@@ -64,7 +64,7 @@ export function createStillClimb(o: StillClimbOptions) {
 	}
 	window.addEventListener('scroll', schedule, { passive: true });
 	window.addEventListener('resize', remeasure);
-	// section heights change with the window, and the page's height with the footer's content
+	// section heights change with the window, and with their content (fonts loading)
 	const layoutWatch = new ResizeObserver(remeasure);
 	layoutWatch.observe(document.body);
 	schedule();

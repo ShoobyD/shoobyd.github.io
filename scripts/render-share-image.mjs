@@ -5,7 +5,7 @@
  * the site's own type and lit by its legibility glow (no scrim behind them).
  *
  * It drives the live 3D scene in Chrome against the dev server, waits for the intro dolly to land,
- * hides the page's own interface (header, panels, gauge, footer) and lays the words over it; the
+ * hides the page's own interface (header, panels, gauge) and lays the words over it; the
  * site's code is untouched. The words come from the dictionary (src/i18n/ui.ts: `brand.tagline`,
  * `share.role`), read here directly (Node strips its types).
  *
@@ -79,7 +79,7 @@ try {
 			const mark = document.querySelector('.sd-header__brand svg')?.cloneNode(true);
 			const hide = document.createElement('style');
 			hide.textContent =
-				'.sd-header,[data-tier-panel],.gauge,.sd-footer,.sd-skip-link,astro-dev-toolbar{visibility:hidden!important}';
+				'.sd-header,[data-tier-panel],.gauge,.sd-skip-link,astro-dev-toolbar{visibility:hidden!important}';
 			document.head.append(hide);
 
 			// the words, where the panel stands: the inline-start of the card (the part kept), in the

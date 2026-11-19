@@ -6,7 +6,7 @@
  * the tier stay put; the scene, reading `dir`, glides the tower to the other side.
  *
  * What is patched: `<html lang dir>`; the head's language (title, description, canonical, Open
- * Graph and X tags, hreflang links, the JSON-LD); and the skip link, header, main and footer,
+ * Graph and X tags, hreflang links, the JSON-LD); and the skip link, header and main,
  * walked side by side with the twin: their text, and only the attributes that carry language
  * (LANG_ATTRS). Where an element's content differs in shape (an "(in Hebrew)" mark that only one
  * language has), its content is replaced, but only inside phrasing (a line of text and its links).
@@ -30,7 +30,7 @@ const LANG_ATTRS = ['lang', 'dir', 'href', 'hreflang', 'title', 'alt', 'aria-lab
  */
 const SKIP = 'astro-island, [data-stop-now], [data-static-tower], [data-static-ground], noscript';
 /** The parts of the body that hold the page's text, walked against the twin's. */
-const REGIONS = ['.sd-skip-link', '.sd-header', '#main', '.sd-footer'];
+const REGIONS = ['.sd-skip-link', '.sd-header', '#main'];
 /** Content that may be replaced wholesale when its shape differs: a line of text and what's in it. */
 const PHRASING = new Set(['A', 'ABBR', 'B', 'BDI', 'BR', 'CITE', 'CODE', 'EM', 'I', 'SMALL', 'SPAN', 'STRONG', 'SUB', 'SUP', 'svg', 'path', 'circle', 'rect', 'g', 'line', 'polyline', 'polygon', 'ellipse', 'use']);
 

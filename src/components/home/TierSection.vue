@@ -231,11 +231,10 @@ h2.tier__title {
 		scrollbar-width: thin;
 		--sheet-fade: 100vh;
 		inset-inline: 8px;
-		/* resting on the site footer when it scrolls into view (sheet.ts) */
-		inset-block: auto var(--sheet-bottom, 0px);
+		inset-block: auto 0;
 		margin-block: 0;
 		inline-size: auto;
-		max-block-size: calc(100svh - var(--sheet-top, 72px) - var(--sheet-bottom, 0px));
+		max-block-size: calc(100svh - var(--sheet-top, 72px));
 		padding-block: 2.9rem 1.3rem;
 		padding-inline: 1.3rem;
 		border-start-start-radius: 50% 2.6rem;

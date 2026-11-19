@@ -39,8 +39,6 @@ export const ui = {
 		'nav.skip':         'דילוג לתוכן',
 		'lang.label':       'EN',
 		'lang.aria':        'Switch to English',
-		'footer.credit':    'נבנה ועוצב בידי ברוך מוסטקיס',
-		'footer.copyright': '© {year} ShoobyD',
 	},
 	en: {
 		'site.title':       'Baruch Mustakis · ShoobyD',
@@ -54,8 +52,6 @@ export const ui = {
 		'nav.skip':         'Skip to content',
 		'lang.label':       'עב',
 		'lang.aria':        'לעברית',
-		'footer.credit':    'Designed and built by Baruch Mustakis',
-		'footer.copyright': '© {year} ShoobyD',
 	},
 } as const satisfies Record<Lang, Record<string, string>>;
 

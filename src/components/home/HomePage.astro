@@ -271,7 +271,7 @@ const elsewhere = [
 	/* ---------- the climb (see ../components/tower/mode.ts) ----------
 	 * The page is the climb: the sky darkens from dawn at the base to night at the summit. The
 	 * climb does its own smoothing, so jumps (gauge links, keys) are instant; the header stays put
-	 * over it; and the footer is lifted above the fixed tower behind it. (`:root` keeps these level
+	 * over it. (`:root` keeps these level
 	 * with the components' own scoped rules, which they override.) */
 	body {
 		background: var(--sd-sky-climb);
@@ -287,7 +287,6 @@ const elsewhere = [
 		inset-block-start: 0;
 		inset-inline: 0;
 	}
-	:root .sd-footer { position: relative; }
 	/* the climb's chrome (the altitude gauge) fades when it steps aside */
 	:root [data-tower-chrome] {
 		transition: opacity var(--sd-dur) var(--sd-ease), visibility 0s;

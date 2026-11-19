@@ -11,8 +11,8 @@
  * page CSS shows it only under `html.webgl`. And a click or tap on the tower's unfinished top: the
  * scene sends `tower:play`.
  *
- * While playing, the root carries `html.tower-game`: the page stops scrolling, the panels, gauge
- * and footer are `inert` (and faded), and click / tap / Space / Enter drop a brick, Esc leaves.
+ * While playing, the root carries `html.tower-game`: the page stops scrolling, the panels and gauge
+ * are `inert` (and faded), and click / tap / Space / Enter drop a brick, Esc leaves.
  */
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import ArchPanel from '../../theme/components/ArchPanel.vue';
@@ -28,7 +28,7 @@ const props = defineProps<{
 /** On the root while game mode is on; the page CSS keys the scroll lock and the fades off it. */
 const GAME_CLASS = 'tower-game';
 /** Everything behind the game that must not take focus or clicks while playing. */
-const BEHIND = '[data-tier-panel], [data-tower-chrome], .sd-footer';
+const BEHIND = '[data-tier-panel], [data-tower-chrome]';
 /** Keys that would scroll the page or step the climb. */
 const CLIMB_KEYS = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'PageUp', 'PageDown', 'Home', 'End']);
 

@@ -72,7 +72,7 @@ onMounted(() => {
 	measure();
 	window.addEventListener('scroll', schedule, { passive: true });
 	window.addEventListener('resize', schedule);
-	// section heights change with the window, and the page's height with the footer's content
+	// section heights change with the window, and with their content (fonts loading)
 	layout = new ResizeObserver(schedule);
 	layout.observe(document.body);
 });

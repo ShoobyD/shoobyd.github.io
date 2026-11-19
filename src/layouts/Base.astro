@@ -1,7 +1,7 @@
 ---
 /**
  * Base layout for every new page: document language and direction, meta, the
- * ShoobyD theme, and the site shell (header, main, footer).
+ * ShoobyD theme, and the site shell (header, main).
  *
  * `alternatePath` is the same page in the other language. Pass it only when that page
  * exists: it brings the language switch in the header, and the hreflang links that pair the two
@@ -10,7 +10,6 @@
  */
 import '../theme/base.css';
 import SiteHeader from '../theme/components/SiteHeader.vue';
-import SiteFooter from '../theme/components/SiteFooter.vue';
 import { getRelativeLocaleUrl } from 'astro:i18n';
 import { dirFor, otherLang, useTranslations, type Lang } from '../i18n/ui';
 
@@ -99,10 +98,6 @@ const langSwitch = alternateHref
 		<main id="main">
 			<slot />
 		</main>
-		<SiteFooter
-			credit={t('footer.credit')}
-			copyright={t('footer.copyright', { year: new Date().getFullYear() })}
-		/>
 		<!-- the language switch changes the page in place, when it has a twin (a no-op without the switch) -->
 		<script>
 			import '../i18n/lang-swap';

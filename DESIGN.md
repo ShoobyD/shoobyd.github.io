@@ -194,8 +194,8 @@ The palette is the tower's materials under a sky that shifts with altitude, with
 ### Neutral
 - **Limestone Cornice** (#e9e3d3): all primary text (`--sd-text`), the keystone and the sheet handle, the portrait's mat, and the upper brick in the game icon.
 - **Weathered Limestone** (#cbbf9f): the shaded underside of the loader's limestone capstone.
-- **Limestone Dim** (limestone at 80%): secondary text over glass (leads on the code tier, asides, hints, the wink, project descriptions at rest, the footer).
-- **Cornice Line** (limestone at 20%) and **Cornice Line Strong** (limestone at 30%): panel borders, aside and footer rules, and control borders.
+- **Limestone Dim** (limestone at 80%): secondary text over glass (leads on the code tier, asides, hints, the wink, project descriptions at rest).
+- **Cornice Line** (limestone at 20%) and **Cornice Line Strong** (limestone at 30%): panel borders, aside rules, and control borders.
 - **Shadow Ink** (#2d2a26): text on gold (selection, gold control, skip link) and the chevron on the sheet handle.
 - **Smoked Glass** and **Smoked Glass Deep** (warm near-black at 70% / 80%): the arch panel's top-to-bottom gradient, the current gauge label's pill and the scrollbar track.
 - **Control Glass** / **Control Glass Hover** (warm near-black at 58% / 78%): the pill control at rest and on hover.

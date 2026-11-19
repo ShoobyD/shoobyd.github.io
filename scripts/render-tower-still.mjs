@@ -90,7 +90,7 @@ try {
 	await page.setViewport({ width: W, height: H, deviceScaleFactor: DPR });
 	await page.goto(URL, { waitUntil: 'networkidle0' });
 	await page.waitForFunction(() => document.documentElement.classList.contains('webgl') && !document.documentElement.classList.contains('sd-tower-loading'), { timeout: 60000 });
-	await page.addStyleTag({ content: '.sd-header,[data-tier-panel],[data-tower-chrome],[data-summit-cue],.sd-footer,astro-dev-toolbar{visibility:hidden!important}' });
+	await page.addStyleTag({ content: '.sd-header,[data-tier-panel],[data-tower-chrome],[data-summit-cue],astro-dev-toolbar{visibility:hidden!important}' });
 
 	// the scene's handle lives in the tower island's Vue component
 	await page.evaluate(() => {

@@ -286,7 +286,7 @@ export async function createTowerScene(opts: TowerOptions): Promise<TowerHandle>
 		climb?.measure();
 	}
 	window.addEventListener('resize', onResize);
-	// section heights change with the window, and the page's height with the footer's content
+	// section heights change with the window, and with their content (fonts loading)
 	const layoutWatch = new ResizeObserver(() => climb?.measure());
 	layoutWatch.observe(document.body);
 
