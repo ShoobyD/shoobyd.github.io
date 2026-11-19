@@ -86,8 +86,15 @@ const towerDoors = await Promise.all(
 	})),
 );
 
-/** The self-portrait opens the base panel, and hangs again beside the strings on the making tier. */
-const towerPortrait = { src: selfPortrait.src, width: selfPortrait.width, height: selfPortrait.height };
+/**
+ * The self-portrait opens the base panel, and hangs again beside the strings on the making tier: as
+ * WebP at its own size (the same file the panel's enlarged view shows), not the original JPEG.
+ */
+const towerPortrait = {
+	src: (await getImage({ src: selfPortrait, width: selfPortrait.width, format: 'webp' })).src,
+	width: selfPortrait.width,
+	height: selfPortrait.height,
+};
 
 // the course is in Hebrew: the English line marks it where its `{he}` token stands
 const [latinBefore, latinRest = ''] = c.languages.latin.split('{link}');
