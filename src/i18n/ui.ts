@@ -67,17 +67,10 @@ export type UiKeysMatch = Assert<
 	[Missing<(typeof ui)['he'], (typeof ui)['en']>, Missing<(typeof ui)['en'], (typeof ui)['he']>] extends [never, never] ? true : false
 >;
 
-export type TemplateVars = Record<string, string | number>;
-
-/** Fills `{name}` placeholders in a template from `vars`; unknown placeholders are left as-is. */
-export function interpolate(template: string, vars: TemplateVars = {}): string {
-	return template.replace(/\{(\w+)\}/g, (match, name: string) => String(vars[name] ?? match));
-}
-
 /** Returns a translator for one language, falling back to the default language per key. */
 export function useTranslations(lang: Lang) {
-	return function t(key: UiKey, vars?: TemplateVars): string {
-		return interpolate(ui[lang][key] ?? ui[defaultLang][key], vars);
+	return function t(key: UiKey): string {
+		return ui[lang][key] ?? ui[defaultLang][key];
 	};
 }
 

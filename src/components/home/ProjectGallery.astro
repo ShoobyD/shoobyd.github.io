@@ -16,6 +16,7 @@
  */
 import type { ImageMetadata } from 'astro';
 import { Image } from 'astro:assets';
+import { interpolate } from '../../i18n/interpolate';
 
 interface Props {
 	/** The project's id: the card that opens it carries it as `data-gallery-open`. */
@@ -27,7 +28,6 @@ interface Props {
 }
 
 const { id, name, shots, labels } = Astro.props;
-const fill = (text: string, n: number) => text.replace('{n}', String(n)).replace('{total}', String(shots.length));
 ---
 
 <dialog class="gallery" data-gallery={id} aria-label={name} data-counter={labels.counter}>
@@ -56,7 +56,7 @@ const fill = (text: string, n: number) => text.replace('{n}', String(n)).replace
 			{
 				shots.map((_, i) => (
 					<li>
-						<button type="button" data-dot={i} aria-label={fill(labels.dot, i + 1)} aria-current={i === 0 ? 'true' : undefined} />
+						<button type="button" data-dot={i} aria-label={interpolate(labels.dot, { n: i + 1 })} aria-current={i === 0 ? 'true' : undefined} />
 					</li>
 				))
 			}
@@ -77,6 +77,7 @@ const fill = (text: string, n: number) => text.replace('{n}', String(n)).replace
 	 * its card, and shrinks back into the same (see image-view.ts); it always opens on the first image.
 	 */
 	import { createImageView } from './image-view';
+	import { interpolate } from '../../i18n/interpolate';
 
 	function setUp(view: HTMLDialogElement) {
 		const stage = view.querySelector<HTMLElement>('.gallery__stage');
@@ -101,7 +102,7 @@ const fill = (text: string, n: number) => text.replace('{n}', String(n)).replace
 			at = (i + slides.length) % slides.length;
 			slides.forEach((s, k) => (s.hidden = k !== at));
 			dots.forEach((d, k) => (k === at ? d.setAttribute('aria-current', 'true') : d.removeAttribute('aria-current')));
-			if (count && announce) count.textContent = counter().replace('{n}', String(at + 1)).replace('{total}', String(slides.length));
+			if (count && announce) count.textContent = interpolate(counter(), { n: at + 1, total: slides.length });
 			// the next image starts loading as this one shows
 			slides[(at + 1) % slides.length].querySelector('img')?.setAttribute('loading', 'eager');
 		}

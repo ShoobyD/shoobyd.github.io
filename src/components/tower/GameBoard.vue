@@ -9,6 +9,7 @@
  */
 import { computed, nextTick, ref, watch } from 'vue';
 import { countBricks, type BoardCopy, type BrickCount } from '../../i18n/home';
+import { interpolate } from '../../i18n/interpolate';
 import {
 	BOARD_SIZE,
 	NAME_MAX,
@@ -48,9 +49,6 @@ const error = ref('');
 const addedId = ref<number | null>(null);
 const addedRank = ref(0);
 const input = ref<HTMLInputElement | null>(null);
-
-const fill = (s: string, values: Record<string, string | number>) =>
-	s.replace(/\{(\w+)\}/g, (m, k: string) => (k in values ? String(values[k]) : m));
 
 const canJoin = computed(() => status.value === 'ready' && addedId.value === null && makesBoard(board.value, props.score));
 
@@ -118,7 +116,7 @@ async function submit() {
 		rememberName(trimmed);
 		addedId.value = result.id;
 		addedRank.value = result.rank;
-		emit('announce', fill(props.copy.added, { n: result.rank }));
+		emit('announce', interpolate(props.copy.added, { n: result.rank }));
 		await nextTick();
 		emit('added');
 		return;
@@ -138,7 +136,7 @@ watch(() => props.run, load, { immediate: true });
 		<p v-else-if="status === 'unavailable'" class="board__note">{{ copy.unavailable }}</p>
 
 		<template v-else>
-			<p v-if="addedId !== null" class="board__lead">{{ fill(copy.added, { n: addedRank }) }}</p>
+			<p v-if="addedId !== null" class="board__lead">{{ interpolate(copy.added, { n: addedRank }) }}</p>
 
 			<form v-else-if="canJoin" class="board__form" novalidate @submit.prevent="submit">
 				<p class="board__lead">{{ copy.qualifies }}</p>
@@ -174,7 +172,7 @@ watch(() => props.run, load, { immediate: true });
 						:class="{ 'is-you': row.you, 'is-slot': row.slot, 'is-top': i < 3 }"
 						:aria-current="row.you && !row.slot ? 'true' : undefined"
 					>
-						<span class="sd-visually-hidden">{{ fill(copy.rowLabel, { rank: i + 1, name: row.name, score: countBricks(count, row.score) }) }}</span>
+						<span class="sd-visually-hidden">{{ interpolate(copy.rowLabel, { rank: i + 1, name: row.name, score: countBricks(count, row.score) }) }}</span>
 						<span class="board__rank" aria-hidden="true">{{ i + 1 }}</span>
 						<!-- the cell keeps the page's direction; <bdi> isolates a name written in the other one -->
 						<span class="board__name" aria-hidden="true"><bdi>{{ row.name }}</bdi></span>
@@ -183,7 +181,7 @@ watch(() => props.run, load, { immediate: true });
 				</ol>
 			</section>
 
-			<p v-if="shortBy" class="board__note">{{ fill(copy.short, shortBy) }}</p>
+			<p v-if="shortBy" class="board__note">{{ interpolate(copy.short, shortBy) }}</p>
 		</template>
 	</div>
 </template>

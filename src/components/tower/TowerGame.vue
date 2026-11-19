@@ -18,6 +18,7 @@ import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import ArchPanel from '../../theme/components/ArchPanel.vue';
 import GameBoard from './GameBoard.vue';
 import { countBricks, type GameCopy } from '../../i18n/home';
+import { interpolate } from '../../i18n/interpolate';
 import type { Game, TowerHandle } from './scene';
 
 const props = defineProps<{
@@ -50,8 +51,6 @@ let alive = true;
 let controls: HTMLButtonElement[] = [];
 let returnTo: HTMLElement | null = null;
 const timers = { perfect: 0, secret: 0, over: 0 };
-
-const fill = (s: string, n: number) => s.replace('{n}', String(n));
 
 /** The live region re-announces identical text only if it changes first. */
 async function announce(text: string) {
@@ -178,7 +177,7 @@ onMounted(async () => {
 		onLaid(n, record, wasPerfect, newBest) {
 			score.value = n;
 			best.value = record;
-			let text = fill(props.copy.announceScore, n);
+			let text = interpolate(props.copy.announceScore, { n });
 			if (wasPerfect) {
 				perfect.value = true;
 				window.clearTimeout(timers.perfect);
@@ -189,7 +188,7 @@ onMounted(async () => {
 			announce(text);
 		},
 		onOver(n, durationMs) {
-			overText.value = n === 0 ? props.copy.overNone : props.copy.overText.replace('{bricks}', countBricks(props.copy.brickCount, n));
+			overText.value = n === 0 ? props.copy.overNone : interpolate(props.copy.overText, { bricks: countBricks(props.copy.brickCount, n) });
 			// start loading the board now, so it is usually there by the time the card comes up
 			lastRun.value = { score: n, durationMs };
 			boardRun.value++;

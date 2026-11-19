@@ -3,6 +3,7 @@
  * Both languages are published: Hebrew at `/`, English at `/en/` (components/home/HomePage.astro).
  */
 import type { Lang } from './ui';
+import { interpolate } from './interpolate';
 import type { ProjectStatus } from '../data/projects';
 
 export const tierIds = ['base', 'code', 'math', 'languages', 'making', 'summit'] as const;
@@ -139,7 +140,7 @@ export interface BrickCount {
 }
 
 /** "one brick" / "12 bricks" (and their Hebrew), for every message that counts bricks. */
-export const countBricks = (c: BrickCount, n: number) => (n === 1 ? c.one : c.many.replace('{n}', String(n)));
+export const countBricks = (c: BrickCount, n: number) => (n === 1 ? c.one : interpolate(c.many, { n }));
 
 /**
  * The shared leaderboard on the game-over card, filled in by the game: `{n}` a rank, and the
