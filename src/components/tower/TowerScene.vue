@@ -9,11 +9,13 @@
  *
  * While the scene is live it also mounts game mode's UI (TowerGame), handing it the scene handle.
  *
- * Debug: `?no3d` keeps the still climb, `?noshadow` renders without shadows.
+ * Debug: `?no3d` keeps the still climb, `?noshadow` renders without shadows, `?why3d` shows why
+ * the visitor got the live tower or the still picture (./why3d.ts).
  */
 import { computed, markRaw, nextTick, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue';
 import { endLoading } from './mode';
 import { createStillClimb, type StillClimb } from './still-climb';
+import * as why3d from './why3d';
 import TowerGame from './TowerGame.vue';
 import type { GameCopy } from '../../i18n/home';
 import { usePageLang } from '../../i18n/page-lang';
@@ -62,12 +64,14 @@ function hasWebGL2() {
 	}
 }
 
-function wanted() {
-	if (lost || motion?.matches) return false;
-	if (new URLSearchParams(location.search).has('no3d')) return false;
+/** What keeps the live tower off for this visitor, or null when nothing does. */
+function blocker() {
+	if (lost) return 'the GPU context was lost';
+	if (motion?.matches) return 'reduced motion';
+	if (new URLSearchParams(location.search).has('no3d')) return '?no3d';
 	const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
-	if (connection?.saveData) return false;
-	return true;
+	if (connection?.saveData) return 'Save-Data';
+	return null;
 }
 
 /** Resolves once the page has painted and the main thread has a quiet moment. */
@@ -103,19 +107,20 @@ function stopStill() {
  * bail-out it fades out over the still climb.
  */
 async function start() {
-	if (handle || starting || !wanted() || !hasWebGL2()) {
-		// a start already in flight owns the loader; it lifts it when it finishes
-		if (!handle && !starting) {
-			goStill();
-			endLoading();
-		}
+	// a start already in flight owns the loader; it lifts it when it finishes
+	if (handle || starting) return;
+	const off = blocker() ?? (hasWebGL2() ? null : 'no WebGL 2');
+	if (off) {
+		why3d.outcome(`still picture: ${off}`);
+		goStill();
+		endLoading();
 		return;
 	}
 	starting = true;
 	try {
 		await afterFirstPaint();
 		const { createTowerScene } = await import('./scene');
-		if (!alive || !wanted() || !canvas.value) return;
+		if (!alive || blocker() || !canvas.value) return;
 		handle = await createTowerScene({
 			canvas: canvas.value,
 			tiers: props.tiers,
@@ -128,7 +133,7 @@ async function start() {
 			// the still climb lets go of the page (the same climb) as the scene takes it over
 			onActivate: () => stopStill(),
 		});
-		if (!alive || !wanted()) stop();
+		if (!alive || blocker()) stop();
 		else live.value = markRaw(handle);
 	} catch (err) {
 		console.warn('tower: staying on the still picture', err);
@@ -137,6 +142,7 @@ async function start() {
 		starting = false;
 		// whatever went wrong on the way, the page climbs without it
 		if (!handle) goStill();
+		why3d.outcome(handle ? 'live 3D' : `still picture: ${blocker() ?? 'the start failed (see above)'}`);
 		endLoading();
 	}
 }
@@ -150,6 +156,7 @@ function stop() {
 	handle = null;
 	generation.value++;
 	goStill();
+	why3d.outcome(`still picture: ${blocker() ?? 'the tower stopped'}`);
 }
 
 // turning reduced motion on mid-visit drops back to the still climb; turning it off brings the live tower back
@@ -164,6 +171,7 @@ async function onMotionChange() {
 onMounted(() => {
 	motion = window.matchMedia('(prefers-reduced-motion: reduce)');
 	motion.addEventListener('change', onMotionChange);
+	why3d.begin();
 	start();
 });
 
