@@ -5,6 +5,10 @@
  * button and a close button. It sits outside the tier panels: one opened from another tier would
  * be inside a faded panel, and take no clicks.
  *
+ * A full-screen button takes the viewer to the browser's own full screen and back; Esc leaves it,
+ * a second Esc closes. It is the sheet inside the dialog that goes full screen: the browser refuses
+ * it to a modal dialog, which already sits in the top layer. Where the browser has no Fullscreen API the button stays hidden.
+ *
  * Progressive: the dialog only takes over where the browser can show a PDF inline
  * (`navigator.pdfViewerEnabled`) on a screen wide enough to read it. Anywhere else (phones, no
  * JavaScript) the link keeps doing what it always did: open the PDF itself. The PDF is only
@@ -18,29 +22,44 @@ interface Props {
 	/** The dialog's title, also the frame's accessible name. */
 	title: string;
 	downloadLabel: string;
+	fullscreenLabel: string;
+	exitFullscreenLabel: string;
 	closeLabel: string;
 	/** File name suggested when downloading. */
 	fileName: string;
 }
 
-const { src, title, downloadLabel, closeLabel, fileName } = Astro.props;
+const { src, title, downloadLabel, fullscreenLabel, exitFullscreenLabel, closeLabel, fileName } = Astro.props;
 ---
 
 <dialog class="cv-view" aria-labelledby="cv-view-title" data-cv-view data-src={src}>
-	<header class="cv-view__bar">
-		<h2 id="cv-view-title" class="cv-view__title">
-			<LinkIcon name="cv" size={20} />
-			{title}
-		</h2>
-		<div class="cv-view__actions">
-			<a class="sd-control sd-control--gold" href={src} download={fileName}>{downloadLabel}</a>
-			<form method="dialog">
-				<button class="sd-control" type="submit">{closeLabel}</button>
-			</form>
-		</div>
-	</header>
-	<!-- the frame gets its src on first open, so the PDF isn't fetched with the page -->
-	<iframe class="cv-view__frame" title={title}></iframe>
+	<div class="cv-view__sheet">
+		<header class="cv-view__bar">
+			<h2 id="cv-view-title" class="cv-view__title">
+				<LinkIcon name="cv" size={20} />
+				{title}
+			</h2>
+			<div class="cv-view__actions">
+				<a class="sd-control sd-control--gold" href={src} download={fileName}>{downloadLabel}</a>
+				<!-- one label shows at a time, by whether the sheet is full screen (CSS), so it is also the button's name -->
+				<button class="sd-control cv-view__full" type="button" hidden>
+					<span class="cv-view__enter">
+						<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" /></svg>
+						{fullscreenLabel}
+					</span>
+					<span class="cv-view__leave">
+						<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" /></svg>
+						{exitFullscreenLabel}
+					</span>
+				</button>
+				<form method="dialog">
+					<button class="sd-control" type="submit">{closeLabel}</button>
+				</form>
+			</div>
+		</header>
+		<!-- the frame gets its src on first open, so the PDF isn't fetched with the page -->
+		<iframe class="cv-view__frame" title={title}></iframe>
+	</div>
 </dialog>
 
 <script>
@@ -63,6 +82,26 @@ const { src, title, downloadLabel, closeLabel, fileName } = Astro.props;
 		view.addEventListener('click', (e) => {
 			if (e.target === view) view.close();
 		});
+
+		const sheet = view.querySelector<HTMLElement>('.cv-view__sheet');
+		const full = view.querySelector<HTMLButtonElement>('.cv-view__full');
+		if (sheet && full && document.fullscreenEnabled && typeof sheet.requestFullscreen === 'function') {
+			full.hidden = false;
+			full.addEventListener('click', () => {
+				if (document.fullscreenElement === sheet) void document.exitFullscreen();
+				else sheet.requestFullscreen().catch(() => {});
+			});
+			// Esc in full screen only leaves it, whether the browser takes the key or hands it to the dialog
+			view.addEventListener('cancel', (e) => {
+				if (document.fullscreenElement !== sheet) return;
+				e.preventDefault();
+				void document.exitFullscreen();
+			});
+			// closing from full screen (the close button) leaves it too
+			view.addEventListener('close', () => {
+				if (document.fullscreenElement === sheet) void document.exitFullscreen();
+			});
+		}
 	}
 </script>
 
@@ -121,6 +160,40 @@ const { src, title, downloadLabel, closeLabel, fileName } = Astro.props;
 	}
 	.cv-view__actions form {
 		display: contents;
+	}
+
+	.cv-view__sheet {
+		flex: 1;
+		min-block-size: 0;
+		display: flex;
+		flex-direction: column;
+	}
+	/* the whole screen, in the dialog's glass, over the tower dimmed as under the dialog */
+	.cv-view__sheet:fullscreen {
+		background: linear-gradient(180deg, var(--sd-glass), var(--sd-glass-strong));
+		backdrop-filter: blur(16px);
+	}
+	.cv-view__sheet::backdrop {
+		background: rgb(14 12 10 / 0.72);
+		backdrop-filter: blur(6px);
+	}
+	.cv-view__full[hidden],
+	.cv-view__leave,
+	.cv-view__sheet:fullscreen .cv-view__enter {
+		display: none;
+	}
+	.cv-view__enter,
+	.cv-view__sheet:fullscreen .cv-view__leave {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+	}
+	.cv-view__full svg {
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 2;
+		stroke-linecap: round;
+		stroke-linejoin: round;
 	}
 
 	.cv-view__frame {
