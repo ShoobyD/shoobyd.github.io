@@ -192,6 +192,12 @@ const elsewhere = [
 	</TierSection>
 
 	<TierSection id="math" sheetLabel={c.sheet.toggle} title={c.math.title} stops={c.math.path.length}>
+		<!-- the CV by the title, as the summit's contact row opens it (CvViewer): this is the tier an
+		     employer reads, and on a phone it shows even while the sheet is collapsed (data-sheet-action
+		     lets a tap through to it, sheet.ts) -->
+		<a slot="action" class="tier-cv" href={links.cv} rel="noopener" target="_blank" data-opens="cv" data-sheet-action>
+			<LinkIcon name="cv" size={18} />{c.summit.contacts.cv}
+		</a>
 		<!-- the collapsed mobile sheet's peek at the stage in focus, like the projects tier's: a compact
 		     copy, filled in as the scroll steps through the path (the list below stays the real one) -->
 		<div class="tier-now" data-stop-now aria-hidden="true" inert></div>
@@ -245,13 +251,6 @@ const elsewhere = [
 		<Fragment slot="title"><BabelTitle client:visible lang={lang} copies={babelCopies} /></Fragment>
 		<p class="wink">{c.summit.wink}</p>
 		<ContactList items={contacts} />
-		<CvViewer
-			src={links.cv}
-			title={c.summit.cvView.title}
-			downloadLabel={c.summit.cvView.download}
-			closeLabel={c.summit.cvView.close}
-			fileName="Baruch-Mustakis-CV.pdf"
-		/>
 		<div class="elsewhere">
 			<span class="elsewhere__lead" id="elsewhere-lead">{c.summit.alsoOn}</span>
 			<ul class="chips chips--links" aria-labelledby="elsewhere-lead">
@@ -272,6 +271,16 @@ const elsewhere = [
 		</div>
 		<p class="aside tower-hint">{c.summit.playHint}</p>
 	</TierSection>
+
+	<!-- the CV viewer, opened from the experience tier and from the summit: outside the panels, as a
+	     panel faded out (any tier but the one in view) takes clicks from all it holds, a dialog too -->
+	<CvViewer
+		src={links.cv}
+		title={c.summit.cvView.title}
+		downloadLabel={c.summit.cvView.download}
+		closeLabel={c.summit.cvView.close}
+		fileName="Baruch-Mustakis-CV.pdf"
+	/>
 </Base>
 
 <style is:global>
@@ -594,6 +603,39 @@ const elsewhere = [
 		.path[data-stepping] .path__stage::before {
 			transition: none;
 		}
+	}
+
+	/* the experience tier's CV, on the title's line: a gold pill, warming under the pointer as the
+	 * summit's contact rows do. It reaches a little past its edge, so a finger has more to hit. */
+	.tier-cv {
+		position: relative;
+		display: inline-flex;
+		flex: none;
+		align-items: center;
+		gap: var(--sd-space-2);
+		padding-block: 6px;
+		padding-inline: 11px 13px;
+		border: 1px solid var(--sd-gold-edge);
+		border-radius: var(--sd-pill);
+		background: var(--sd-gold-wash);
+		color: var(--sd-gold);
+		font-size: var(--sd-text-sm);
+		font-weight: 600;
+		line-height: 1.2;
+		white-space: nowrap;
+		text-decoration: none;
+		transition: color var(--sd-dur-fast), border-color var(--sd-dur-fast), background var(--sd-dur-fast);
+	}
+	.tier-cv::after {
+		content: '';
+		position: absolute;
+		inset: -6px;
+	}
+	.tier-cv:hover,
+	.tier-cv:focus-visible {
+		color: var(--sd-gold-hot);
+		border-color: var(--sd-gold);
+		background: color-mix(in srgb, var(--sd-gold) 18%, transparent);
 	}
 
 	.formula {

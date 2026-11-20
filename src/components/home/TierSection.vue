@@ -4,6 +4,8 @@
  * tower; the tower island fades each panel in around its own tier.
  * The section id is the anchor the altitude gauge links to.
  * The heading's content can be replaced through the `title` slot (e.g. the summit's Babel joke).
+ * The `action` slot puts a control on the title's line, at the panel's other end (e.g. the
+ * experience tier's CV): it stays in view under the title even in a collapsed sheet.
  */
 import ArchPanel from '../../theme/components/ArchPanel.vue';
 
@@ -41,9 +43,12 @@ defineProps<{
 					<path d="M5 9l7 7 7-7" />
 				</svg>
 			</button>
-			<component :is="level === 1 ? 'h1' : 'h2'" :id="`tier-${id}-title`" class="tier__title">
-				<slot name="title">{{ title }}</slot>
-			</component>
+			<div class="tier__head" :class="{ 'tier__head--action': $slots.action }">
+				<component :is="level === 1 ? 'h1' : 'h2'" :id="`tier-${id}-title`" class="tier__title">
+					<slot name="title">{{ title }}</slot>
+				</component>
+				<slot name="action" />
+			</div>
 			<!-- the panel's content under its title: on wide screens in 3D this is what scrolls when it
 			     runs long, so the title stays in view and the scrollbar runs down the panel's straight
 			     side, below the arch and the title -->
@@ -73,6 +78,20 @@ defineProps<{
 
 h2.tier__title {
 	margin-block-end: var(--sd-space-4);
+}
+
+/* a control on the title's line: the title at the inline-start, the control centred on it at the
+ * other end, and the title's bottom margin below both */
+.tier__head--action {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--sd-space-3);
+	margin-block-end: var(--sd-space-4);
+}
+
+.tier__head--action > .tier__title {
+	margin-block-end: 0;
 }
 
 /* the sheet handle: a larger keystone carrying a chevron that points where the sheet will go

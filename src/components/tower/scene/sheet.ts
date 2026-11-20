@@ -91,8 +91,10 @@ export function createSheet(panels: HTMLElement[], startTier: number) {
 		set(i, isCollapsed(i));
 	});
 	// a tap anywhere on a collapsed sheet opens it (rather than following a link half out of sight)
+	/** A control that works as it is even in a collapsed sheet (the CV by the experience tier's title). */
+	const acts = (e: Event) => !!(e.target as Element | null)?.closest?.('[data-sheet-action]');
 	const onTap = panels.map((_, i) => (e: MouseEvent) => {
-		if (!isNarrow() || !isCollapsed(i)) return;
+		if (!isNarrow() || !isCollapsed(i) || acts(e)) return;
 		e.preventDefault();
 		e.stopPropagation();
 		set(i, true);
@@ -103,7 +105,7 @@ export function createSheet(panels: HTMLElement[], startTier: number) {
 		if (isCollapsed(i) && p.scrollTop !== 0) p.scrollTop = 0;
 	});
 	const onFocus = panels.map((_, i) => (e: FocusEvent) => {
-		if (isNarrow() && isCollapsed(i) && e.target !== handles[i]) set(i, true);
+		if (isNarrow() && isCollapsed(i) && e.target !== handles[i] && !acts(e)) set(i, true);
 	});
 	/**
 	 * A tap (or click) outside an open sheet, on the tower, collapses it, and only that: the tap

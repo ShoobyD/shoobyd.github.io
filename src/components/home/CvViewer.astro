@@ -1,7 +1,9 @@
 ---
 /**
- * The CV, read in place: a link carrying `data-opens="cv"` (the summit's CV row) opens this
- * dialog with the PDF shown full size over the tower, a download button and a close button.
+ * The CV, read in place: a link carrying `data-opens="cv"` (the experience tier's CV by its title,
+ * the summit's CV row) opens this dialog with the PDF shown full size over the tower, a download
+ * button and a close button. It sits outside the tier panels: one opened from another tier would
+ * be inside a faded panel, and take no clicks.
  *
  * Progressive: the dialog only takes over where the browser can show a PDF inline
  * (`navigator.pdfViewerEnabled`) on a screen wide enough to read it. Anywhere else (phones, no
