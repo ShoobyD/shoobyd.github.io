@@ -1,6 +1,7 @@
 /**
  * Leaderboard API for the Tower of Babel brick-stacking game on shoobyd.github.io.
  *
+ *   POST   /runs          → { run }                                a ticket for a run starting now
  *   GET    /scores        → { scores: Entry[] }                    the top BOARD_SIZE
  *   POST   /scores        { name, score, durationMs }
  *                         → { accepted: true, id, rank, scores }   when it makes the board
@@ -30,6 +31,9 @@ interface Entry {
 /** Submissions allowed per client per window. */
 const RATE_LIMIT = 5;
 const RATE_WINDOW_MS = 60_000;
+/** Runs one client may start per minute (a run can end within seconds), and how long a ticket stays valid. */
+const RUN_LIMIT = 30;
+const RUN_TTL_MS = 2 * 60 * 60_000;
 
 export default {
 	async fetch(request: Request, env: Env): Promise<Response> {
@@ -44,10 +48,10 @@ export default {
 			if (url.pathname === '/scores' && request.method === 'GET') {
 				return json({ scores: await topScores(env.DB) }, 200, cors, 'public, max-age=15');
 			}
-			if (url.pathname === '/scores' && request.method === 'POST') {
+			if (request.method === 'POST' && (url.pathname === '/scores' || url.pathname === '/runs')) {
 				// browsers always send Origin on a cross-site POST: refuse anything not from the site
 				if (!origin || !allowed.includes(origin)) return json({ error: 'origin' }, 403, cors);
-				return await submit(request, env, cors);
+				return url.pathname === '/runs' ? await startRun(request, env, cors) : await submit(request, env, cors);
 			}
 			const match = url.pathname.match(/^\/scores\/(\d+)$/);
 			if (match && request.method === 'DELETE') return await remove(Number(match[1]), request, env, cors);
@@ -65,6 +69,20 @@ async function topScores(db: D1Database): Promise<Entry[]> {
 		.bind(BOARD_SIZE)
 		.all<Entry>();
 	return results;
+}
+
+/** A ticket for a run starting now, stamped with this server's clock (see migrations/0002_runs.sql). */
+async function startRun(request: Request, env: Env, cors: HeadersInit): Promise<Response> {
+	const now = Date.now();
+	const client = await hashClient(request.headers.get('CF-Connecting-IP') ?? 'unknown');
+	await env.DB.prepare('DELETE FROM runs WHERE started_at < ?').bind(now - RUN_TTL_MS).run();
+	const recent = await env.DB.prepare('SELECT COUNT(*) AS n FROM runs WHERE client = ? AND started_at >= ?')
+		.bind(client, now - RATE_WINDOW_MS)
+		.first<{ n: number }>();
+	if ((recent?.n ?? 0) >= RUN_LIMIT) return json({ error: 'rate_limited' }, 429, cors);
+	const run = crypto.randomUUID();
+	await env.DB.prepare('INSERT INTO runs (id, client, started_at) VALUES (?, ?, ?)').bind(run, client, now).run();
+	return json({ run }, 201, cors);
 }
 
 async function submit(request: Request, env: Env, cors: HeadersInit): Promise<Response> {

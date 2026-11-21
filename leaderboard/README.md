@@ -6,6 +6,7 @@ The leaderboard API for the Tower of Babel brick-stacking game on [shoobyd.githu
 
 | Method | Path | Body / headers | Result |
 | --- | --- | --- | --- |
+| `POST` | `/runs` | | `201 { run }`: a ticket for a run starting now, stamped with the server's clock; `429` past 30 starts a minute from one client |
 | `GET` | `/scores` | | `{ scores }`: the top 10, best first, earliest first among equals |
 | `POST` | `/scores` | `{ name, score, durationMs }` | `201 { accepted: true, id, rank, scores }`, or `{ accepted: false, reason, scores }` |
 | `DELETE` | `/scores/:id` | `Authorization: Bearer <ADMIN_TOKEN>` | `{ deleted, scores }` |
@@ -20,7 +21,7 @@ Reasons a submission is refused:
 | `rate_limited` | More than 5 submissions a minute from one client |
 | `not_on_board` | Doesn't beat the current 10th place |
 
-Only `POST` checks the origin: it must be one of `ALLOWED_ORIGINS` in `wrangler.toml`. The table only ever holds the board itself.
+Only `POST` checks the origin: it must be one of `ALLOWED_ORIGINS` in `wrangler.toml`. The scores table only ever holds the board itself; run tickets are pruned after two hours.
 
 ## Develop
 
