@@ -46,6 +46,21 @@ async function call(path: string, init?: RequestInit): Promise<Response | null> 
 	}
 }
 
+/**
+ * A ticket for a run starting now (the Worker stamps it with its own clock), or `null` when the
+ * service can't be reached. Asked for as each run starts, and sent with the run's score.
+ */
+export async function startRun(): Promise<string | null> {
+	const res = await call('/runs', { method: 'POST' });
+	if (!res?.ok) return null;
+	try {
+		const data = (await res.json()) as { run?: unknown };
+		return typeof data.run === 'string' ? data.run : null;
+	} catch {
+		return null;
+	}
+}
+
 /** The current board, best first; `null` when the service can't be reached. */
 export async function fetchBoard(): Promise<BoardEntry[] | null> {
 	const res = await call('/scores');
@@ -59,7 +74,14 @@ export async function fetchBoard(): Promise<BoardEntry[] | null> {
 }
 
 /** Submits a run; `null` when the service can't be reached or answers with an error of its own. */
-export async function submitScore(run: { name: string; score: number; durationMs: number }): Promise<SubmitResult | null> {
+export async function submitScore(run: {
+	name: string;
+	score: number;
+	durationMs: number;
+	/** The run's ticket (`startRun`), and the phases its bricks were dropped at. */
+	run: string | null;
+	phases: number[];
+}): Promise<SubmitResult | null> {
 	const res = await call('/scores', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },

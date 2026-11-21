@@ -78,6 +78,8 @@ export function createStack(parent: THREE.Object3D, base: number, brick: THREE.T
 	let phase = 0;
 	let speed = SPEED0;
 	let score = 0;
+	/** The phase each brick of the run was dropped at, in order: the run as the leaderboard replays it. */
+	let phases: number[] = [];
 	let over = false;
 	let camTop = base;
 
@@ -146,6 +148,7 @@ export function createStack(parent: THREE.Object3D, base: number, brick: THREE.T
 		clear();
 		over = false;
 		score = 0;
+		phases = [];
 		speed = SPEED0;
 		spawn();
 	}
@@ -191,6 +194,7 @@ export function createStack(parent: THREE.Object3D, base: number, brick: THREE.T
 			falling.push({ mesh: slice, v, spin });
 		}
 
+		phases.push(phase);
 		laid.push({ mesh: mv.mesh, x: mv.mesh.position.x, z: mv.mesh.position.z, w: mv.w, d: mv.d, squash: 1 });
 		if (perfect) flash(mv.mesh, mv.w, mv.d);
 		score++;
@@ -249,6 +253,10 @@ export function createStack(parent: THREE.Object3D, base: number, brick: THREE.T
 		},
 		get over() {
 			return over;
+		},
+		/** The phase each brick laid in this run was dropped at (a copy). */
+		get phases() {
+			return phases.slice();
 		},
 		/** Nothing is in motion that needs frames to finish (slices falling, flashes fading). */
 		get idle() {

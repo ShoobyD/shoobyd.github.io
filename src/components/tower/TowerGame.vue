@@ -17,6 +17,7 @@
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import ArchPanel from '../../theme/components/ArchPanel.vue';
 import GameBoard from './GameBoard.vue';
+import { startRun } from './leaderboard';
 import { countBricks, type GameCopy } from '../../i18n/home';
 import { interpolate } from '../../i18n/interpolate';
 import type { Game, TowerHandle } from './scene';
@@ -42,8 +43,18 @@ const overText = ref('');
 const announcement = ref('');
 const dialog = ref<HTMLDialogElement | null>(null);
 const againBtn = ref<HTMLButtonElement | null>(null);
-/** The run that just ended, for the leaderboard; `boardRun` is bumped per run so it reloads. */
-const lastRun = ref({ score: 0, durationMs: 0 });
+/**
+ * The run that just ended, for the leaderboard (its score, its drops and its ticket); `boardRun`
+ * is bumped per run so it reloads.
+ */
+const lastRun = ref<{ score: number; durationMs: number; phases: number[]; ticket: Promise<string | null> }>({
+	score: 0,
+	durationMs: 0,
+	phases: [],
+	ticket: Promise.resolve(null),
+});
+/** The ticket for the run being played, asked for as it starts (without waiting for it). */
+let ticket: Promise<string | null> = Promise.resolve(null);
 const boardRun = ref(0);
 
 let game: Game | null = null;
@@ -85,6 +96,7 @@ function closeDialog() {
 function enter(from: HTMLElement | null) {
 	if (!game || active.value) return;
 	returnTo = from;
+	ticket = startRun();
 	game.enter();
 	active.value = true;
 	score.value = 0;
@@ -112,6 +124,7 @@ function exit(restoreFocus = true) {
 function again() {
 	closeDialog();
 	score.value = 0;
+	if (game) ticket = startRun();
 	game?.again();
 }
 
@@ -187,10 +200,10 @@ onMounted(async () => {
 			if (newBest) text = `${text}. ${props.copy.announceBest}`;
 			announce(text);
 		},
-		onOver(n, durationMs) {
+		onOver(n, durationMs, phases) {
 			overText.value = n === 0 ? props.copy.overNone : interpolate(props.copy.overText, { bricks: countBricks(props.copy.brickCount, n) });
 			// start loading the board now, so it is usually there by the time the card comes up
-			lastRun.value = { score: n, durationMs };
+			lastRun.value = { score: n, durationMs, phases, ticket };
 			boardRun.value++;
 			announce(overText.value);
 			// let the brick tumble before the card comes up
@@ -271,6 +284,8 @@ onBeforeUnmount(() => {
 				:count="copy.brickCount"
 				:score="lastRun.score"
 				:duration-ms="lastRun.durationMs"
+				:phases="lastRun.phases"
+				:ticket="lastRun.ticket"
 				:run="boardRun"
 				@announce="announce"
 				@added="againBtn?.focus()"

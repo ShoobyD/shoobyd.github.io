@@ -29,6 +29,9 @@ const props = defineProps<{
 	/** Bricks laid in the run that just ended. */
 	score: number;
 	durationMs: number;
+	/** The phases the run's bricks were dropped at, and the run's ticket (both for the server to check). */
+	phases: number[];
+	ticket: Promise<string | null>;
 	/** Bumped for every finished run, so the board reloads and the form starts fresh. */
 	run: number;
 }>();
@@ -104,7 +107,8 @@ async function submit() {
 		return;
 	}
 	submitting.value = true;
-	const result = await submitScore({ name: trimmed, score: props.score, durationMs: props.durationMs });
+	const run = await props.ticket;
+	const result = await submitScore({ name: trimmed, score: props.score, durationMs: props.durationMs, run, phases: props.phases });
 	submitting.value = false;
 	if (!result) {
 		error.value = props.copy.errors.network;
