@@ -47,9 +47,8 @@ const againBtn = ref<HTMLButtonElement | null>(null);
  * The run that just ended, for the leaderboard (its score, its drops and its ticket); `boardRun`
  * is bumped per run so it reloads.
  */
-const lastRun = ref<{ score: number; durationMs: number; phases: number[]; ticket: Promise<string | null> }>({
+const lastRun = ref<{ score: number; phases: number[]; ticket: Promise<string | null> }>({
 	score: 0,
-	durationMs: 0,
 	phases: [],
 	ticket: Promise.resolve(null),
 });
@@ -200,10 +199,10 @@ onMounted(async () => {
 			if (newBest) text = `${text}. ${props.copy.announceBest}`;
 			announce(text);
 		},
-		onOver(n, durationMs, phases) {
+		onOver(n, phases) {
 			overText.value = n === 0 ? props.copy.overNone : interpolate(props.copy.overText, { bricks: countBricks(props.copy.brickCount, n) });
 			// start loading the board now, so it is usually there by the time the card comes up
-			lastRun.value = { score: n, durationMs, phases, ticket };
+			lastRun.value = { score: n, phases, ticket };
 			boardRun.value++;
 			announce(overText.value);
 			// let the brick tumble before the card comes up
@@ -283,7 +282,6 @@ onBeforeUnmount(() => {
 				:copy="copy.board"
 				:count="copy.brickCount"
 				:score="lastRun.score"
-				:duration-ms="lastRun.durationMs"
 				:phases="lastRun.phases"
 				:ticket="lastRun.ticket"
 				:run="boardRun"

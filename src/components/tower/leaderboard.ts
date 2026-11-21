@@ -27,6 +27,7 @@ export interface BoardEntry {
 export type RefusalReason =
 	| 'score_invalid'
 	| 'too_fast'
+	| 'run_invalid'
 	| 'name_empty'
 	| 'name_long'
 	| 'name_chars'
@@ -77,7 +78,6 @@ export async function fetchBoard(): Promise<BoardEntry[] | null> {
 export async function submitScore(run: {
 	name: string;
 	score: number;
-	durationMs: number;
 	/** The run's ticket (`startRun`), and the phases its bricks were dropped at. */
 	run: string | null;
 	phases: number[];

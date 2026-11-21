@@ -8,20 +8,21 @@ The leaderboard API for the Tower of Babel brick-stacking game on [shoobyd.githu
 | --- | --- | --- | --- |
 | `POST` | `/runs` | | `201 { run }`: a ticket for a run starting now, stamped with the server's clock; `429` past 30 starts a minute from one client |
 | `GET` | `/scores` | | `{ scores }`: the top 10, best first, earliest first among equals |
-| `POST` | `/scores` | `{ name, score, durationMs }` | `201 { accepted: true, id, rank, scores }`, or `{ accepted: false, reason, scores }` |
+| `POST` | `/scores` | `{ name, score, run, phases }`: `run` is the run's ticket, `phases` the phase each brick was dropped at | `201 { accepted: true, id, rank, scores }`, or `{ accepted: false, reason, scores }` |
 | `DELETE` | `/scores/:id` | `Authorization: Bearer <ADMIN_TOKEN>` | `{ deleted, scores }` |
 
 Reasons a submission is refused:
 
 | Reason | Meaning |
 | --- | --- |
-| `score_invalid` | Not a whole number from 1 to 500, or no duration |
-| `too_fast` | Impossible in the reported time (see `minimumDurationMs` in `src/rules.ts`) |
+| `run_invalid` | No ticket, one already used, or one older than two hours |
+| `score_invalid` | Replaying the phases (`replay` in `src/rules.ts`) doesn't land every brick, or doesn't give the score sent |
+| `too_fast` | The bricks moved for longer than the time since the ticket was issued (plus 3 seconds) |
 | `name_empty`, `name_long`, `name_chars`, `name_banned` | The name is empty, longer than 20 characters, uses characters other than letters, digits, spaces and `._'-`, or contains a banned word (`src/banned.ts`) |
 | `rate_limited` | More than 5 submissions a minute from one client |
 | `not_on_board` | Doesn't beat the current 10th place |
 
-Only `POST` checks the origin: it must be one of `ALLOWED_ORIGINS` in `wrangler.toml`. The scores table only ever holds the board itself; run tickets are pruned after two hours.
+A name the board refuses leaves the ticket for another try; any other answer uses it up. Only `POST` checks the origin: it must be one of `ALLOWED_ORIGINS` in `wrangler.toml`. The scores table only ever holds the board itself; run tickets are pruned after two hours.
 
 ## Develop
 
@@ -52,5 +53,5 @@ Entry ids are in the `GET /scores` response.
 
 ## Keep in sync with the game
 
-The plausibility check in `src/rules.ts` mirrors the brick timing in the site's `src/components/tower/scene/game/stack.ts` (`AMP`, `BS`, `SPEED0`, `SPEED_MAX` and the speed growth). If the game changes, change it here too.
+`replay` in `src/rules.ts` mirrors the stack's rules in the site's `src/components/tower/scene/game/stack.ts`: `AMP`, `BS`, `PERFECT`, `SPEED0`, `SPEED_MAX`, the speed growth, and the arithmetic of a drop. If the game changes, change it here too.
 

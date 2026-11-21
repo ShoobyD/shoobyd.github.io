@@ -170,6 +170,7 @@ export interface BoardCopy {
 		| 'name_banned'
 		| 'rate_limited'
 		| 'too_fast'
+		| 'run_invalid'
 		| 'score_invalid'
 		| 'not_on_board'
 		| 'network',
@@ -307,6 +308,7 @@ export const home: Record<Lang, HomeCopy> = {
 					name_banned: 'השם הזה לא ייחקק במגדל. נסו אחר.',
 					rate_limited: 'יותר מדי ניסיונות. נסו שוב בעוד דקה.',
 					too_fast: 'התוצאה הזאת לא נראית אפשרית, ולכן לא נשמרה.',
+					run_invalid: 'לא היה אפשר לאמת את הריצה הזאת, ולכן היא לא נשמרה.',
 					score_invalid: 'משהו בתוצאה השתבש, והיא לא נשמרה.',
 					not_on_board: 'בינתיים מישהו עקף אתכם. הלוח עודכן.',
 					network: 'לא הצלחנו להגיע ללוח. נסו שוב.',
@@ -442,6 +444,7 @@ export const home: Record<Lang, HomeCopy> = {
 					name_banned: "That name won't be carved into the tower. Try another.",
 					rate_limited: 'Too many tries. Try again in a minute.',
 					too_fast: "That score doesn't look possible, so it wasn't saved.",
+					run_invalid: "This run couldn't be verified, so it wasn't saved.",
 					score_invalid: "Something was off with that run, so it wasn't saved.",
 					not_on_board: 'Someone overtook you in the meantime. The board is updated.',
 					network: "Couldn't reach the board. Try again.",

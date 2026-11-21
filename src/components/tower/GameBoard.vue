@@ -28,7 +28,6 @@ const props = defineProps<{
 	count: BrickCount;
 	/** Bricks laid in the run that just ended. */
 	score: number;
-	durationMs: number;
 	/** The phases the run's bricks were dropped at, and the run's ticket (both for the server to check). */
 	phases: number[];
 	ticket: Promise<string | null>;
@@ -108,7 +107,7 @@ async function submit() {
 	}
 	submitting.value = true;
 	const run = await props.ticket;
-	const result = await submitScore({ name: trimmed, score: props.score, durationMs: props.durationMs, run, phases: props.phases });
+	const result = await submitScore({ name: trimmed, score: props.score, run, phases: props.phases });
 	submitting.value = false;
 	if (!result) {
 		error.value = props.copy.errors.network;

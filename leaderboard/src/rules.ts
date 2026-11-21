@@ -1,15 +1,16 @@
 /**
- * The leaderboard's rules: the size of the board, what a name may be, and whether a score is
- * physically possible in the time the game says it took.
+ * The leaderboard's rules: the size of the board, what a name may be, and the replay that turns a
+ * run's drops into its score.
  *
- * The timing model mirrors the game (src/components/tower/scene/game/stack.ts in the site); if
- * the game's AMP / BS / SPEED0 / SPEED_MAX / speed growth change, change them here too.
+ * The replay mirrors the game (src/components/tower/scene/game/stack.ts in the site); if the
+ * game's AMP / BS / PERFECT / SPEED0 / SPEED_MAX / speed growth or its arithmetic change, change
+ * them here too.
  */
 import { BANNED } from './banned';
 
 export const BOARD_SIZE = 10;
 export const NAME_MAX = 20;
-/** A run longer than this can't be scored (and keeps the plausibility sum bounded). */
+/** A run longer than this can't be scored (and keeps the replay bounded). */
 export const SCORE_MAX = 500;
 
 // ---------- names ----------
@@ -48,39 +49,50 @@ function isBanned(name: string) {
 	});
 }
 
-// ---------- plausibility ----------
+// ---------- replay ----------
 
-/** How far a brick starts from the stack, and the widest a brick can be (the game's AMP and BS). */
+/**
+ * The stack's rules, as the game plays them (src/components/tower/scene/game/stack.ts in the
+ * site): the reach a brick swings over, the first brick's footprint, how close a drop snaps as
+ * perfect, and the swing's speed and how it grows per brick.
+ */
 const AMP = 3.6;
 const BRICK = 2.8;
+const PERFECT = 0.13;
 const SPEED0 = 2.4;
 const SPEED_MAX = 6.5;
 const SPEED_GROWTH = 1.045;
 
 /**
- * Each brick swings in as `sin(phase) * AMP`, starting at phase −π/2, so even the widest brick
- * can't be dropped onto the stack before its phase has advanced this far.
+ * Replays a run from the phase each brick was dropped at, with the same arithmetic as the game:
+ * brick `i` swings on the x axis when `i` is even and z when odd, at `sin(phase) * AMP` from the
+ * brick below; a drop that misses ends the run, one within PERFECT snaps on top, any other one
+ * loses its overhang. Every phase sent must be a brick that landed, so the score is their count.
+ *
+ * A brick starts at phase −π/2 and its phase grows at the speed of the moment, so the phases
+ * also give how long the bricks were moving (`gameMs`): no more than the run's real time.
  */
-const MIN_PHASE = Math.asin(-BRICK / AMP) + Math.PI / 2;
-
-/** Frame timing and timer resolution: accept runs down to this fraction of the ideal minimum. */
-const SLACK = 0.75;
-
-/** The fastest a perfect player could lay `score` bricks, in milliseconds. */
-export function minimumDurationMs(score: number) {
+export function replay(phases: unknown): { ok: true; score: number; gameMs: number } | { ok: false } {
+	if (!Array.isArray(phases) || phases.length < 1 || phases.length > SCORE_MAX) return { ok: false };
+	const top = { x: 0, z: 0, w: BRICK, d: BRICK };
 	let speed = SPEED0;
 	let seconds = 0;
-	for (let i = 0; i < score; i++) {
-		seconds += MIN_PHASE / speed;
+	for (let i = 0; i < phases.length; i++) {
+		const phase: unknown = phases[i];
+		if (typeof phase !== 'number' || !Number.isFinite(phase) || phase < -Math.PI / 2) return { ok: false };
+		const ax = i % 2 === 0 ? 'x' : 'z';
+		const size = ax === 'x' ? top.w : top.d;
+		const delta = top[ax] + Math.sin(phase) * AMP - top[ax];
+		if (Math.abs(delta) >= size) return { ok: false };
+		if (Math.abs(delta) >= PERFECT) {
+			const keep = size - Math.abs(delta);
+			top[ax] += delta / 2;
+			if (ax === 'x') top.w = keep;
+			else top.d = keep;
+		}
+		seconds += (phase + Math.PI / 2) / speed;
 		speed = Math.min(SPEED_MAX, speed * SPEED_GROWTH);
 	}
-	return seconds * 1000;
-}
-
-export function checkScore(score: unknown, durationMs: unknown): { ok: true; score: number; durationMs: number } | { ok: false; error: 'score_invalid' | 'too_fast' } {
-	if (!Number.isInteger(score) || (score as number) < 1 || (score as number) > SCORE_MAX) return { ok: false, error: 'score_invalid' };
-	if (typeof durationMs !== 'number' || !Number.isFinite(durationMs) || durationMs <= 0) return { ok: false, error: 'score_invalid' };
-	if (durationMs < minimumDurationMs(score as number) * SLACK) return { ok: false, error: 'too_fast' };
-	return { ok: true, score: score as number, durationMs: Math.round(durationMs) };
+	return { ok: true, score: phases.length, gameMs: seconds * 1000 };
 }
 

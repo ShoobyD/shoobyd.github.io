@@ -17,11 +17,10 @@ export interface GameEvents {
 	/** A brick was laid; `perfect` when it snapped into place, `best` the record after it. */
 	onLaid(score: number, best: number, perfect: boolean, newBest: boolean): void;
 	/**
-	 * The brick missed the stack: the run is over. `durationMs` runs from the start of the run to
-	 * the last brick laid; the leaderboard uses it to tell a real run from an impossible one.
-	 * `phases` are the phases the run's bricks were dropped at, for the leaderboard to replay.
+	 * The brick missed the stack: the run is over. `phases` are the phases the run's bricks were
+	 * dropped at, for the leaderboard to replay.
 	 */
-	onOver(score: number, durationMs: number, phases: number[]): void;
+	onOver(score: number, phases: number[]): void;
 	/** Eight bricks in one run: the SD-08 secret. */
 	onSecret(): void;
 }
@@ -58,12 +57,9 @@ export function createGame(tower: TowerHandle, events: GameEvents) {
 	let active = false;
 	let best = readBest();
 	let unlocked = false;
-	let runStart = 0;
-	let lastLaid = 0;
 
 	function start() {
 		unlocked = false;
-		runStart = lastLaid = performance.now();
 		stack.reset();
 	}
 
@@ -102,10 +98,9 @@ export function createGame(tower: TowerHandle, events: GameEvents) {
 			const r = stack.drop();
 			if (!r) return;
 			if (r.kind === 'miss') {
-				events.onOver(r.score, lastLaid - runStart, stack.phases);
+				events.onOver(r.score, stack.phases);
 				return;
 			}
-			lastLaid = performance.now();
 			const newBest = r.score > best;
 			if (newBest) {
 				best = r.score;

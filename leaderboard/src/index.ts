@@ -3,15 +3,17 @@
  *
  *   POST   /runs          → { run }                                a ticket for a run starting now
  *   GET    /scores        → { scores: Entry[] }                    the top BOARD_SIZE
- *   POST   /scores        { name, score, durationMs }
+ *   POST   /scores        { name, score, run, phases }
  *                         → { accepted: true, id, rank, scores }   when it makes the board
  *                         → { accepted: false, reason, scores }    when it doesn't (or is refused)
  *   DELETE /scores/:id    Authorization: Bearer <ADMIN_TOKEN>      removes an entry
  *
- * The site is static; this Worker is the only writer. It checks the origin, the name, whether
- * the score is possible in the time the game reports, and how often one client submits.
+ * The site is static; this Worker is the only writer. It checks the origin and the name, takes
+ * the run's ticket (`run`, from POST /runs) and replays its drops (`phases`): every brick has to
+ * land and make the score, in no more time than passed since the ticket (rules.ts). It also
+ * limits how often one client submits.
  */
-import { BOARD_SIZE, checkName, checkScore } from './rules';
+import { BOARD_SIZE, checkName, replay } from './rules';
 
 export interface Env {
 	DB: D1Database;
@@ -34,6 +36,8 @@ const RATE_WINDOW_MS = 60_000;
 /** Runs one client may start per minute (a run can end within seconds), and how long a ticket stays valid. */
 const RUN_LIMIT = 30;
 const RUN_TTL_MS = 2 * 60 * 60_000;
+/** The ticket is stamped when its request arrives, a moment after the run began: allow for that. */
+const CLOCK_SLACK_MS = 3000;
 
 export default {
 	async fetch(request: Request, env: Env): Promise<Response> {
@@ -86,20 +90,31 @@ async function startRun(request: Request, env: Env, cors: HeadersInit): Promise<
 }
 
 async function submit(request: Request, env: Env, cors: HeadersInit): Promise<Response> {
-	let body: { name?: unknown; score?: unknown; durationMs?: unknown };
+	let body: { name?: unknown; score?: unknown; run?: unknown; phases?: unknown };
 	try {
 		body = await request.json();
 	} catch {
 		return json({ error: 'bad_json' }, 400, cors);
 	}
 
-	const scored = checkScore(body.score, body.durationMs);
-	if (!scored.ok) return json({ accepted: false, reason: scored.error, scores: await topScores(env.DB) }, 422, cors);
+	const refuse = async (reason: string) => json({ accepted: false, reason, scores: await topScores(env.DB) }, 422, cors);
+
+	// a name the board won't show keeps the ticket: the player can fix it and send the run again
 	const named = checkName(body.name);
-	if (!named.ok) return json({ accepted: false, reason: named.error, scores: await topScores(env.DB) }, 422, cors);
+	if (!named.ok) return refuse(named.error);
+
+	// from here on the ticket is used up, whatever the outcome
+	const now = Date.now();
+	const ticket =
+		typeof body.run === 'string'
+			? await env.DB.prepare('DELETE FROM runs WHERE id = ? RETURNING started_at AS startedAt').bind(body.run).first<{ startedAt: number }>()
+			: null;
+	if (!ticket || now - ticket.startedAt > RUN_TTL_MS) return refuse('run_invalid');
+	const run = replay(body.phases);
+	if (!run.ok || run.score !== body.score) return refuse('score_invalid');
+	if (run.gameMs > now - ticket.startedAt + CLOCK_SLACK_MS) return refuse('too_fast');
 
 	// rate limit per client, keyed by a hash of its address (the address itself is never stored)
-	const now = Date.now();
 	const client = await hashClient(request.headers.get('CF-Connecting-IP') ?? 'unknown');
 	await env.DB.prepare('DELETE FROM submissions WHERE created_at < ?').bind(now - RATE_WINDOW_MS).run();
 	const recent = await env.DB.prepare('SELECT COUNT(*) AS n FROM submissions WHERE client = ?').bind(client).first<{ n: number }>();
@@ -109,12 +124,12 @@ async function submit(request: Request, env: Env, cors: HeadersInit): Promise<Re
 	// only a score that beats the current last place (or fills an empty place) is kept
 	const board = await topScores(env.DB);
 	const last = board[BOARD_SIZE - 1];
-	if (board.length >= BOARD_SIZE && scored.score <= last.score) {
+	if (board.length >= BOARD_SIZE && run.score <= last.score) {
 		return json({ accepted: false, reason: 'not_on_board', scores: board }, 200, cors);
 	}
 
 	const inserted = await env.DB.prepare('INSERT INTO scores (name, score, duration_ms, created_at) VALUES (?, ?, ?, ?) RETURNING id')
-		.bind(named.name, scored.score, scored.durationMs, now)
+		.bind(named.name, run.score, Math.round(run.gameMs), now)
 		.first<{ id: number }>();
 	// keep the table to the board itself: anything pushed off it is dropped
 	await env.DB.prepare(
